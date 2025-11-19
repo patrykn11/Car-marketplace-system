@@ -9,5 +9,4 @@ public class EitimotoBackendApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(EitimotoBackendApplication.class, args);
 	}
-
 }

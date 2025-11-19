@@ -2,7 +2,9 @@ services:
   db:
     image: postgres:latest
     ports:
-      - "5433:5433"
+      - "3000:5432"
     restart: always
     environment:
-      POSTGRES_PASSWORD: changemeinprod!
+      POSTGRES_DB: eitimoto_db
+      POSTGRES_USER: eitimoto_user
+      POSTGRES_PASSWORD: zawszemoznapytac
