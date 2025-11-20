@@ -60,7 +60,7 @@ const LoginPage = () => {
                 onSubmit={handleSubmit} 
                 className="flex flex-col justify-center items-center w-full max-w-md p-6 sm:p-8 gap-4 border-2 border-black 
                            shadow-2xl shadow-gray-700 bg-white rounded-lg">
-                <h2 className="text-2xl sm:text-3xl font-bold mb-4">Logowanie</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold mb-4">LOGIN</h2>
 
                 <input
                     type="text"
@@ -74,11 +74,11 @@ const LoginPage = () => {
                     value={userlog.pass} 
                     onChange={handlePassChange} 
                     className="w-full p-2 sm:p-3 resize-none rounded border border-black focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-                <Link to='/register' className="text-blue-600 hover:underline transition-all duration-200">don't have account?</Link>
+                <Link to='/register' className="text-blue-600 hover:underline transition-all duration-200">don't have an account?</Link>
                 <button
                     type="submit" 
                     className="mt-4 px-4 sm:px-6 py-2 sm:py-3 text-white font-semibold rounded-lg shadow transition-colors bg-blue-600 hover:bg-blue-700 w-full">
-                    Zaloguj
+                    Login
                 </button>
             </form>
 
