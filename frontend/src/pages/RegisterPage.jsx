@@ -33,7 +33,7 @@ const RegisterPage = () => {
             const data_login = {
                 username: userlog.user,
                 password: userlog.pass,
-                useremail
+                email: user.email
             };
     
             try {
