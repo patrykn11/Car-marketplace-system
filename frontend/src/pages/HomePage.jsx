@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
 import { mockCars } from '../data/mockCars';
 import CarCard from '../components/CarCard';
-
+import {useAuth} from '../contexts/AuthContext'
 const HomePage = () => {
     const featuredCars = mockCars.slice(0, 3);
-
+    const {login, isAuthentication} = useAuth();
     return (
         <div className="space-y-12">
             <section className="text-center py-12 bg-blue-600 text-white rounded-lg shadow-xl">

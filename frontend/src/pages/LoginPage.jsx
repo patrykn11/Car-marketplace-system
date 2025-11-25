@@ -1,10 +1,11 @@
-// pages/LoginPage.jsx
-
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+
 const LoginPage = () => {
     const navigate = useNavigate();
+    const {isAuthenticated, login } = useAuth(); 
+    
     const [userlog, setUserlog] = useState({ user: "", pass: "" });
     const [error, setError] = useState('');
 
@@ -26,30 +27,15 @@ const LoginPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const data_login = {
-            username: userlog.user,
-            password: userlog.pass
-        };
+        setError(''); 
 
         try {
-            const resp = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data_login)
-            });
 
-            if(resp.ok){
-                const data = await resp.json();
-                navigate('/HomePage')
-                // TODO: token saving
-                setError('');
-            } else {
-                setError("Wrong username or password");
-            }
-        } catch(error){
-            setError("Server is not available");
+            await login(userlog.user, userlog.pass);
+            
+            navigate('/'); 
+        } catch(err) {
+            setError(err.message);
         }
     };
 
@@ -74,7 +60,11 @@ const LoginPage = () => {
                     value={userlog.pass} 
                     onChange={handlePassChange} 
                     className="w-full p-2 sm:p-3 resize-none rounded border border-black focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-                <Link to='/register' className="text-blue-600 hover:underline transition-all duration-200">don't have an account?</Link>
+                
+                <Link to='/register' className="text-blue-600 hover:underline transition-all duration-200">
+                    don't have an account?
+                </Link>
+                
                 <button
                     type="submit" 
                     className="mt-4 px-4 sm:px-6 py-2 sm:py-3 text-white font-semibold rounded-lg shadow transition-colors bg-blue-600 hover:bg-blue-700 w-full">
@@ -83,7 +73,7 @@ const LoginPage = () => {
             </form>
 
             {error && (
-                <div className="text-sm sm:text-base text-red-600 text-center mt-2">
+                <div className="text-sm sm:text-base text-red-600 text-center mt-2 font-medium">
                     {error}
                 </div>
             )}
