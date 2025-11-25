@@ -4,11 +4,11 @@ import CarCard from '../components/CarCard';
 import {useAuth} from '../contexts/AuthContext'
 const HomePage = () => {
     const featuredCars = mockCars.slice(0, 3);
-    const {login, isAuthentication} = useAuth();
+    const {login, isAuthentication, username} = useAuth();
     return (
         <div className="space-y-12">
             <section className="text-center py-12 bg-blue-600 text-white rounded-lg shadow-xl">
-                <h1 className="text-4xl font-bold mb-4">Welcome to EITI MOTO</h1>
+                <h1 className="text-4xl font-bold mb-4">Welcome to EITI MOTO{username ? `, ${username}` : "nikt"}</h1>
                 <p className="text-xl mb-8">Find your dream car today!</p>
                 <Link
                     to="/cars"
