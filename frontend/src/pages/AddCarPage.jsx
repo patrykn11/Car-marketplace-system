@@ -5,6 +5,7 @@ export default function AddCarPage() {
     const [car_brand, setCarBrand]              = useState("");
     const [car_model, setCarModel]              = useState("");
     const [production_year, setProductionYear]  = useState("");
+    const [car_engine, setCarEngine]            = useState("");
     const [car_color, setCarColor]              = useState("");
     const [price, setPrice]                     = useState("");
     const [description, setDescription]         = useState("");
@@ -70,6 +71,10 @@ export default function AddCarPage() {
                         </option>
                     ))}
                 </select>
+            </label>
+
+            <label className="block mb-1">
+                Engine:
             </label>
 
             <label className="block mb-1">
