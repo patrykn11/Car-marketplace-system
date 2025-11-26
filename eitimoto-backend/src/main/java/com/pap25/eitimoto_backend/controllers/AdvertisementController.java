@@ -1,7 +1,5 @@
 package com.pap25.eitimoto_backend.controllers;
 
-import java.lang.foreign.Linker.Option;
-
 import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +24,7 @@ public class AdvertisementController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Advertisement> getAdvertisement(@PathVariable("id") Long advertisementId) {
-        return advertisementRepository.findByAdvertisementID(advertisementId)
+        return advertisementRepository.findByAdvertisementId(advertisementId)
             .map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.notFound().build());
     }

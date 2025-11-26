@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import com.pap25.eitimoto_backend.entities.Engine;
 
-public interface EngineRepository extends JpaRepository<EngineRepository, Long> {
+public interface EngineRepository extends JpaRepository<Engine, Long> {
     Optional<Engine> findByEngineCode(String engineCode);
     boolean existsByEngineCode(String engineCode);
 }
