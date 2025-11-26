@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 
 export default function AddCarPage() {
+    const [title, setTitle]                     = useState("");
     const [car_brand, setCarBrand]              = useState("");
     const [car_model, setCarModel]              = useState("");
     const [production_year, setProductionYear]  = useState("");
@@ -23,8 +24,8 @@ export default function AddCarPage() {
             alert('Ogłoszenie dodane pomyślnie');
             setTitle('');
             setDescription('');
-        } else { 
-            alert('Błąd przy dodawaniu ogłoszenia'); 
+        } else {
+            alert('Błąd przy dodawaniu ogłoszenia');
         }
     }
 
@@ -106,8 +107,8 @@ export default function AddCarPage() {
             </label>
 
             <div className="flex justify-center mt-4">
-                <button 
-                    type="submit" 
+                <button
+                    type="submit"
                     className="bg-blue-600 text-white p-2 rounded px-6"
                 >
                     Dodaj ogłoszenie
