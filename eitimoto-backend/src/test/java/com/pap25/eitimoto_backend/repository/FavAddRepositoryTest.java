@@ -24,7 +24,7 @@ public class FavAddRepositoryTest {
 
     @Test
     void returnsFavoriteAdsWhenFindByUserId() {
-        User user = new User(null, "user1", "password1", Role.USER, null);
+        User user = new User(null, "user1", "password1", Role.USER, null, null);
         entityManager.persistAndFlush(user);
 
         FavoriteAdvertisement fav1 = FavoriteAdvertisement.builder()
@@ -48,7 +48,7 @@ public class FavAddRepositoryTest {
 
     @Test
     void returnsFavoriteAdWhenFindByUserIdAndAdvertisementId() {
-        User user = new User(null, "user2", "password2", Role.USER, null);
+        User user = new User(null, "user2", "password2", Role.USER, null, null);
         entityManager.persistAndFlush(user);
 
         FavoriteAdvertisement fav = FavoriteAdvertisement.builder()
@@ -66,7 +66,7 @@ public class FavAddRepositoryTest {
 
     @Test
     void deletesFavoriteAdWhenDeleteByUserIdAndAdvertisementId() {
-        User user = new User(null, "user3", "password3", Role.USER, null);
+        User user = new User(null, "user3", "password3", Role.USER, null, null);
         entityManager.persistAndFlush(user);
 
         FavoriteAdvertisement fav = FavoriteAdvertisement.builder()
@@ -104,8 +104,8 @@ public class FavAddRepositoryTest {
 
     @Test
     void handlesMultipleUsersFavoritesCorrectly() {
-        User userA = new User(null, "userA", "passwordA", Role.USER, null);
-        User userB = new User(null, "userB", "passwordB", Role.USER, null);
+        User userA = new User(null, "userA", "passwordA", Role.USER, null, null);
+        User userB = new User(null, "userB", "passwordB", Role.USER, null, null);
         entityManager.persistAndFlush(userA);
         entityManager.persistAndFlush(userB);
 
@@ -133,7 +133,7 @@ public class FavAddRepositoryTest {
 
     @Test
     void canAddAndRetrieveMultipleFavoritesForSameUser() {
-        User user = new User(null, "userMulti", "passwordMulti", Role.USER, null);
+        User user = new User(null, "userMulti", "passwordMulti", Role.USER, null, null);
         entityManager.persistAndFlush(user);
 
         for (long adId = 601L; adId <= 605L; adId++) {
@@ -154,7 +154,7 @@ public class FavAddRepositoryTest {
 
     @Test
     void deletingOneFavoriteDoesNotAffectOthers() {
-        User user = new User(null, "userDelTest", "passwordDelTest", Role.USER, null);
+        User user = new User(null, "userDelTest", "passwordDelTest", Role.USER, null, null);
         entityManager.persistAndFlush(user);
 
         FavoriteAdvertisement fav1 = FavoriteAdvertisement.builder()
@@ -180,7 +180,7 @@ public class FavAddRepositoryTest {
 
     @Test
     void handlesLargeNumberOfFavorites() {
-        User user = new User(null, "userLarge", "passwordLarge", Role.USER, null);
+        User user = new User(null, "userLarge", "passwordLarge", Role.USER, null, null);
         entityManager.persistAndFlush(user);
 
         for (long adId = 800L; adId < 900L; adId++) {
@@ -205,7 +205,7 @@ public class FavAddRepositoryTest {
 
     @Test
     void canHandleNullAdvertisementIdGracefully() {
-        User user = new User(null, "userNullAd", "passwordNullAd", Role.USER, null);
+        User user = new User(null, "userNullAd", "passwordNullAd", Role.USER, null, null);
         entityManager.persistAndFlush(user);
 
         Optional<FavoriteAdvertisement> result = favAddRepository.findByUserIdAndAdvertisementId(user.getId(), null);

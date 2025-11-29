@@ -1,5 +1,8 @@
 package com.pap25.eitimoto_backend.controllers;
 
+import com.pap25.eitimoto_backend.dto.AdvertisementDto;
+import com.pap25.eitimoto_backend.dto.AdvertisementResponseDto;
+import com.pap25.eitimoto_backend.entities.Advertisement;
 import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,32 +13,30 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.pap25.eitimoto_backend.entities.Advertisement;
+import com.pap25.eitimoto_backend.services.AdvertisementService;
 import com.pap25.eitimoto_backend.repository.AdvertisementRepository;
-
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @Controller
-@RequestMapping("/advertisements")
+@RequestMapping("/api/advertisements")
 @RequiredArgsConstructor
 public class AdvertisementController {
 
-    private final AdvertisementRepository advertisementRepository;
+    private final AdvertisementService advertisementService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Advertisement> getAdvertisement(@PathVariable("id") Long advertisementId) {
-        return advertisementRepository.findByAdvertisementId(advertisementId)
-            .map(ResponseEntity::ok)
-            .orElseGet(() -> ResponseEntity.notFound().build());
+    @GetMapping
+    public ResponseEntity<List<AdvertisementResponseDto>> getAllAdvertisements() {
+        List<AdvertisementResponseDto> list = advertisementService.getAdvertisements();
+        return ResponseEntity.ok(list);
     }
 
-    @PostMapping("/add-car")
-    public ResponseEntity<Advertisement> addCar(@RequestBody Advertisement request) {
-        /* --- Saving new car in repository */
-        Advertisement saved = advertisementRepository.save(request);
-
-        return ResponseEntity
-               .status(HttpStatus.CREATED)
-               .body(saved); 
+    @PostMapping("/add")
+    public ResponseEntity<AdvertisementResponseDto> addAdvertisements(@RequestBody AdvertisementDto advertisement) {
+        AdvertisementResponseDto saveAd =  advertisementService.addAdvertisement(advertisement);
+        return ResponseEntity.ok(saveAd);
     }
+
+
 }
