@@ -7,6 +7,7 @@ import com.pap25.eitimoto_backend.entities.User;
 import com.pap25.eitimoto_backend.repository.AdvertisementRepository;
 import com.pap25.eitimoto_backend.repository.CarRepository;
 import com.pap25.eitimoto_backend.entities.Car;
+import com.pap25.eitimoto_backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 import jakarta.persistence.EntityNotFoundException;
 import com.pap25.eitimoto_backend.mapper.AdvertisementMapper;
+import org.springframework.web.bind.annotation.PathVariable;
 
 
 @Service
@@ -25,6 +27,7 @@ public class AdvertisementService {
     private final UserContextService userContextService;
     private final AdvertisementMapper advertisementMapper;
     private final CarRepository carRepository;
+    private final UserRepository userRepository;
 
     public List<AdvertisementResponseDto> getAdvertisements() {
         return advertisementRepository.findAll()
@@ -58,5 +61,29 @@ public class AdvertisementService {
                 .car(car).build();
         advertisementRepository.save(ad);
         return advertisementMapper.toDto(ad);
+    }
+
+
+    @Transactional
+    public AdvertisementResponseDto removeAdvertisement(Long id) {
+        User currentUser = userContextService.getCurrentUser();
+        Advertisement ad = advertisementRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Not found"));
+
+        if(!currentUser.getId().equals(ad.getUser().getId())) {
+            throw new SecurityException("You are not allowed to delete this advertisement");
+        }
+        advertisementRepository.delete(ad);
+
+        return advertisementMapper.toDto(ad);
+
+    }
+
+    public List<AdvertisementResponseDto> getUserAdvertisement() {
+        User currentUser = userContextService.getCurrentUser();
+
+        List<Advertisement> ads = advertisementRepository.findByUserId(currentUser.getId());
+
+        return ads.stream().map(ad -> advertisementMapper.toDto(ad)).collect(Collectors.toList());
     }
 }
