@@ -7,11 +7,7 @@ import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import com.pap25.eitimoto_backend.services.AdvertisementService;
 import com.pap25.eitimoto_backend.repository.AdvertisementRepository;
@@ -32,10 +28,22 @@ public class AdvertisementController {
         return ResponseEntity.ok(list);
     }
 
+    @GetMapping("user")
+    public ResponseEntity<List<AdvertisementResponseDto>> getUserAdvertisements() {
+        List<AdvertisementResponseDto> ads = advertisementService.getUserAdvertisement();
+        return ResponseEntity.ok(ads);
+    }
+
     @PostMapping("/add")
     public ResponseEntity<AdvertisementResponseDto> addAdvertisements(@RequestBody AdvertisementDto advertisement) {
         AdvertisementResponseDto saveAd =  advertisementService.addAdvertisement(advertisement);
         return ResponseEntity.ok(saveAd);
+    }
+
+    @DeleteMapping("/remove/{id}")
+    public ResponseEntity<AdvertisementResponseDto> removeAdvertisements(@PathVariable Long id) {
+        AdvertisementResponseDto removeAd =  advertisementService.removeAdvertisement(id);
+        return ResponseEntity.ok(removeAd);
     }
 
 
