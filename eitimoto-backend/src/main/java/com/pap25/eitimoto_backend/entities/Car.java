@@ -26,4 +26,10 @@ public class Car {
 
     @Column(nullable = false)
     private Integer productionYear;
+
+    @Column(nullable = false)
+    private Integer price;
+
+    @Column(nullable = false)
+    private Integer mileage;
 }

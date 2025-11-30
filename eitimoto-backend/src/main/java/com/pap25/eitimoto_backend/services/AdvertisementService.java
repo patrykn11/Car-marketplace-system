@@ -47,6 +47,8 @@ public class AdvertisementService {
         car.setCarBrand(adDto.getCar().getCarBrand());
         car.setCarModel(adDto.getCar().getCarModel());
         car.setProductionYear(adDto.getCar().getProductionYear());
+        car.setPrice(adDto.getCar().getPrice());
+        car.setMileage(adDto.getCar().getMileage());
 
         carRepository.save(car);
         Advertisement ad = Advertisement.builder()

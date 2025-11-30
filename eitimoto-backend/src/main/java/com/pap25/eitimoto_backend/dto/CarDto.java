@@ -10,4 +10,6 @@ public class CarDto {
     private String carBrand;
     private String carModel;
     private Integer productionYear;
+    private Integer price;
+    private Integer mileage;
 }
