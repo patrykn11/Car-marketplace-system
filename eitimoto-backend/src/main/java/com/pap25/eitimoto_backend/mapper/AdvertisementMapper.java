@@ -15,6 +15,8 @@ public class AdvertisementMapper {
                 .carBrand(ad.getCar().getCarBrand())
                 .carModel(ad.getCar().getCarModel())
                 .productionYear(ad.getCar().getProductionYear())
+                .mileage(ad.getCar().getMileage())
+                .price(ad.getCar().getPrice())
                 .build();
 
         return AdvertisementResponseDto.builder()
