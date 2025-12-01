@@ -45,6 +45,7 @@ const RegisterPage = () => {
                 }
             catch(error){
                 setError(error.message);
+                
             }
         };
     
