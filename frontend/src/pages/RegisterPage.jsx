@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 const RegisterPage = () => {
+        const {register} = useAuth();
         const navigate = useNavigate();
         const [userlog, setUserlog] = useState({ user: "", pass: "" });
         const [useremail, setUserEmail] = useState('');
         const [error, setError] = useState('');
+
     
         const handlePassChange = (e) => {
             const value = e.target.value;
@@ -33,28 +36,16 @@ const RegisterPage = () => {
             const data_login = {
                 username: userlog.user,
                 password: userlog.pass,
-                email: user.email
+                // email: user.email
             };
     
             try {
-                const resp = await fetch('/api/auth/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data_login)
-                });
-    
-                if(resp.ok){
-                    const data = await resp.json();
-                    navigate('/HomePage')
-                    // TODO: token saving
-                    setError('');
-                } else {
-                    setError("Wrong username or password");
+                await register(data_login.username, data_login.password); 
+                navigate('/');              
                 }
-            } catch(error){
-                setError("Server is not available");
+            catch(error){
+                setError(error.message);
+                
             }
         };
     
