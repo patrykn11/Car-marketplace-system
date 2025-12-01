@@ -4,6 +4,7 @@ import com.pap25.eitimoto_backend.dto.AdvertisementDto;
 import com.pap25.eitimoto_backend.dto.AdvertisementResponseDto;
 import com.pap25.eitimoto_backend.entities.Advertisement;
 import org.apache.catalina.connector.Response;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,9 +16,10 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-@Controller
-@RequestMapping("/api/advertisements")
+@RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173")
+@RequestMapping("/api/advertisements")
 public class AdvertisementController {
 
     private final AdvertisementService advertisementService;
@@ -45,8 +47,4 @@ public class AdvertisementController {
         AdvertisementResponseDto removeAd =  advertisementService.removeAdvertisement(id);
         return ResponseEntity.ok(removeAd);
     }
-
-
-
-
 }

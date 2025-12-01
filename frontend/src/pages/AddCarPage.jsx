@@ -1,19 +1,19 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 
 export default function AddCarPage() {
-    const [title, setTitle]                     = useState("");
-    const [car_brand, setCarBrand]              = useState("");
-    const [car_model, setCarModel]              = useState("");
-    const [production_year, setProductionYear]  = useState("");
-    const [mileage, setMileage]                 = useState("");
-    const [fuel_type, setFuelType]              = useState("");
-    const [transmission, setTransmission]       = useState("");
-    const [engine_capacity, setEngineCapacity]  = useState("");
-    const [power, setPower]                     = useState("");
-    const [car_color, setCarColor]              = useState("");
-    const [price, setPrice]                     = useState("");
-    const [description, setDescription]         = useState("");
-    const [location, setLocation]               = useState("");
+    const [title, setTitle] = useState("");
+    const [car_brand, setCarBrand] = useState("");
+    const [car_model, setCarModel] = useState("");
+    const [production_year, setProductionYear] = useState("");
+    const [mileage, setMileage] = useState("");
+    const [fuel_type, setFuelType] = useState("");
+    const [transmission, setTransmission] = useState("");
+    const [engine_capacity, setEngineCapacity] = useState("");
+    const [power, setPower] = useState("");
+    const [car_color, setCarColor] = useState("");
+    const [price, setPrice] = useState("");
+    const [description, setDescription] = useState("");
+    const [location, setLocation] = useState("");
 
     async function addCar(ev) {
         ev.preventDefault();
@@ -34,7 +34,7 @@ export default function AddCarPage() {
             location
         };
 
-        const response = await fetch('/api/cars', {
+        const response = await fetch('http://localhost:3333/api/advertisements/add', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -43,7 +43,8 @@ export default function AddCarPage() {
         });
 
         if (response.ok) {
-            alert('Ogłoszenie dodane pomyślnie');
+            alert('Advertisement added successfully');
+            
             setTitle('');
             setCarBrand('');
             setCarModel('');
@@ -57,8 +58,10 @@ export default function AddCarPage() {
             setPrice('');
             setDescription('');
             setLocation('');
+
+            navigate('/');
         } else {
-            alert('Błąd przy dodawaniu ogłoszenia');
+            alert('Error adding advertisement');
         }
     }
 
@@ -68,8 +71,8 @@ export default function AddCarPage() {
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
                     {/* Header */}
                     <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-6">
-                        <h2 className="text-3xl font-bold text-white">Dodaj nowe ogłoszenie</h2>
-                        <p className="text-blue-100 mt-2">Wypełnij formularz, aby dodać swoje auto</p>
+                        <h2 className="text-3xl font-bold text-white">Add New Advertisement</h2>
+                        <p className="text-blue-100 mt-2">Fill in the form to list your car for sale</p>
                     </div>
 
                     <form onSubmit={addCar} className="p-8">
@@ -77,18 +80,18 @@ export default function AddCarPage() {
                         <div className="mb-8">
                             <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
                                 <span className="bg-blue-100 text-blue-600 rounded-full w-8 h-8 flex items-center justify-center mr-3">1</span>
-                                Podstawowe informacje
+                                Basic Information
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Tytuł ogłoszenia *
+                                        Advertisement Title *
                                     </label>
                                     <input
                                         type="text"
                                         value={title}
                                         onChange={e => setTitle(e.target.value)}
-                                        placeholder="np. BMW 3 Series w świetnym stanie"
+                                        placeholder="e.g. BMW 3 Series in great condition"
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                                         required
                                     />
@@ -96,7 +99,7 @@ export default function AddCarPage() {
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Cena (PLN) *
+                                        Price (PLN) *
                                     </label>
                                     <input
                                         type="number"
@@ -116,12 +119,12 @@ export default function AddCarPage() {
                         <div className="mb-8">
                             <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
                                 <span className="bg-blue-100 text-blue-600 rounded-full w-8 h-8 flex items-center justify-center mr-3">2</span>
-                                Szczegóły pojazdu
+                                Vehicle Details
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Marka *
+                                        Brand *
                                     </label>
                                     <input
                                         type="text"
@@ -149,7 +152,7 @@ export default function AddCarPage() {
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Rok produkcji *
+                                        Production Year *
                                     </label>
                                     <select
                                         value={production_year}
@@ -157,8 +160,8 @@ export default function AddCarPage() {
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                                         required
                                     >
-                                        <option value="">Wybierz rok</option>
-                                        {Array.from({length: new Date().getFullYear() - 1950 + 1}, (_, i) => new Date().getFullYear() - i).map(year => (
+                                        <option value="">Select year</option>
+                                        {Array.from({ length: new Date().getFullYear() - 1950 + 1 }, (_, i) => new Date().getFullYear() - i).map(year => (
                                             <option key={year} value={year}>
                                                 {year}
                                             </option>
@@ -168,7 +171,7 @@ export default function AddCarPage() {
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Przebieg (km) *
+                                        Mileage (km) *
                                     </label>
                                     <input
                                         type="number"
@@ -183,7 +186,7 @@ export default function AddCarPage() {
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Rodzaj paliwa *
+                                        Fuel Type *
                                     </label>
                                     <select
                                         value={fuel_type}
@@ -191,11 +194,11 @@ export default function AddCarPage() {
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                                         required
                                     >
-                                        <option value="">Wybierz paliwo</option>
-                                        <option value="Benzyna">Benzyna</option>
+                                        <option value="">Select fuel type</option>
+                                        <option value="Petrol">Petrol</option>
                                         <option value="Diesel">Diesel</option>
-                                        <option value="Elektryczny">Elektryczny</option>
-                                        <option value="Hybryda">Hybryda</option>
+                                        <option value="Electric">Electric</option>
+                                        <option value="Hybrid">Hybrid</option>
                                         <option value="LPG">LPG</option>
                                         <option value="CNG">CNG</option>
                                     </select>
@@ -203,7 +206,7 @@ export default function AddCarPage() {
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Skrzynia biegów *
+                                        Transmission *
                                     </label>
                                     <select
                                         value={transmission}
@@ -211,16 +214,16 @@ export default function AddCarPage() {
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                                         required
                                     >
-                                        <option value="">Wybierz skrzynię</option>
-                                        <option value="Manualna">Manualna</option>
-                                        <option value="Automatyczna">Automatyczna</option>
-                                        <option value="Półautomatyczna">Półautomatyczna</option>
+                                        <option value="">Select transmission</option>
+                                        <option value="Manual">Manual</option>
+                                        <option value="Automatic">Automatic</option>
+                                        <option value="Semi-automatic">Semi-automatic</option>
                                     </select>
                                 </div>
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Pojemność silnika (L) *
+                                        Engine Capacity (L) *
                                     </label>
                                     <input
                                         type="number"
@@ -236,7 +239,7 @@ export default function AddCarPage() {
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Moc (KM) *
+                                        Power (HP) *
                                     </label>
                                     <input
                                         type="number"
@@ -251,13 +254,13 @@ export default function AddCarPage() {
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Kolor *
+                                        Color *
                                     </label>
                                     <input
                                         type="text"
                                         value={car_color}
                                         onChange={e => setCarColor(e.target.value)}
-                                        placeholder="Czarny"
+                                        placeholder="Black"
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                                         required
                                     />
@@ -265,13 +268,13 @@ export default function AddCarPage() {
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Lokalizacja *
+                                        Location *
                                     </label>
                                     <input
                                         type="text"
                                         value={location}
                                         onChange={e => setLocation(e.target.value)}
-                                        placeholder="Warszawa"
+                                        placeholder="Warsaw"
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                                         required
                                     />
@@ -283,22 +286,22 @@ export default function AddCarPage() {
                         <div className="mb-8">
                             <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
                                 <span className="bg-blue-100 text-blue-600 rounded-full w-8 h-8 flex items-center justify-center mr-3">3</span>
-                                Opis
+                                Description
                             </h3>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Szczegółowy opis ogłoszenia *
+                                    Detailed Description *
                                 </label>
                                 <textarea
                                     value={description}
                                     onChange={e => setDescription(e.target.value)}
-                                    placeholder="Opisz stan pojazdu, historię serwisową, wyposażenie dodatkowe..."
+                                    placeholder="Describe the vehicle condition, service history, additional features..."
                                     rows="6"
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
                                     required
                                 />
                                 <p className="text-sm text-gray-500 mt-2">
-                                    Minimum 50 znaków. Bądź szczegółowy, aby zwiększyć szanse na sprzedaż.
+                                    Minimum 50 characters. Be specific to increase chances of sale.
                                 </p>
                             </div>
                         </div>
@@ -307,15 +310,16 @@ export default function AddCarPage() {
                         <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
                             <button
                                 type="button"
+                                onClick={() => window.location.href = '/'}
                                 className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition"
                             >
-                                Anuluj
+                                Cancel
                             </button>
                             <button
                                 type="submit"
                                 className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition shadow-lg"
                             >
-                                Dodaj ogłoszenie
+                                Add Advertisement
                             </button>
                         </div>
                     </form>
