@@ -46,7 +46,17 @@ const Navbar = () => {
                             className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium ml-3"
                         >
                             Register
-                        </Link></>) :  <button onClick={logout}>Logout</button>}
+                        </Link></>) :  (<>
+                        <Link
+                            to="/profile"
+                            className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
+                        >
+                            My profile
+                        </Link>
+                        <button onClick={logout} className="bg-red-600 text-white hover:bg-red-700 px-4 py-2 rounded-md text-sm font-medium ml-3">
+                            Logout
+                        </button>
+                        </>)}
                     </div>
                 </div>
             </div>

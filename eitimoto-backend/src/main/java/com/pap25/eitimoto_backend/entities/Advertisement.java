@@ -22,22 +22,17 @@ public class Advertisement {
 
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "car_id", nullable = false, foreignKey = @ForeignKey(name = "fk_ad_car"))
     private Car car;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_ad_car"))
+    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_ad_user_id"))
     private User user;
 
     @Column(nullable=false)
     private String title;
-
-    @Column(nullable=false)
-    private LocalDateTime createdAt;
-
-    @Column(nullable=false)
-    private LocalDateTime updatedAt;
-    
-    @Column(nullable=false)
-    private AdvertisementStatus status;
+//x
+//    @Column(nullable=false)
+//    private AdvertisementStatus status;
 }
