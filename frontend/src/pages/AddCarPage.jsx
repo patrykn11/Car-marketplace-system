@@ -44,7 +44,6 @@ export default function AddCarPage() {
 
         if (response.ok) {
             alert('Ogłoszenie dodane pomyślnie');
-            // Reset form
             setTitle('');
             setCarBrand('');
             setCarModel('');
