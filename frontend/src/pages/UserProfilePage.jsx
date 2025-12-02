@@ -1,43 +1,37 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { api } from "../apiClient";
 
 const UserProfilePage = () => {
     const [user, setUser] = useState(null);
     const [advertisements, setAdvertisements] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const { isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
+        if (!isAuthenticated) {
+            navigate('/login');
+            return;
+        }
         fetchUserProfile();
     }, []);
 
     async function fetchUserProfile() {
         try {
-            const response = await fetch('/api/users/profile', {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
+            const { data: userData } = await api.get('/api/advertisements/user')
+            setUser(userData);
 
-            if (response.ok) {
-                const userData = await response.json();
-                setUser(userData);
-                
-                const adsResponse = await fetch(`/api/advertisements/user/${userData.id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
+            /* Warto tutaj dorobic moze ProfileController zeby nie właziło to w /api/advertisements*/
 
-                if (adsResponse.ok) {
-                    setAdvertisements(await adsResponse.json());
-                }
-            } else {
-                // navigate('/login');
-            }
+            // const { data: adsData } = await api.get(`/api/advertisements/user/${userData.id}`)
+            // setAdvertisements(adsData);
+
         } catch (error) {
             console.error('Błąd:', error);
-            // navigate('/login');
+            navigate('/login');
         } finally {
             setLoading(false);
         }
@@ -47,7 +41,7 @@ const UserProfilePage = () => {
         if (!window.confirm('Czy na pewno chcesz usunąć to ogłoszenie?')) return;
 
         try {
-            const response = await fetch(`/api/advertisements/${adId}`, {
+            const response = await fetch(`http://localhost:3333/api/advertisements/${adId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -100,7 +94,7 @@ const UserProfilePage = () => {
                     onClick={() => navigate('/edit-profile')}
                     className="mt-6 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                 >
-                    Edytuj profil
+                    Edit profile
                 </button>
             </div>
 
@@ -153,7 +147,7 @@ const UserProfilePage = () => {
                     onClick={() => navigate('/add-car')}
                     className="mt-6 bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 w-full"
                 >
-                    + Dodaj nowe ogłoszenie
+                    + Add new advertisement
                 </button>
             </div>
         </div>

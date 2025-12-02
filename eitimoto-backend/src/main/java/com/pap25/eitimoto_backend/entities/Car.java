@@ -32,4 +32,16 @@ public class Car {
 
     @Column(nullable = false)
     private Integer mileage;
+
+    @Column(nullable = false)
+    private String fuelType;
+
+    @Column(nullable = false)
+    private String transmission;
+    
+    @Column(nullable = false)
+    private Integer power;
+    
+    @Column(nullable = false)
+    private String carColor;
 }

@@ -9,6 +9,7 @@ public class AdvertisementResponseDto {
     private Long advertisementId;
     private String title;
     private String description;
-    private CarDto car;
+    private String location;
+    private CarDto carData;
     private String username;
 }

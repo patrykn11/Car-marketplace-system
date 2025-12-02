@@ -11,19 +11,23 @@ public class AdvertisementMapper {
 
     public AdvertisementResponseDto toDto(Advertisement ad) {
         CarDto carDto = CarDto.builder()
-                .carId(ad.getCar().getCarId())
+                // .carId(ad.getCar().getCarId())
                 .carBrand(ad.getCar().getCarBrand())
                 .carModel(ad.getCar().getCarModel())
                 .productionYear(ad.getCar().getProductionYear())
                 .mileage(ad.getCar().getMileage())
                 .price(ad.getCar().getPrice())
+                .fuelType(ad.getCar().getFuelType())
+                .transmission(ad.getCar().getTransmission())
+                .power(ad.getCar().getPower())
+                .carColor(ad.getCar().getCarColor())
                 .build();
 
         return AdvertisementResponseDto.builder()
                 .advertisementId(ad.getAdvertisementId())
                 .title(ad.getTitle())
                 .description(ad.getDescription())
-                .car(carDto)
+                .carData(carDto)
                 .username(ad.getUser().getUsername())
                 .build();
     }

@@ -1,67 +1,86 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function AddCarPage() {
+    const { token, authFetch, isAuthenticated } = useAuth();
+    const navigate = useNavigate();
+
     const [title, setTitle] = useState("");
-    const [car_brand, setCarBrand] = useState("");
-    const [car_model, setCarModel] = useState("");
-    const [production_year, setProductionYear] = useState("");
+    const [carBrand, setCarBrand] = useState("");
+    const [carModel, setCarModel] = useState("");
+    const [productionYear, setProductionYear] = useState("");
     const [mileage, setMileage] = useState("");
-    const [fuel_type, setFuelType] = useState("");
+    const [fuelType, setFuelType] = useState("");
     const [transmission, setTransmission] = useState("");
-    const [engine_capacity, setEngineCapacity] = useState("");
+    const [engineCapacity, setEngineCapacity] = useState("");
     const [power, setPower] = useState("");
-    const [car_color, setCarColor] = useState("");
+    const [carColor, setCarColor] = useState("");
     const [price, setPrice] = useState("");
     const [description, setDescription] = useState("");
     const [location, setLocation] = useState("");
-
+    
     async function addCar(ev) {
         ev.preventDefault();
 
+        if (!isAuthenticated) {
+            alert("You must be logged in to add an advertisement");
+            navigate('/login');
+            return;
+        }
+
         const carData = {
-            title,
-            car_brand,
-            car_model,
-            production_year: parseInt(production_year),
-            mileage: parseInt(mileage),
-            fuel_type,
-            transmission,
-            engine_capacity: parseFloat(engine_capacity),
-            power: parseInt(power),
-            car_color,
-            price: parseFloat(price),
-            description,
-            location
-        };
+            carBrand, carModel,
+            productionYear, price,
+            mileage, fuelType,
+            transmission, engineCapacity,
+            power, carColor
+        }
+        
+        const advertisementData = {
+            title, description,
+            location, carData
+        }
 
-        const response = await fetch('http://localhost:3333/api/advertisements/add', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(carData),
-        });
+        try {
+            const response = await authFetch('http://localhost:3333/api/advertisements/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(advertisementData)
+            });
 
-        if (response.ok) {
-            alert('Advertisement added successfully');
-            
-            setTitle('');
-            setCarBrand('');
-            setCarModel('');
-            setProductionYear('');
-            setMileage('');
-            setFuelType('');
-            setTransmission('');
-            setEngineCapacity('');
-            setPower('');
-            setCarColor('');
-            setPrice('');
-            setDescription('');
-            setLocation('');
-
-            navigate('/');
-        } else {
-            alert('Error adding advertisement');
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Success:", data);
+                alert("Advertisement added successfully!");
+                
+                setTitle("");
+                setCarBrand("");
+                setCarModel("");
+                setProductionYear("");
+                setMileage("");
+                setFuelType("");
+                setTransmission("");
+                setEngineCapacity("");
+                setPower("");
+                setCarColor("");
+                setPrice("");
+                setDescription("");
+                setLocation("");
+                setDescription("");
+                
+                navigate('/');
+            } else {
+                const error = await response.text();
+                console.error("Error:", response.status, error);
+                alert(`Error adding advertisement: ${response.status}`);
+            }
+        } catch (err) {
+            console.error("Network error:", err);
+            alert("Error connecting to server");
         }
     }
 
@@ -128,7 +147,7 @@ export default function AddCarPage() {
                                     </label>
                                     <input
                                         type="text"
-                                        value={car_brand}
+                                        value={carBrand}
                                         onChange={e => setCarBrand(e.target.value)}
                                         placeholder="BMW"
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
@@ -142,7 +161,7 @@ export default function AddCarPage() {
                                     </label>
                                     <input
                                         type="text"
-                                        value={car_model}
+                                        value={carModel}
                                         onChange={e => setCarModel(e.target.value)}
                                         placeholder="3 Series"
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
@@ -155,7 +174,7 @@ export default function AddCarPage() {
                                         Production Year *
                                     </label>
                                     <select
-                                        value={production_year}
+                                        value={productionYear}
                                         onChange={e => setProductionYear(e.target.value)}
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                                         required
@@ -189,7 +208,7 @@ export default function AddCarPage() {
                                         Fuel Type *
                                     </label>
                                     <select
-                                        value={fuel_type}
+                                        value={fuelType}
                                         onChange={e => setFuelType(e.target.value)}
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                                         required
@@ -227,7 +246,7 @@ export default function AddCarPage() {
                                     </label>
                                     <input
                                         type="number"
-                                        value={engine_capacity}
+                                        value={engineCapacity}
                                         onChange={e => setEngineCapacity(e.target.value)}
                                         placeholder="2.0"
                                         step="0.1"
@@ -258,7 +277,7 @@ export default function AddCarPage() {
                                     </label>
                                     <input
                                         type="text"
-                                        value={car_color}
+                                        value={carColor}
                                         onChange={e => setCarColor(e.target.value)}
                                         placeholder="Black"
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"

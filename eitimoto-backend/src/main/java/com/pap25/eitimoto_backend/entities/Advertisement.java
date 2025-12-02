@@ -32,7 +32,7 @@ public class Advertisement {
 
     @Column(nullable=false)
     private String title;
-//x
+
 //    @Column(nullable=false)
 //    private AdvertisementStatus status;
 }

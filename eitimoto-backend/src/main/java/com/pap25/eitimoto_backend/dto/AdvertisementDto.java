@@ -8,5 +8,6 @@ import lombok.Data;
 public class AdvertisementDto {
     private String title;
     private String description;
-    private CarDto car; // pełne dane samochodu
+    private String location;
+    private CarDto carData; // pełne dane samochodu
 }

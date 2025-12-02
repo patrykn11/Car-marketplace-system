@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Running frontend..."
-cd frontend && ./run_frontend.sh &
+cd frontend && sudo sh ./run_frontend.sh &
 echo "Running backend..."
-cd eitimoto-backend && ./run_backend.sh &
+cd eitimoto-backend && sh sudo ./run_backend.sh &
 

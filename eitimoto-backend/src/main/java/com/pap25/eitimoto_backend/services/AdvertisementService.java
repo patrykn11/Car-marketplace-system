@@ -45,13 +45,16 @@ public class AdvertisementService {
     public AdvertisementResponseDto addAdvertisement(AdvertisementDto adDto) {
         User user = userContextService.getCurrentUser();
 
-
         Car car = new Car();
-        car.setCarBrand(adDto.getCar().getCarBrand());
-        car.setCarModel(adDto.getCar().getCarModel());
-        car.setProductionYear(adDto.getCar().getProductionYear());
-        car.setPrice(adDto.getCar().getPrice());
-        car.setMileage(adDto.getCar().getMileage());
+        car.setCarBrand(adDto.getCarData().getCarBrand());
+        car.setCarModel(adDto.getCarData().getCarModel());
+        car.setProductionYear(adDto.getCarData().getProductionYear());
+        car.setPrice(adDto.getCarData().getPrice());
+        car.setMileage(adDto.getCarData().getMileage());
+        car.setFuelType(adDto.getCarData().getFuelType());
+        car.setTransmission(adDto.getCarData().getTransmission());
+        car.setPower(adDto.getCarData().getPower());
+        car.setCarColor(adDto.getCarData().getCarColor());
 
         carRepository.save(car);
         Advertisement ad = Advertisement.builder()

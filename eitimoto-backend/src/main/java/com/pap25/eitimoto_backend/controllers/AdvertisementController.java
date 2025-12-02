@@ -30,7 +30,7 @@ public class AdvertisementController {
         return ResponseEntity.ok(list);
     }
 
-    @GetMapping("user")
+    @GetMapping("/user")
     public ResponseEntity<List<AdvertisementResponseDto>> getUserAdvertisements() {
         List<AdvertisementResponseDto> ads = advertisementService.getUserAdvertisement();
         return ResponseEntity.ok(ads);
