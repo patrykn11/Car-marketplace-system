@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: eitimoto_user
       POSTGRES_PASSWORD: zawszemoznapytac
   backend:
-    build: .
+    build: ./eitimoto-backend
     ports:
       - "3333:3333"
     depends_on:
@@ -18,3 +18,9 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/eitimoto_db
       SPRING_DATASOURCE_USERNAME: eitimoto_user
       SPRING_DATASOURCE_PASSWORD: zawszemoznapytac
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend

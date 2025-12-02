@@ -1,4 +1,4 @@
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -19,7 +19,7 @@ export default function AddCarPage() {
     const [price, setPrice] = useState("");
     const [description, setDescription] = useState("");
     const [location, setLocation] = useState("");
-    
+
     async function addCar(ev) {
         ev.preventDefault();
 
@@ -36,7 +36,7 @@ export default function AddCarPage() {
             transmission, engineCapacity,
             power, carColor
         }
-        
+
         const advertisementData = {
             title, description,
             location, carData
@@ -56,7 +56,7 @@ export default function AddCarPage() {
                 const data = await response.json();
                 console.log("Success:", data);
                 alert("Advertisement added successfully!");
-                
+
                 setTitle("");
                 setCarBrand("");
                 setCarModel("");
@@ -71,7 +71,7 @@ export default function AddCarPage() {
                 setDescription("");
                 setLocation("");
                 setDescription("");
-                
+
                 navigate('/');
             } else {
                 const error = await response.text();
