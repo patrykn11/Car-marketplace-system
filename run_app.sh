@@ -1,7 +1,7 @@
-#!/bin/bash
+# add installation of docker in case of its abscence
 
-echo "Running frontend..."
-cd frontend && sudo sh ./run_frontend.sh &
-echo "Running backend..."
-cd eitimoto-backend && sh sudo ./run_backend.sh &
+
+# docker compose up if it exists
+
+docker-compose up --build
 

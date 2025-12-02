@@ -41,6 +41,11 @@ public class AdvertisementService {
                 .orElseThrow(() -> new EntityNotFoundException("Advertisement not found with id: " + id));
     }
 
+    public AdvertisementResponseDto getAdvertisementDtoById(Long id) {
+        Advertisement ad = getAdvertisementById(id);
+        return advertisementMapper.toDto(ad);
+    }
+
     @Transactional
     public AdvertisementResponseDto addAdvertisement(AdvertisementDto adDto) {
         User user = userContextService.getCurrentUser();

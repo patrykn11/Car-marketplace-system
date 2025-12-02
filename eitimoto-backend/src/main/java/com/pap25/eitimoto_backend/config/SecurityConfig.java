@@ -40,7 +40,8 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/advertisements/**").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/advertisements/**").permitAll()
+                .requestMatchers("/api/advertisements/**").authenticated()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
@@ -52,11 +53,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // Tymczasowy - potem sie wypierdoli 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/api/advertisements/**");
-    }
+
 
     @Bean
     public CorsFilter corsFilter() {
