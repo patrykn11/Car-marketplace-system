@@ -81,10 +81,11 @@ public class AdvertisementService {
         if(!currentUser.getId().equals(ad.getUser().getId())) {
             throw new SecurityException("You are not allowed to delete this advertisement");
         }
+
+        AdvertisementResponseDto responseDto = advertisementMapper.toDto(ad);
         advertisementRepository.delete(ad);
 
-        return advertisementMapper.toDto(ad);
-
+        return responseDto;
     }
 
     public List<AdvertisementResponseDto> getUserAdvertisement() {

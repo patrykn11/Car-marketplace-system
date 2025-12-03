@@ -18,7 +18,6 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost")
 @RequestMapping("/api/advertisements")
 public class AdvertisementController {
 
