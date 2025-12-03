@@ -1,8 +1,8 @@
-# 🚗 Eitimoto - Platforma ogłoszeń motoryzacyjnych
+# Eitimoto - Platforma ogłoszeń motoryzacyjnych
 
 > **PAP2025Z-Z02** - Projekt zespołowy
 
-## 👥 Zespół
+## Zespół
 
 | Imię i nazwisko |
 |-----------------|
@@ -13,27 +13,31 @@
 
 ---
 
-## 🚀 Szybki start
+## Szybki start
 
 ### Wymagania
-- **Docker & Docker Compose** - to wszystko!
-
-> Nie potrzebujesz instalować Javy, Node.js ani PostgreSQL - wszystko działa w kontenerach.
+- **Docker & Docker Compose** 
 
 ### Uruchomienie
 
-#### 🐧 Linux (Ubuntu/Debian)
+Klonowanie repozytorium 
+
+```bash
+git clone https://gitlab-stud.elka.pw.edu.pl/jjarosz/pap2025z-z02.git
+```
+
+#### Linux (Ubuntu/Debian)
 
 ```bash
 sudo ./run_app.sh
 ```
 
-> ⚠️ Skrypt wymaga `sudo`  
-> 💡 Jeśli nie masz Dockera, skrypt zainstaluje go automatycznie.
+> Skrypt wymaga `sudo`  
+> Jeśli skrypt nie najdzie Dockera, to zainstaluje go automatycznie.
 
-#### 🍎 macOS / 🪟 Windows / Inne systemy
+#### macOS / Windows / Inne systemy
 
-Skrypt `run_app.sh` **nie zadziała** .Użyj Docker Compose bezpośrednio:
+Skrypt `run_app.sh` **nie zadziała** . Należy użyć:
 
 ```bash
 docker-compose up --build
@@ -43,11 +47,11 @@ docker-compose up --build
 
 ---
 
-Po uruchomieniu poczekaj 1-2 minuty na start wszystkich serwisów.
+Po uruchomieniu należy poczekać 1-2 minuty na start wszystkich serwisów.
 
 ---
 
-## 🌐 Dostęp do aplikacji
+## Dostęp do aplikacji
 
 | Serwis | URL |
 |--------|-----|
