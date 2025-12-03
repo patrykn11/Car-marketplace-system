@@ -21,16 +21,14 @@ const UserProfilePage = () => {
 
     async function fetchUserProfile() {
         try {
-            const { data: userData } = await api.get('/api/advertisements/user')
+            const { data: userData } = await api.get('/api/profile/me')
             setUser(userData);
-
-            /* Warto tutaj dorobic moze ProfileController zeby nie właziło to w /api/advertisements*/
-
-            // const { data: adsData } = await api.get(`/api/advertisements/user/${userData.id}`)
-            // setAdvertisements(adsData);
+            
+            const { data: userAdsData } = await api.get('/api/profile/user/advertisements')
+            setAdvertisements(userAdsData);
 
         } catch (error) {
-            console.error('Błąd:', error);
+            console.error('Error:', error);
             navigate('/login');
         } finally {
             setLoading(false);
@@ -38,120 +36,183 @@ const UserProfilePage = () => {
     }
 
     async function deleteAdvertisement(adId) {
-        if (!window.confirm('Czy na pewno chcesz usunąć to ogłoszenie?')) return;
+        if (!window.confirm('Are you sure you want to delete this listing?')) return;
 
         try {
-            const response = await fetch(`http://localhost:3333/api/advertisements/${adId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-
-            if (response.ok) {
-                setAdvertisements(advertisements.filter(ad => ad.advertisementId !== adId));
-                alert('Ogłoszenie usunięte');
-            }
+            await api.delete(`/api/advertisements/remove/${adId}`);
+            setAdvertisements(advertisements.filter(ad => ad.advertisementId !== adId));
         } catch (error) {
-            console.error('Błąd:', error);
+            console.error('Error:', error);
+            alert('Failed to delete listing');
         }
     }
 
     if (loading) {
-        return <div className="p-4 text-center">Ładowanie...</div>;
+        return <div className="p-4 text-center">Loading...</div>;
     }
 
     if (!user) {
-        return <div className="p-4 text-center">Nie udało się załadować profilu</div>;
+        return <div className="p-4 text-center">Failed to load profile</div>;
     }
 
     return (
-        <div className="max-w-4xl mx-auto p-4">
-            {/* Dane użytkownika */}
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                <h1 className="text-3xl font-bold mb-4">Mój profil</h1>
+        <div className="min-h-screen bg-gray-50 pt-20 pb-10 px-4">
+            <div className="max-w-6xl mx-auto space-y-8">
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <p className="text-gray-600">Imię i nazwisko:</p>
-                        <p className="text-xl font-semibold">{user.firstName} {user.lastName}</p>
+                <div className="bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-lg">
+                    <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 h-36 relative">
                     </div>
-                    <div>
-                        <p className="text-gray-600">Email:</p>
-                        <p className="text-xl font-semibold">{user.email}</p>
-                    </div>
-                    <div>
-                        <p className="text-gray-600">Telefon:</p>
-                        <p className="text-xl font-semibold">{user.phoneNumber || 'Nie podano'}</p>
-                    </div>
-                    <div>
-                        <p className="text-gray-600">Miasto:</p>
-                        <p className="text-xl font-semibold">{user.city || 'Nie podano'}</p>
-                    </div>
-                </div>
+                    
+                    <div className="pt-8 pb-8 px-8">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+                            <div>
+                                <h1 className="text-3xl font-bold text-gray-900 mb-1">{user.username}</h1>
+                                <p className="text-gray-500">EITI MOTO Member</p>
+                            </div>
+                            <button 
+                                onClick={() => navigate('/edit-profile')}
+                                className="mt-4 md:mt-0 px-6 py-3 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-xl text-gray-700 font-medium transition-all duration-300 flex items-center gap-2"
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                Edit Profile
+                            </button>
+                        </div>
 
-                <button 
-                    onClick={() => navigate('/edit-profile')}
-                    className="mt-6 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
-                    Edit profile
-                </button>
-            </div>
-
-            {/* Moje ogłoszenia */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-2xl font-bold mb-4">Moje ogłoszenia ({advertisements.length})</h2>
-
-                {advertisements.length === 0 ? (
-                    <p className="text-gray-600">Nie masz żadnych ogłoszeń. 
-                        <a href="/add-car" className="text-blue-500 hover:underline"> Dodaj pierwsze!</a>
-                    </p>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {advertisements.map(ad => (
-                            <div key={ad.advertisementId} className="border rounded-lg p-4 hover:shadow-lg transition">
-                                <h3 className="text-lg font-semibold mb-2">{ad.title}</h3>
-                                <p className="text-gray-600 mb-2">{ad.description}</p>
-                                
-                                <div className="mb-3">
-                                    {ad.car && (
-                                        <p className="text-sm text-gray-500">
-                                            {ad.car.carBrand} {ad.car.carModel} ({ad.car.productionYear})
-                                        </p>
-                                    )}
-                                </div>
-
-                                <div className="flex justify-between items-center">
-                                    <p className="text-xl font-bold text-green-600">{ad.car?.price} PLN</p>
-                                    <div className="space-x-2">
-                                        <button 
-                                            onClick={() => navigate(`/car/${ad.advertisementId}`)}
-                                            className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
-                                        >
-                                            Szczegóły
-                                        </button>
-                                        <button 
-                                            onClick={() => deleteAdvertisement(ad.advertisementId)}
-                                            className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
-                                        >
-                                            Usuń
-                                        </button>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="bg-blue-50 hover:bg-blue-100 rounded-2xl p-5 border border-blue-100 transition-all duration-300">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-3 bg-blue-100 rounded-xl">
+                                        <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p className="text-gray-500 text-sm">Email</p>
+                                        <p className="text-gray-900 font-medium">{user.email}</p>
                                     </div>
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                )}
 
-                <button 
-                    onClick={() => navigate('/add-car')}
-                    className="mt-6 bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 w-full"
-                >
-                    + Add new advertisement
-                </button>
+                            <div className="bg-green-50 hover:bg-green-100 rounded-2xl p-5 border border-green-100 transition-all duration-300">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-3 bg-green-100 rounded-xl">
+                                        <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p className="text-gray-500 text-sm">Phone</p>
+                                        <p className="text-gray-900 font-medium">{user.contactNumber || 'Not provided'}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-purple-50 hover:bg-purple-100 rounded-2xl p-5 border border-purple-100 transition-all duration-300">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-3 bg-purple-100 rounded-xl">
+                                        <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p className="text-gray-500 text-sm">Location</p>
+                                        <p className="text-gray-900 font-medium">{user.location || 'Not provided'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-2xl font-bold text-gray-900">
+                            Your Listings 
+                            <span className="ml-2 px-3 py-1 bg-blue-100 text-blue-600 text-lg rounded-full">{advertisements.length}</span>
+                        </h2>
+                        <button 
+                            onClick={() => navigate('/add-car')}
+                            className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-all duration-300 flex items-center gap-2 shadow-lg"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add Listing
+                        </button>
+                    </div>
+
+                    {advertisements.length === 0 ? (
+                        <div className="bg-white rounded-3xl border-2 border-dashed border-gray-200 p-16 text-center">
+                            <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 rounded-2xl flex items-center justify-center">
+                                <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                </svg>
+                            </div>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Listings</h3>
+                            <p className="text-gray-500 mb-6">You don't have any listings yet. Start selling!</p>
+                            <button 
+                                onClick={() => navigate('/add-car')}
+                                className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                            >
+                                Add your first listing →
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {advertisements.map(ad => (
+                                <div 
+                                    key={ad.id} 
+                                    className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300"
+                                >
+                                    <div className="h-48 bg-gray-100 flex items-center justify-center relative overflow-hidden">
+                                            <img
+                                                className="w-full h-96 object-cover"
+                                                src={ad.carData.image || "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"}
+                                            />
+                                        <div className="absolute top-3 right-3 px-3 py-1 bg-green-500 text-white text-sm font-bold rounded-lg shadow-lg">
+                                            {ad.carData.price} PLN
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="p-5">
+                                        <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-1">{ad.title}</h3>
+                                        
+                                        <div className="flex flex-wrap gap-2 mb-4">
+                                            <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-lg">{ad.carData.carBrand}</span>
+                                            <span className="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded-lg">{ad.carData.productionYear}</span>
+                                            <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg">{ad.carData.mileage} km</span>
+                                        </div>
+
+                                        <p className="text-gray-500 text-sm line-clamp-2 mb-5">{ad.description}</p>
+
+                                        <div className="flex gap-3">
+                                            <button 
+                                                onClick={() => navigate(`/cars/${ad.advertisementId}`)}
+                                                className="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-all duration-300 text-sm"
+                                            >
+                                                Details
+                                            </button>
+                                            <button 
+                                                onClick={() => deleteAdvertisement(ad.advertisementId)}
+                                                className="p-2 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl transition-all duration-300"
+                                            >
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
-    );
+    );     
 };
 
 export default UserProfilePage;
