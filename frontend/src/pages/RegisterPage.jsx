@@ -6,7 +6,7 @@ const RegisterPage = () => {
         const {register} = useAuth();
         const navigate = useNavigate();
         const [userlog, setUserlog] = useState({ user: "", pass: "" });
-        const [useremail, setUserEmail] = useState('');
+        const [userEmail, setUserEmail] = useState('');
         const [error, setError] = useState('');
 
     
@@ -36,7 +36,7 @@ const RegisterPage = () => {
             const data_login = {
                 username: userlog.user,
                 password: userlog.pass,
-                // email: user.email
+                // email: userEmail
             };
     
             try {

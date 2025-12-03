@@ -4,7 +4,7 @@ import {useAuth} from '../contexts/AuthContext'
 const Navbar = () => {
     const {isAuthenticated, logout} = useAuth();
     return (
-        <nav className="fixed w-full bg-white shadow-md">
+        <nav className="fixed w-full bg-white z-50 shadow-md">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16">
                     <div className="flex">
