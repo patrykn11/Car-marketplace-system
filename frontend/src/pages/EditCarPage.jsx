@@ -1,0 +1,373 @@
+import React, { useState, useEffect } from "react";
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate, useParams } from 'react-router-dom';
+
+export default function EditCarPage() {
+    const { token, authFetch, isAuthenticated } = useAuth();
+    const navigate = useNavigate();
+    const { id } = useParams();
+
+    const [loading, setLoading] = useState(true);
+    const [title, setTitle] = useState("");
+    const [carBrand, setCarBrand] = useState("");
+    const [carModel, setCarModel] = useState("");
+    const [productionYear, setProductionYear] = useState("");
+    const [mileage, setMileage] = useState("");
+    const [fuelType, setFuelType] = useState("");
+    const [transmission, setTransmission] = useState("");
+    const [engineCapacity, setEngineCapacity] = useState("");
+    const [power, setPower] = useState("");
+    const [carColor, setCarColor] = useState("");
+    const [price, setPrice] = useState("");
+    const [description, setDescription] = useState("");
+    const [location, setLocation] = useState(""); // Note: Location is not in backend DTO yet, keeping for UI consistency or future use
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+            alert("You must be logged in to edit an advertisement");
+            navigate('/login');
+            return;
+        }
+
+        const fetchAd = async () => {
+            try {
+                const response = await fetch(`http://localhost:3333/api/advertisements/${id}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setTitle(data.title);
+                    setDescription(data.description);
+                    // Map carData
+                    setCarBrand(data.carData.carBrand);
+                    setCarModel(data.carData.carModel);
+                    setProductionYear(data.carData.productionYear);
+                    setMileage(data.carData.mileage);
+                    setFuelType(data.carData.fuelType);
+                    setTransmission(data.carData.transmission);
+                    setEngineCapacity(data.carData.engineCapacity);
+                    setPower(data.carData.power);
+                    setCarColor(data.carData.carColor);
+                    setPrice(data.carData.price);
+                    setLocation(data.location);
+
+                    setLoading(false);
+                } else {
+                    alert("Failed to fetch advertisement details");
+                    navigate('/');
+                }
+            } catch (error) {
+                console.error("Error fetching ad:", error);
+                alert("Error connecting to server");
+                navigate('/');
+            }
+        };
+
+        fetchAd();
+    }, [id, isAuthenticated, navigate]);
+
+    async function updateCar(ev) {
+        ev.preventDefault();
+
+        const carData = {
+            carBrand, carModel,
+            productionYear, price,
+            mileage, fuelType,
+            transmission, engineCapacity, // Note: engineCapacity might be missing in backend DTO/Entity mapping based on previous files
+            power, carColor
+        }
+
+        const advertisementData = {
+            title, description,
+            location, carData
+        }
+
+        try {
+            const response = await authFetch(`http://localhost:3333/api/advertisements/update/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(advertisementData)
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Success:", data);
+                alert("Advertisement updated successfully!");
+                navigate('/');
+            } else {
+                const error = await response.text();
+                console.error("Error:", response.status, error);
+                alert(`Error updating advertisement: ${response.status}`);
+            }
+        } catch (err) {
+            console.error("Network error:", err);
+            alert("Error connecting to server");
+        }
+    }
+
+    if (loading) return <div className="text-center mt-10">Loading...</div>;
+
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto">
+                <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+                    {/* Header */}
+                    <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-6">
+                        <h2 className="text-3xl font-bold text-white">Edit Advertisement</h2>
+                        <p className="text-blue-100 mt-2">Update your car listing details</p>
+                    </div>
+
+                    <form onSubmit={updateCar} className="p-8">
+                        {/* Basic Info Section */}
+                        <div className="mb-8">
+                            <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                                <span className="bg-blue-100 text-blue-600 rounded-full w-8 h-8 flex items-center justify-center mr-3">1</span>
+                                Basic Information
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Advertisement Title *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={title}
+                                        onChange={e => setTitle(e.target.value)}
+                                        placeholder="e.g. BMW 3 Series in great condition"
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Price (PLN) *
+                                    </label>
+                                    <input
+                                        type="number"
+                                        value={price}
+                                        onChange={e => setPrice(e.target.value)}
+                                        placeholder="50000"
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        min="0"
+                                        step="1000"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Car Details Section */}
+                        <div className="mb-8">
+                            <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                                <span className="bg-blue-100 text-blue-600 rounded-full w-8 h-8 flex items-center justify-center mr-3">2</span>
+                                Vehicle Details
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Brand *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={carBrand}
+                                        onChange={e => setCarBrand(e.target.value)}
+                                        placeholder="BMW"
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Model *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={carModel}
+                                        onChange={e => setCarModel(e.target.value)}
+                                        placeholder="3 Series"
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Production Year *
+                                    </label>
+                                    <select
+                                        value={productionYear}
+                                        onChange={e => setProductionYear(e.target.value)}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        required
+                                    >
+                                        <option value="">Select year</option>
+                                        {Array.from({ length: new Date().getFullYear() - 1950 + 1 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                                            <option key={year} value={year}>
+                                                {year}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Mileage (km) *
+                                    </label>
+                                    <input
+                                        type="number"
+                                        value={mileage}
+                                        onChange={e => setMileage(e.target.value)}
+                                        placeholder="120000"
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        min="0"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Fuel Type *
+                                    </label>
+                                    <select
+                                        value={fuelType}
+                                        onChange={e => setFuelType(e.target.value)}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        required
+                                    >
+                                        <option value="">Select fuel type</option>
+                                        <option value="Petrol">Petrol</option>
+                                        <option value="Diesel">Diesel</option>
+                                        <option value="Electric">Electric</option>
+                                        <option value="Hybrid">Hybrid</option>
+                                        <option value="LPG">LPG</option>
+                                        <option value="CNG">CNG</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Transmission *
+                                    </label>
+                                    <select
+                                        value={transmission}
+                                        onChange={e => setTransmission(e.target.value)}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        required
+                                    >
+                                        <option value="">Select transmission</option>
+                                        <option value="Manual">Manual</option>
+                                        <option value="Automatic">Automatic</option>
+                                        <option value="Semi-automatic">Semi-automatic</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Engine Capacity (L) *
+                                    </label>
+                                    <input
+                                        type="number"
+                                        value={engineCapacity}
+                                        onChange={e => setEngineCapacity(e.target.value)}
+                                        placeholder="2.0"
+                                        step="0.1"
+                                        min="0"
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Power (HP) *
+                                    </label>
+                                    <input
+                                        type="number"
+                                        value={power}
+                                        onChange={e => setPower(e.target.value)}
+                                        placeholder="150"
+                                        min="0"
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Color *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={carColor}
+                                        onChange={e => setCarColor(e.target.value)}
+                                        placeholder="Black"
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Location *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={location}
+                                        onChange={e => setLocation(e.target.value)}
+                                        placeholder="Warsaw"
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Description Section */}
+                        <div className="mb-8">
+                            <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                                <span className="bg-blue-100 text-blue-600 rounded-full w-8 h-8 flex items-center justify-center mr-3">3</span>
+                                Description
+                            </h3>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Detailed Description *
+                                </label>
+                                <textarea
+                                    value={description}
+                                    onChange={e => setDescription(e.target.value)}
+                                    placeholder="Describe the vehicle condition, service history, additional features..."
+                                    rows="6"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
+                                    required
+                                />
+                                <p className="text-sm text-gray-500 mt-2">
+                                    Minimum 50 characters. Be specific to increase chances of sale.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Submit Button */}
+                        <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                            <button
+                                type="button"
+                                onClick={() => window.location.href = '/'}
+                                className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition shadow-lg"
+                            >
+                                Update Advertisement
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    )
+}

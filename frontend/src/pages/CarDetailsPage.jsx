@@ -111,6 +111,14 @@ const CarDetailsPage = () => {
                                 <span className="block text-gray-500 text-sm">Color</span>
                                 <span className="font-semibold">{car.carData.carColor}</span>
                             </div>
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <span className="block text-gray-500 text-sm">Engine Capacity</span>
+                                <span className="font-semibold">{car.carData.engineCapacity} L</span>
+                            </div>
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <span className="block text-gray-500 text-sm">Location</span>
+                                <span className="font-semibold">{car.location}</span>
+                            </div>
                         </div>
 
                         <div className="prose max-w-none">

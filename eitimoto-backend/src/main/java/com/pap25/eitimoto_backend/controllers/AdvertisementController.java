@@ -52,4 +52,10 @@ public class AdvertisementController {
         AdvertisementResponseDto removeAd =  advertisementService.removeAdvertisement(id);
         return ResponseEntity.ok(removeAd);
     }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<AdvertisementResponseDto> updateAdvertisement(@PathVariable Long id, @RequestBody AdvertisementDto advertisement) {
+        AdvertisementResponseDto updatedAd = advertisementService.updateAdvertisement(id, advertisement);
+        return ResponseEntity.ok(updatedAd);
+    }
 }

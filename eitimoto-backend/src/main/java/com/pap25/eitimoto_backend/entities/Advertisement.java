@@ -15,7 +15,7 @@ import jakarta.persistence.*;
 @Entity
 @Table( name = "Advertisement" )
 public class Advertisement {
-        
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long advertisementId;
@@ -32,6 +32,9 @@ public class Advertisement {
 
     @Column(nullable=false)
     private String title;
+
+    @Column(nullable=false)
+    private String location;
 
 //    @Column(nullable=false)
 //    private AdvertisementStatus status;

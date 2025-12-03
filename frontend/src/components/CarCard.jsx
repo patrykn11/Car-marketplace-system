@@ -30,13 +30,24 @@ const CarCard = ({ car }) => {
     return (
         <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 relative group">
             {isAuthenticated && username === car.username && (
-                <button
-                    onClick={handleDelete}
-                    className="absolute top-2 right-2 z-10 p-1 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors opacity-0 group-hover:opacity-100"
-                    title="Delete Advertisement"
-                >
-                    <img src={closeIcon} alt="Delete" className="w-4 h-4" />
-                </button>
+                <div className="absolute top-2 right-2 z-10 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                        onClick={() => window.location.href = `/edit-car/${car.advertisementId}`}
+                        className="p-2 bg-blue-100 hover:bg-blue-200 rounded-full transition-colors"
+                        title="Edit Advertisement"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                        </svg>
+                    </button>
+                    <button
+                        onClick={handleDelete}
+                        className="p-2 bg-red-100 hover:bg-red-200 rounded-full transition-colors"
+                        title="Delete Advertisement"
+                    >
+                        <img src={closeIcon} alt="Delete" className="w-5 h-5" />
+                    </button>
+                </div>
             )}
 
             <img

@@ -21,12 +21,14 @@ public class AdvertisementMapper {
                 .transmission(ad.getCar().getTransmission())
                 .power(ad.getCar().getPower())
                 .carColor(ad.getCar().getCarColor())
+                .engineCapacity(ad.getCar().getEngineCapacity())
                 .build();
 
         return AdvertisementResponseDto.builder()
                 .advertisementId(ad.getAdvertisementId())
                 .title(ad.getTitle())
                 .description(ad.getDescription())
+                .location(ad.getLocation())
                 .carData(carDto)
                 .username(ad.getUser().getUsername())
                 .build();

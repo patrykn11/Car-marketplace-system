@@ -60,11 +60,13 @@ public class AdvertisementService {
         car.setTransmission(adDto.getCarData().getTransmission());
         car.setPower(adDto.getCarData().getPower());
         car.setCarColor(adDto.getCarData().getCarColor());
+        car.setEngineCapacity(adDto.getCarData().getEngineCapacity());
 
         carRepository.save(car);
         Advertisement ad = Advertisement.builder()
                 .title(adDto.getTitle())
                 .description(adDto.getDescription())
+                .location(adDto.getLocation())
                 .user(user)
                 .car(car).build();
         advertisementRepository.save(ad);
@@ -86,6 +88,40 @@ public class AdvertisementService {
         advertisementRepository.delete(ad);
 
         return responseDto;
+    }
+
+    @Transactional
+    public AdvertisementResponseDto updateAdvertisement(Long id, AdvertisementDto adDto) {
+        User currentUser = userContextService.getCurrentUser();
+        Advertisement ad = advertisementRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Not found"));
+
+        if (!currentUser.getId().equals(ad.getUser().getId())) {
+            throw new SecurityException("You are not allowed to update this advertisement");
+        }
+
+        // Update Advertisement fields
+        ad.setTitle(adDto.getTitle());
+        ad.setDescription(adDto.getDescription());
+        ad.setLocation(adDto.getLocation());
+
+        // Update Car fields
+        Car car = ad.getCar();
+        car.setCarBrand(adDto.getCarData().getCarBrand());
+        car.setCarModel(adDto.getCarData().getCarModel());
+        car.setProductionYear(adDto.getCarData().getProductionYear());
+        car.setPrice(adDto.getCarData().getPrice());
+        car.setMileage(adDto.getCarData().getMileage());
+        car.setFuelType(adDto.getCarData().getFuelType());
+        car.setTransmission(adDto.getCarData().getTransmission());
+        car.setPower(adDto.getCarData().getPower());
+        car.setCarColor(adDto.getCarData().getCarColor());
+        car.setEngineCapacity(adDto.getCarData().getEngineCapacity());
+
+        // Save changes (cascaded to Car)
+        advertisementRepository.save(ad);
+
+        return advertisementMapper.toDto(ad);
     }
 
     public List<AdvertisementResponseDto> getUserAdvertisement() {

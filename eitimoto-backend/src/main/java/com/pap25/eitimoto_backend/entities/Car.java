@@ -38,10 +38,13 @@ public class Car {
 
     @Column(nullable = false)
     private String transmission;
-    
+
     @Column(nullable = false)
     private Integer power;
-    
+
     @Column(nullable = false)
     private String carColor;
+
+    @Column(nullable = false)
+    private Double engineCapacity;
 }
