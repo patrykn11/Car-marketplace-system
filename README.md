@@ -1,89 +1,58 @@
-# PAP2025Z-Z02
+# 🚗 Eitimoto - Platforma ogłoszeń motoryzacyjnych
 
-## Skład zespołu:
+> **PAP2025Z-Z02** - Projekt zespołowy
 
-1) Adrian Werel
-2) Julian Jarosz
-3) Paweł Kozikowski
-4) Patryk Nisgorski
+## 👥 Zespół
 
----
-
-## Instrukcja uruchomienia projektu
-
-### Wymagania:
-- **Java 17+**
-- **Maven**
-- **Node.js & npm**
-- **Docker & Docker Compose**
-- **PostgreSQL** (przez Docker)
+| Imię i nazwisko |
+|-----------------|
+| Adrian Werel |
+| Julian Jarosz |
+| Paweł Kozikowski |
+| Patryk Nisgorski |
 
 ---
 
-### 1. Uruchomienie bazy danych (PostgreSQL)
+## 🚀 Szybki start
 
-W folderze `eitimoto-backend`:
+### Wymagania
+- **Docker & Docker Compose** - to wszystko!
+
+> Nie potrzebujesz instalować Javy, Node.js ani PostgreSQL - wszystko działa w kontenerach.
+
+### Uruchomienie
+
+#### 🐧 Linux (Ubuntu/Debian)
 
 ```bash
-cd eitimoto-backend
-docker-compose up -d
+sudo ./run_app.sh
 ```
 
-To uruchomi PostgreSQL w kontenerze Docker na porcie **3000**.
+> ⚠️ Skrypt wymaga `sudo`  
+> 💡 Jeśli nie masz Dockera, skrypt zainstaluje go automatycznie.
+
+#### 🍎 macOS / 🪟 Windows / Inne systemy
+
+Skrypt `run_app.sh` **nie zadziała** .Użyj Docker Compose bezpośrednio:
+
+```bash
+docker-compose up --build
+```
+
+> Wymaga wcześniejszej instalacji [Docker Desktop](https://www.docker.com/products/docker-desktop/).
 
 ---
 
-### 2. Uruchomienie backendu (Spring Boot)
-
-W folderze `eitimoto-backend`:
-
-```bash
-cd eitimoto-backend
-./mvnw spring-boot:run
-```
-
-Lub użyj skryptu:
-
-```bash
-./run_backend.sh
-```
-
-Backend uruchomi się na: **http://localhost:3333**
+Po uruchomieniu poczekaj 1-2 minuty na start wszystkich serwisów.
 
 ---
 
-### 3. Uruchomienie frontendu (React + Vite)
+## 🌐 Dostęp do aplikacji
 
-W folderze `frontend`:
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Lub użyj skryptu:
-
-```bash
-./run_frontend.sh
-```
-
-Frontend uruchomi się na: **http://localhost:5173**
+| Serwis | URL |
+|--------|-----|
+| Frontend | http://localhost:8000 |
+| Backend API | http://localhost:3333/api |
+| PostgreSQL | localhost:3000 |
 
 ---
-
-### 4. Dostęp do aplikacji
-
-- **Frontend:** http://localhost:5173
-- **Backend API:** http://localhost:3333/api
-- **PostgreSQL:** localhost:3000
-
----
-
-### Szybkie uruchomienie (z głównego folderu)
-
-Możesz też użyć głównego skryptu:
-
-```bash
-sudo sh ./run_app.sh
-```
