@@ -23,7 +23,7 @@ const UserProfilePage = () => {
         try {
             const { data: userData } = await api.get('/api/profile/me')
             setUser(userData);
-            
+
             const { data: userAdsData } = await api.get('/api/profile/user/advertisements')
             setAdvertisements(userAdsData);
 
@@ -58,18 +58,18 @@ const UserProfilePage = () => {
     return (
         <div className="min-h-screen bg-gray-50 pt-20 pb-10 px-4">
             <div className="max-w-6xl mx-auto space-y-8">
-                
+
                 <div className="bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-lg">
-                    <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 h-36 relative">
+                    <div className="bg-blue-600 h-36 relative">
                     </div>
-                    
+
                     <div className="pt-8 pb-8 px-8">
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
                             <div>
                                 <h1 className="text-3xl font-bold text-gray-900 mb-1">{user.username}</h1>
                                 <p className="text-gray-500">EITI MOTO Member</p>
                             </div>
-                            <button 
+                            <button
                                 onClick={() => navigate('/edit-profile')}
                                 className="mt-4 md:mt-0 px-6 py-3 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-xl text-gray-700 font-medium transition-all duration-300 flex items-center gap-2"
                             >
@@ -130,10 +130,10 @@ const UserProfilePage = () => {
                 <div>
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-2xl font-bold text-gray-900">
-                            Your Listings 
+                            Your Listings
                             <span className="ml-2 px-3 py-1 bg-blue-100 text-blue-600 text-lg rounded-full">{advertisements.length}</span>
                         </h2>
-                        <button 
+                        <button
                             onClick={() => navigate('/add-car')}
                             className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-all duration-300 flex items-center gap-2 shadow-lg"
                         >
@@ -153,7 +153,7 @@ const UserProfilePage = () => {
                             </div>
                             <h3 className="text-xl font-semibold text-gray-900 mb-2">No Listings</h3>
                             <p className="text-gray-500 mb-6">You don't have any listings yet. Start selling!</p>
-                            <button 
+                            <button
                                 onClick={() => navigate('/add-car')}
                                 className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
                             >
@@ -163,39 +163,39 @@ const UserProfilePage = () => {
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {advertisements.map(ad => (
-                                <div 
-                                    key={ad.id} 
+                                <div
+                                    key={ad.id}
                                     className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300"
                                 >
                                     <div className="h-48 bg-gray-100 flex items-center justify-center relative overflow-hidden">
-                                            <img
-                                                className="w-full h-96 object-cover"
-                                                src={ad.carData.image || "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"}
-                                            />
-                                        <div className="absolute top-3 right-3 px-3 py-1 bg-green-500 text-white text-sm font-bold rounded-lg shadow-lg">
+                                        <img
+                                            className="w-full h-96 object-cover"
+                                            src={ad.carData.image || "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"}
+                                        />
+                                        <div className="absolute top-3 right-3 px-3 py-1 text-gray-600  bg-gray-100 text-sm font-bold rounded-lg shadow-lg">
                                             {ad.carData.price} PLN
                                         </div>
                                     </div>
-                                    
+
                                     <div className="p-5">
-                                        <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-1">{ad.title}</h3>
-                                        
+                                        <h3 className="text-lg font-bold  text-gray-900 mb-3 line-clamp-1">{ad.title}</h3>
+
                                         <div className="flex flex-wrap gap-2 mb-4">
-                                            <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-lg">{ad.carData.carBrand}</span>
-                                            <span className="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded-lg">{ad.carData.productionYear}</span>
+                                            <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg">{ad.carData.carBrand}</span>
+                                            <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg">{ad.carData.productionYear}</span>
                                             <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg">{ad.carData.mileage} km</span>
                                         </div>
 
                                         <p className="text-gray-500 text-sm line-clamp-2 mb-5">{ad.description}</p>
 
                                         <div className="flex gap-3">
-                                            <button 
+                                            <button
                                                 onClick={() => navigate(`/cars/${ad.advertisementId}`)}
                                                 className="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-all duration-300 text-sm"
                                             >
                                                 Details
                                             </button>
-                                            <button 
+                                            <button
                                                 onClick={() => deleteAdvertisement(ad.advertisementId)}
                                                 className="p-2 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl transition-all duration-300"
                                             >
@@ -212,7 +212,7 @@ const UserProfilePage = () => {
                 </div>
             </div>
         </div>
-    );     
+    );
 };
 
 export default UserProfilePage;
