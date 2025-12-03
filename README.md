@@ -22,6 +22,12 @@
 
 ### Uruchomienie
 
+Klonowanie repozytorium 
+
+```bash
+git clone https://gitlab-stud.elka.pw.edu.pl/jjarosz/pap2025z-z02.git
+```
+
 #### 🐧 Linux (Ubuntu/Debian)
 
 ```bash
