@@ -8,6 +8,7 @@ import UserProfilePage from './pages/UserProfilePage';
 import CarListPage from './pages/CarListPage';
 import CarDetailsPage from './pages/CarDetailsPage';
 import AddCarPage from './pages/AddCarPage';
+import EditCarPage from './pages/EditCarPage';
 import NotFoundPage from './pages/NotFoundPage';
 import './App.css';
 
@@ -23,6 +24,7 @@ function App() {
           <Route path="cars" element={<CarListPage />} />
           <Route path="cars/:id" element={<CarDetailsPage />} />
           <Route path="add-car" element={<AddCarPage />} />
+          <Route path="edit-car/:id" element={<EditCarPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

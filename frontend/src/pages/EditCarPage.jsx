@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
-export default function AddCarPage() {
+export default function EditCarPage() {
     const { token, authFetch, isAuthenticated } = useAuth();
     const navigate = useNavigate();
+    const { id } = useParams();
 
+    const [loading, setLoading] = useState(true);
     const [title, setTitle] = useState("");
     const [carBrand, setCarBrand] = useState("");
     const [carModel, setCarModel] = useState("");
@@ -18,22 +20,58 @@ export default function AddCarPage() {
     const [carColor, setCarColor] = useState("");
     const [price, setPrice] = useState("");
     const [description, setDescription] = useState("");
-    const [location, setLocation] = useState("");
+    const [location, setLocation] = useState(""); // Note: Location is not in backend DTO yet, keeping for UI consistency or future use
 
-    async function addCar(ev) {
-        ev.preventDefault();
-
+    useEffect(() => {
         if (!isAuthenticated) {
-            alert("You must be logged in to add an advertisement");
+            alert("You must be logged in to edit an advertisement");
             navigate('/login');
             return;
         }
+
+        const fetchAd = async () => {
+            try {
+                const response = await fetch(`http://localhost:3333/api/advertisements/${id}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setTitle(data.title);
+                    setDescription(data.description);
+                    // Map carData
+                    setCarBrand(data.carData.carBrand);
+                    setCarModel(data.carData.carModel);
+                    setProductionYear(data.carData.productionYear);
+                    setMileage(data.carData.mileage);
+                    setFuelType(data.carData.fuelType);
+                    setTransmission(data.carData.transmission);
+                    setEngineCapacity(data.carData.engineCapacity);
+                    setPower(data.carData.power);
+                    setCarColor(data.carData.carColor);
+                    setPrice(data.carData.price);
+                    setLocation(data.location);
+
+                    setLoading(false);
+                } else {
+                    alert("Failed to fetch advertisement details");
+                    navigate('/');
+                }
+            } catch (error) {
+                console.error("Error fetching ad:", error);
+                alert("Error connecting to server");
+                navigate('/');
+            }
+        };
+
+        fetchAd();
+    }, [id, isAuthenticated, navigate]);
+
+    async function updateCar(ev) {
+        ev.preventDefault();
 
         const carData = {
             carBrand, carModel,
             productionYear, price,
             mileage, fuelType,
-            transmission, engineCapacity,
+            transmission, engineCapacity, // Note: engineCapacity might be missing in backend DTO/Entity mapping based on previous files
             power, carColor
         }
 
@@ -43,8 +81,8 @@ export default function AddCarPage() {
         }
 
         try {
-            const response = await authFetch('http://localhost:3333/api/advertisements/add', {
-                method: 'POST',
+            const response = await authFetch(`http://localhost:3333/api/advertisements/update/${id}`, {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
@@ -55,28 +93,12 @@ export default function AddCarPage() {
             if (response.ok) {
                 const data = await response.json();
                 console.log("Success:", data);
-                alert("Advertisement added successfully!");
-
-                setTitle("");
-                setCarBrand("");
-                setCarModel("");
-                setProductionYear("");
-                setMileage("");
-                setFuelType("");
-                setTransmission("");
-                setEngineCapacity("");
-                setPower("");
-                setCarColor("");
-                setPrice("");
-                setDescription("");
-                setLocation("");
-                setDescription("");
-
+                alert("Advertisement updated successfully!");
                 navigate('/');
             } else {
                 const error = await response.text();
                 console.error("Error:", response.status, error);
-                alert(`Error adding advertisement: ${response.status}`);
+                alert(`Error updating advertisement: ${response.status}`);
             }
         } catch (err) {
             console.error("Network error:", err);
@@ -84,17 +106,19 @@ export default function AddCarPage() {
         }
     }
 
+    if (loading) return <div className="text-center mt-10">Loading...</div>;
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
                     {/* Header */}
                     <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-6">
-                        <h2 className="text-3xl font-bold text-white">Add New Advertisement</h2>
-                        <p className="text-blue-100 mt-2">Fill in the form to list your car for sale</p>
+                        <h2 className="text-3xl font-bold text-white">Edit Advertisement</h2>
+                        <p className="text-blue-100 mt-2">Update your car listing details</p>
                     </div>
 
-                    <form onSubmit={addCar} className="p-8">
+                    <form onSubmit={updateCar} className="p-8">
                         {/* Basic Info Section */}
                         <div className="mb-8">
                             <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
@@ -338,7 +362,7 @@ export default function AddCarPage() {
                                 type="submit"
                                 className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition shadow-lg"
                             >
-                                Add Advertisement
+                                Update Advertisement
                             </button>
                         </div>
                     </form>

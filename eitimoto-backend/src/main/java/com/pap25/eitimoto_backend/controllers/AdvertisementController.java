@@ -18,7 +18,6 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/advertisements")
 public class AdvertisementController {
 
@@ -28,6 +27,12 @@ public class AdvertisementController {
     public ResponseEntity<List<AdvertisementResponseDto>> getAllAdvertisements() {
         List<AdvertisementResponseDto> list = advertisementService.getAdvertisements();
         return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<AdvertisementResponseDto> getAdvertisementById(@PathVariable Long id) {
+        AdvertisementResponseDto ad = advertisementService.getAdvertisementDtoById(id);
+        return ResponseEntity.ok(ad);
     }
 
     @GetMapping("/user")
@@ -46,5 +51,11 @@ public class AdvertisementController {
     public ResponseEntity<AdvertisementResponseDto> removeAdvertisements(@PathVariable Long id) {
         AdvertisementResponseDto removeAd =  advertisementService.removeAdvertisement(id);
         return ResponseEntity.ok(removeAd);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<AdvertisementResponseDto> updateAdvertisement(@PathVariable Long id, @RequestBody AdvertisementDto advertisement) {
+        AdvertisementResponseDto updatedAd = advertisementService.updateAdvertisement(id, advertisement);
+        return ResponseEntity.ok(updatedAd);
     }
 }

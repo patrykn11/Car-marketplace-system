@@ -18,4 +18,5 @@ public class CarDto {
     private String transmission;
     private Integer power;
     private String carColor;
+    private Double engineCapacity;
 }
