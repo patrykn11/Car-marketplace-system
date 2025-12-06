@@ -10,6 +10,7 @@ import java.util.Optional;
 
 public interface AdvertisementRepository extends JpaRepository<Advertisement, Long> {
     List<Advertisement> findByUserId(Long id);
+    List<Advertisement> findByUserUsername(String username);
     Optional<Advertisement> findByAdvertisementId(Long id);
     boolean existsByTitle(String title);
 }
