@@ -30,6 +30,7 @@ public class FriendRequestService {
 
     }
 
+
     public FriendRequestResponseDto createInvitation(String username) {
         User sender = userContextService.getCurrentUser();
 
