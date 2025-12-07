@@ -27,6 +27,7 @@ public class FriendRequestService {
         List<FriendRequest> invitations =
                 friendRequestRepository.findAllByReceiverIdAndStatus(userId, FriendshipStatus.PENDING);
 
+
         return invitations.stream()
                 .map(invitation ->
                         UserProfileResponseDto.builder()
