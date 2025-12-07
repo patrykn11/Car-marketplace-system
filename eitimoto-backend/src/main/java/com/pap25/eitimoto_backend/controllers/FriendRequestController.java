@@ -22,6 +22,10 @@ public class FriendRequestController {
     public ResponseEntity<List<UserProfileResponseDto>> getFriendRequests() {
         return ResponseEntity.ok(friendRequestService.getUserInvitations());
     }
+
+
+
+
     @PostMapping("add/{username}")
     public ResponseEntity<FriendRequestResponseDto> addFriendRequest(@PathVariable String username){
         FriendRequestResponseDto friendRequest = friendRequestService.createInvitation(username);
