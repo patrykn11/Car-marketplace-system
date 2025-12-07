@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import com.pap25.eitimoto_backend.services.FriendRequestService;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,7 +32,11 @@ public class ProfileController {
 		
 		private final ProfileService profileService;
 		private final AdvertisementService advertisementService;
-
+        private final FriendRequestService friendRequestService;
+        @GetMapping("/friends")
+        public ResponseEntity<List<UserProfileResponseDto>> getUserFriends() {
+            return ResponseEntity.ok(friendRequestService.getUserFriends());
+        }
 		@GetMapping("/me")
 		public ResponseEntity<UserProfileResponseDto> getMyProfile(Authentication auth) {
 				String username = auth.getName();

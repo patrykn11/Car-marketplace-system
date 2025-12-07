@@ -24,9 +24,24 @@ public class FriendRequestService {
     public List<UserProfileResponseDto> getUserInvitations() {
         Long userId = userContextService.getCurrentUser().getId();
 
-        List<FriendRequest> invitations = friendRequestRepository.findAllByReceiverId(userId);
+        List<FriendRequest> invitations = friendRequestRepository.findAllByReceiverIdAndStatus(userId, FriendshipStatus.PENDING);
         return invitations.stream().map(invitation ->
                 UserProfileResponseDto.builder().username(invitation.getSender().getUsername()).build()).collect(Collectors.toList());
+
+    }
+
+    public List<UserProfileResponseDto> getUserFriends() {
+        String username = userContextService.getCurrentUser().getUsername();
+
+        List<FriendRequest> friends = friendRequestRepository.findAllByUserAndStatus(username, FriendshipStatus.ACCEPTED);
+        return friends.stream().map(fr ->{
+            if (fr.getSender().getUsername().equals(username))
+                return UserProfileResponseDto.builder().username(fr.getReceiver().getUsername()).build();
+            else
+                return UserProfileResponseDto.builder().username(fr.getSender().getUsername()).build();
+        }
+        ).collect(Collectors.toList());
+
 
     }
 
