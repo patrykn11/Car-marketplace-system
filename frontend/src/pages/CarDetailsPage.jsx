@@ -35,28 +35,24 @@ const CarDetailsPage = () => {
         if (id) fetchCarDetails();
     }, [id, authFetch]);
 
-    // Check invitations and friend status
     useEffect(() => {
         if (!isAuthenticated || !car || username === car.username) return;
 
         const checkStatus = async () => {
             try {
-                // Zaproszenie od właściciela auta
+
                 const fromRes = await authFetch(`http://localhost:3333/api/invitations/from/${car.username}`);
                 const fromData = await fromRes.json();
                 setInvitationFromUser(fromData);
 
-                // Zaproszenie zaakceptowane
                 const acceptedRes = await authFetch(`http://localhost:3333/api/invitations/Accepted/${car.username}`);
                 const acceptedData = await acceptedRes.json();
                 setAcceptedInvitationFromUser(acceptedData);
 
-                // Zaproszenie wysłane przeze mnie
                 const sentRes = await authFetch(`http://localhost:3333/api/invitations/sent/${car.username}`);
                 const sentData = await sentRes.json();
                 setSentInvitation(sentData);
 
-                // Sprawdzenie czy już jesteśmy znajomymi (endpoint możesz dodać w backendzie)
                 const friendRes = await authFetch(`http://localhost:3333/api/friends/isFriend/${car.username}`);
                 const friendData = await friendRes.json();
                 setIsFriend(friendData);
@@ -126,7 +122,6 @@ const CarDetailsPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                 <div className="md:flex">
-                    {/* Image Section */}
                     <div className="md:w-1/2">
                         <img
                             className="w-full h-96 object-cover"
@@ -135,7 +130,6 @@ const CarDetailsPage = () => {
                         />
                     </div>
 
-                    {/* Details Section */}
                     <div className="md:w-1/2 p-8">
                         <div className="flex justify-between items-start">
                             <div>
@@ -194,7 +188,6 @@ const CarDetailsPage = () => {
                             <p className="text-gray-600">Posted by: {car.username}</p>
                             <p className="text-gray-600">Contact: {car.userPhoneNumber}</p>
 
-                            {/* Przyciski przyjaciół */}
                             {isAuthenticated && username !== car.username && !isFriend && !acceptedInvitationFromUser && (
                                 invitationFromUser ? (
                                     <button
