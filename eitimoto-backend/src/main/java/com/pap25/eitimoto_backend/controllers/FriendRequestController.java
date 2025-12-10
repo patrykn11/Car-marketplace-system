@@ -42,4 +42,24 @@ public class FriendRequestController {
         friendRequestService.declineInvitation(username);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/from/{username}")
+    public ResponseEntity<Boolean> hasInvitationFromUser(@PathVariable String username)
+    {
+        boolean exists = friendRequestService.hasPendingInvitationFromUser(username);
+        return ResponseEntity.ok(exists);
+    }
+
+    @GetMapping("/Accepted/{username}")
+    public ResponseEntity<Boolean> hasAcceptedInvitationFromUser(@PathVariable String username)
+    {
+        boolean exists = friendRequestService.hasAcceptedInvitationFromUser(username);
+        return ResponseEntity.ok(exists);
+    }
+
+    @GetMapping("/sent/{targetUsername}")
+    public ResponseEntity<Boolean> hasSentInvitation(@PathVariable String targetUsername) {
+        boolean sent = friendRequestService.hasSentInvitationToUser(targetUsername);
+        return ResponseEntity.ok(sent);
+    }
 }

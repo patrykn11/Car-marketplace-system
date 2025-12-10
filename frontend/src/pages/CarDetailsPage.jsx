@@ -4,19 +4,24 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 const CarDetailsPage = () => {
     const { id } = useParams();
-    const { token, authFetch, isAuthenticated } = useAuth();
+    const { token, authFetch, isAuthenticated, username } = useAuth();
     const navigate = useNavigate();
     const [car, setCar] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const [invitationFromUser, setInvitationFromUser] = useState(false);
+    const [acceptedInvitationFromUser, setAcceptedInvitationFromUser] = useState(false);
+    const [sentInvitation, setSentInvitation] = useState(false);
+    const [isFriend, setIsFriend] = useState(false);
+    const [loadingInvite, setLoadingInvite] = useState(false);
+
+    // Fetch car details
     useEffect(() => {
         const fetchCarDetails = async () => {
             try {
                 const response = await authFetch(`http://localhost:3333/api/advertisements/${id}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch car details');
-                }
+                if (!response.ok) throw new Error('Failed to fetch car details');
                 const data = await response.json();
                 setCar(data);
             } catch (err) {
@@ -27,10 +32,68 @@ const CarDetailsPage = () => {
             }
         };
 
-        if (id) {
-            fetchCarDetails();
-        }
+        if (id) fetchCarDetails();
     }, [id, authFetch]);
+
+    // Check invitations and friend status
+    useEffect(() => {
+        if (!isAuthenticated || !car || username === car.username) return;
+
+        const checkStatus = async () => {
+            try {
+                // Zaproszenie od właściciela auta
+                const fromRes = await authFetch(`http://localhost:3333/api/invitations/from/${car.username}`);
+                const fromData = await fromRes.json();
+                setInvitationFromUser(fromData);
+
+                // Zaproszenie zaakceptowane
+                const acceptedRes = await authFetch(`http://localhost:3333/api/invitations/Accepted/${car.username}`);
+                const acceptedData = await acceptedRes.json();
+                setAcceptedInvitationFromUser(acceptedData);
+
+                // Zaproszenie wysłane przeze mnie
+                const sentRes = await authFetch(`http://localhost:3333/api/invitations/sent/${car.username}`);
+                const sentData = await sentRes.json();
+                setSentInvitation(sentData);
+
+                // Sprawdzenie czy już jesteśmy znajomymi (endpoint możesz dodać w backendzie)
+                const friendRes = await authFetch(`http://localhost:3333/api/friends/isFriend/${car.username}`);
+                const friendData = await friendRes.json();
+                setIsFriend(friendData);
+
+            } catch (err) {
+                console.error('Error checking invitations/friend status:', err);
+            }
+        };
+
+        checkStatus();
+    }, [isAuthenticated, car, username, authFetch]);
+
+    // Handle add/accept friend
+    const handleFriendAction = async () => {
+        setLoadingInvite(true);
+        try {
+            const url = invitationFromUser
+                ? `http://localhost:3333/api/invitations/accept/${car.username}`
+                : `http://localhost:3333/api/invitations/add/${car.username}`;
+
+            const res = await authFetch(url, { method: 'POST' });
+            if (res.ok) {
+                alert(invitationFromUser ? 'Invitation accepted' : 'Invitation sent');
+                // Update state after action
+                setInvitationFromUser(false);
+                setSentInvitation(!invitationFromUser);
+                setAcceptedInvitationFromUser(invitationFromUser);
+                if (!invitationFromUser) setIsFriend(true); // jeśli wysłaliśmy zaproszenie, w backendzie może od razu być zaakceptowane
+            } else {
+                alert('Action failed');
+            }
+        } catch (err) {
+            console.error('Friend invitation error:', err);
+        } finally {
+            setLoadingInvite(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -67,7 +130,7 @@ const CarDetailsPage = () => {
                     <div className="md:w-1/2">
                         <img
                             className="w-full h-96 object-cover"
-                            src={car.image || "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"}
+                            src={car.image || "https://images.unsplash.com/photo-1494976388531-d1058494cdd8"}
                             alt={`${car.carData.carBrand} ${car.carData.carModel}`}
                         />
                     </div>
@@ -123,15 +186,32 @@ const CarDetailsPage = () => {
 
                         <div className="prose max-w-none">
                             <h3 className="text-xl font-semibold mb-2">Description</h3>
-                            <p className="text-gray-600 whitespace-pre-line">
-                                {car.description}
-                            </p>
+                            <p className="text-gray-600 whitespace-pre-line">{car.description}</p>
                         </div>
 
                         <div className="mt-8 pt-6 border-t border-gray-200">
                             <h3 className="text-lg font-semibold mb-2">Seller Info</h3>
-                            <p className="text-gray-600">Posted by: {car.userFirstName} {car.userLastName}</p>
+                            <p className="text-gray-600">Posted by: {car.username}</p>
                             <p className="text-gray-600">Contact: {car.userPhoneNumber}</p>
+
+                            {/* Przyciski przyjaciół */}
+                            {isAuthenticated && username !== car.username && !isFriend && !acceptedInvitationFromUser && (
+                                invitationFromUser ? (
+                                    <button
+                                        onClick={handleFriendAction}
+                                        className="mt-4 px-4 py-2 rounded-lg font-medium bg-blue-100 hover:bg-blue-200 text-blue-700 transition"
+                                    >
+                                        Accept {car.username}'s invitation
+                                    </button>
+                                ) : !sentInvitation ? (
+                                    <button
+                                        onClick={handleFriendAction}
+                                        className="mt-4 px-4 py-2 rounded-lg font-medium bg-green-100 hover:bg-green-200 text-green-700 transition"
+                                    >
+                                        Add {car.username} to friends
+                                    </button>
+                                ) : null
+                            )}
                         </div>
                     </div>
                 </div>

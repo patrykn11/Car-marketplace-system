@@ -7,9 +7,24 @@ const UserProfilePage = () => {
     const [user, setUser] = useState(null);
     const [advertisements, setAdvertisements] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    const { isAuthenticated } = useAuth();
+    const [invitations, setInvitations] = useState([]);
+    const { authFetch, isAuthenticated} = useAuth();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await authFetch("http://localhost:3333/api/invitations", {
+                    method: 'GET'
+                });
+                const data = await response.json();
+                setInvitations(data)
+            } catch (error) {
+                console.error('Error: ', error);
+            }
+        };
+        fetchData();
+    }, []);
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -45,8 +60,39 @@ const UserProfilePage = () => {
             console.error('Error:', error);
             alert('Failed to delete listing');
         }
+        
     }
 
+    async function acceptInvitation(username){
+        try{
+        const response = await authFetch(`http://localhost:3333/api/invitations/accept/${username}`,{
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/json'
+            },
+
+        });
+        setInvitations(prev => prev.filter(inv => inv.username !== username));
+        }
+        catch(error){
+            console.error('Error: ', error);
+        }
+    }
+    async function declineInvitation(username){
+        try{
+        const response = await authFetch(`http://localhost:3333/api/invitations/decline/${username}`,{
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/json'
+            },
+
+        });
+        setInvitations(prev => prev.filter(inv => inv.username !== username));
+        }
+        catch(error){
+            console.error('Error: ', error);
+        }
+    }
     if (loading) {
         return <div className="p-4 text-center">Loading...</div>;
     }
@@ -126,7 +172,32 @@ const UserProfilePage = () => {
                         </div>
                     </div>
                 </div>
-
+                <div className="flex flex-col gap-4">
+                    <h2 className="text-xl font-semibold text-gray-900">Invitations</h2>
+                    {invitations.length === 0 && <p className="text-gray-500">No invitations</p>}
+                    {invitations.map((invitation) => (
+                        <div
+                            key={invitation.username}
+                            className="flex items-center justify-between bg-white p-3 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
+                        >
+                            <span className="font-medium text-gray-800">{invitation.username}</span>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => acceptInvitation(invitation.username)}
+                                    className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors duration-200"
+                                >
+                                    Accept
+                                </button>
+                                <button
+                                    onClick={() => declineInvitation(invitation.username)}
+                                    className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors duration-200"
+                                >
+                                    Decline
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
                 <div>
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-2xl font-bold text-gray-900">

@@ -80,7 +80,8 @@ public class FriendRequestService {
                 .orElseThrow(() -> new IllegalArgumentException("user does not exist"));
 
         boolean alreadyRequested = friendRequestRepository.existsBySenderAndReceiver(sender, receiver);
-        if (alreadyRequested) {
+        boolean alreadyRequested2 = friendRequestRepository.existsBySenderAndReceiver(receiver, sender);
+        if (alreadyRequested || alreadyRequested2) {
             throw new IllegalArgumentException("this invitation already exists");
         }
 
@@ -125,5 +126,39 @@ public class FriendRequestService {
         friendRequestRepository.delete(invitation);
     }
 
+    public boolean hasPendingInvitationFromUser(String senderUsername) {
+        String currentUsername = userContextService.getCurrentUser().getUsername();
+
+        return friendRequestRepository.existsBySenderUsernameAndReceiverUsernameAndStatus(
+                senderUsername,
+                currentUsername,
+                FriendshipStatus.PENDING
+        );
+    }
+
+    public boolean hasAcceptedInvitationFromUser(String senderUsername) {
+        String currentUsername = userContextService.getCurrentUser().getUsername();
+        boolean condition1 = friendRequestRepository.existsBySenderUsernameAndReceiverUsernameAndStatus(
+                senderUsername,
+                currentUsername,
+                FriendshipStatus.ACCEPTED
+        );
+        boolean condition2 = friendRequestRepository.existsBySenderUsernameAndReceiverUsernameAndStatus(
+                currentUsername,
+                senderUsername,
+                FriendshipStatus.ACCEPTED
+        );
+        return condition1 || condition2;
+    }
+
+    public boolean hasSentInvitationToUser(String targetUsername) {
+        String currentUsername = userContextService.getCurrentUser().getUsername();
+
+        return friendRequestRepository.existsBySenderUsernameAndReceiverUsernameAndStatus(
+                currentUsername,
+                targetUsername,
+                FriendshipStatus.PENDING
+        );
+    }
 
 }
