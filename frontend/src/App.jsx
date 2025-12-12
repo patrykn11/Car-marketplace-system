@@ -10,6 +10,7 @@ import CarDetailsPage from './pages/CarDetailsPage';
 import AddCarPage from './pages/AddCarPage';
 import EditCarPage from './pages/EditCarPage';
 import NotFoundPage from './pages/NotFoundPage';
+import FeaturedVideoPage from './pages/Film';
 import './App.css';
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
           <Route path="add-car" element={<AddCarPage />} />
           <Route path="edit-car/:id" element={<EditCarPage />} />
           <Route path="*" element={<NotFoundPage />} />
+          <Route path="film" element={<FeaturedVideoPage/>} />
         </Route>
       </Routes>
     </AuthProvider>
