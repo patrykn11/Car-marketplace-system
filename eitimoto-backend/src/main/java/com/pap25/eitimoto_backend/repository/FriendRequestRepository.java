@@ -2,7 +2,7 @@ package com.pap25.eitimoto_backend.repository;
 
 import com.pap25.eitimoto_backend.entities.FriendRequest;
 import com.pap25.eitimoto_backend.entities.FriendshipStatus;
-import com.pap25.eitimoto_backend.entities.User; // <--- TEGO BRAKOWAŁO!
+import com.pap25.eitimoto_backend.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
