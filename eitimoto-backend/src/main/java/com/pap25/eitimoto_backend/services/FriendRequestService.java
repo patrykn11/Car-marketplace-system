@@ -10,6 +10,7 @@ import com.pap25.eitimoto_backend.dto.FriendRequestResponseDto;
 import com.pap25.eitimoto_backend.dto.UserProfileResponseDto;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import com.pap25.eitimoto_backend.entities.FriendshipStatus;
 import com.pap25.eitimoto_backend.mapper.FriendRequestMapper;
@@ -40,34 +41,17 @@ public class FriendRequestService {
                 .collect(Collectors.toList());
     }
 
-        public List<UserProfileResponseDto> getUserFriends() {
-            String username = userContextService.getCurrentUser().getUsername();
-
-            List<FriendRequest> friends =
-                    friendRequestRepository.findAllByUserAndStatus(username, FriendshipStatus.ACCEPTED);
-
-            return friends.stream()
-                    .map(fr -> {
-                        if (fr.getSender().getUsername().equals(username)) {
-                            return UserProfileResponseDto.builder()
-                                    .username(fr.getReceiver().getUsername())
-                                    .email(null)
-                                    .contactNumber(null)
-                                    .location(null)
-                                    .build();
-                        } else {
-                            return UserProfileResponseDto.builder()
-                                    .username(fr.getSender().getUsername())
-                                    .email(null)
-                                    .contactNumber(null)
-                                    .location(null)
-                                    .build();
-                        }
-
-
-                    })
-                    .collect(Collectors.toList());
-        }
+    public List<UserProfileResponseDto> getUserFriends() {
+        Set<User> friends = userContextService.getFriends();
+        return friends.stream()
+                .map(friend -> UserProfileResponseDto.builder()
+                        .username(friend.getUsername())
+                        .email(null)
+                        .contactNumber(null)
+                        .location(null)
+                        .build())
+                .collect(Collectors.toList());
+    }
 
     public FriendRequestResponseDto createInvitation(String username) {
         User sender = userContextService.getCurrentUser();

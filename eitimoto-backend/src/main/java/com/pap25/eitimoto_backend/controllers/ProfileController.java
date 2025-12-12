@@ -55,6 +55,11 @@ public class ProfileController {
 		public ResponseEntity<List<AdvertisementResponseDto>> getUserAdvertisement() {
 			List<AdvertisementResponseDto> ads = advertisementService.getUserAdvertisement();
         	return ResponseEntity.ok(ads);
-	}
+	    }
+
+        @GetMapping("/friends/advertisements")
+        public ResponseEntity<List<AdvertisementResponseDto>> getUserFriendsAdvertisement() {
+            return ResponseEntity.ok(profileService.getFriendsAdvertisements());
+        }
 
 }

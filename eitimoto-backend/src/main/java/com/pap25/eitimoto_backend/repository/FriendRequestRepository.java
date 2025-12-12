@@ -12,12 +12,10 @@ import java.util.Optional;
 
 public interface FriendRequestRepository extends JpaRepository<FriendRequest, Long> {
     boolean existsBySenderUsernameAndReceiverUsernameAndStatus(String senderUsername, String receiverUsername, FriendshipStatus status);
-    Optional<FriendRequest> findBySenderAndReceiver(User sender, User receiver);
     boolean existsBySenderAndReceiver(User sender, User receiver);
     boolean existsBySenderAndReceiverAndStatus(User sender, User receiver, FriendshipStatus status);
     Optional<FriendRequest> findBySenderUsernameAndReceiverUsernameAndStatus(
             String senderUsername, String receiverUsername, FriendshipStatus status);
-    List<FriendRequest> findAllByReceiverId(Long Id);
     List<FriendRequest> findAllByReceiverIdAndStatus(Long Id, FriendshipStatus status);
     @Query("SELECT fr FROM FriendRequest fr WHERE " +
             "(fr.sender.username = :username OR fr.receiver.username = :username) " +

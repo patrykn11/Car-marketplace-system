@@ -6,24 +6,23 @@ import { api } from "../apiClient";
 const UserProfilePage = () => {
     const [user, setUser] = useState(null);
     const [advertisements, setAdvertisements] = useState([]);
+    const [friendsAds, setFriendsAds] = useState([]);
     const [loading, setLoading] = useState(true);
     const [invitations, setInvitations] = useState([]);
-    const { authFetch, isAuthenticated} = useAuth();
+    const { authFetch, isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchInvitations = async () => {
             try {
-                const response = await authFetch("http://localhost:3333/api/invitations", {
-                    method: 'GET'
-                });
+                const response = await authFetch("http://localhost:3333/api/invitations");
                 const data = await response.json();
-                setInvitations(data)
+                setInvitations(data);
             } catch (error) {
                 console.error('Error: ', error);
             }
         };
-        fetchData();
+        fetchInvitations();
     }, []);
 
     useEffect(() => {
@@ -32,21 +31,30 @@ const UserProfilePage = () => {
             return;
         }
         fetchUserProfile();
+        fetchFriendsAdvertisements();
     }, []);
 
     async function fetchUserProfile() {
         try {
-            const { data: userData } = await api.get('/api/profile/me')
+            const { data: userData } = await api.get('/api/profile/me');
             setUser(userData);
 
-            const { data: userAdsData } = await api.get('/api/profile/user/advertisements')
+            const { data: userAdsData } = await api.get('/api/profile/user/advertisements');
             setAdvertisements(userAdsData);
-
         } catch (error) {
             console.error('Error:', error);
             navigate('/login');
         } finally {
             setLoading(false);
+        }
+    }
+
+    async function fetchFriendsAdvertisements() {
+        try {
+            const { data: friendsAdsData } = await api.get('/api/profile/friends/advertisements');
+            setFriendsAds(friendsAdsData);
+        } catch (error) {
+            console.error('Error fetching friends ads:', error);
         }
     }
 
@@ -60,39 +68,32 @@ const UserProfilePage = () => {
             console.error('Error:', error);
             alert('Failed to delete listing');
         }
-        
     }
 
     async function acceptInvitation(username){
         try{
-        const response = await authFetch(`http://localhost:3333/api/invitations/accept/${username}`,{
-            method: 'POST',
-            headers:{
-                'Content-Type': 'application/json'
-            },
-
-        });
-        setInvitations(prev => prev.filter(inv => inv.username !== username));
-        }
-        catch(error){
+            await authFetch(`http://localhost:3333/api/invitations/accept/${username}`,{
+                method: 'POST',
+                headers:{ 'Content-Type': 'application/json' }
+            });
+            setInvitations(prev => prev.filter(inv => inv.username !== username));
+        } catch(error){
             console.error('Error: ', error);
         }
     }
+
     async function declineInvitation(username){
         try{
-        const response = await authFetch(`http://localhost:3333/api/invitations/decline/${username}`,{
-            method: 'POST',
-            headers:{
-                'Content-Type': 'application/json'
-            },
-
-        });
-        setInvitations(prev => prev.filter(inv => inv.username !== username));
-        }
-        catch(error){
+            await authFetch(`http://localhost:3333/api/invitations/decline/${username}`,{
+                method: 'POST',
+                headers:{ 'Content-Type': 'application/json' }
+            });
+            setInvitations(prev => prev.filter(inv => inv.username !== username));
+        } catch(error){
             console.error('Error: ', error);
         }
     }
+
     if (loading) {
         return <div className="p-4 text-center">Loading...</div>;
     }
@@ -106,8 +107,7 @@ const UserProfilePage = () => {
             <div className="max-w-6xl mx-auto space-y-8">
 
                 <div className="bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-lg">
-                    <div className="bg-blue-600 h-36 relative">
-                    </div>
+                    <div className="bg-blue-600 h-36 relative"></div>
 
                     <div className="pt-8 pb-8 px-8">
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
@@ -172,6 +172,7 @@ const UserProfilePage = () => {
                         </div>
                     </div>
                 </div>
+
                 <div className="flex flex-col gap-4">
                     <h2 className="text-xl font-semibold text-gray-900">Invitations</h2>
                     {invitations.length === 0 && <p className="text-gray-500">No invitations</p>}
@@ -198,6 +199,7 @@ const UserProfilePage = () => {
                         </div>
                     ))}
                 </div>
+
                 <div>
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-2xl font-bold text-gray-900">
@@ -208,20 +210,12 @@ const UserProfilePage = () => {
                             onClick={() => navigate('/add-car')}
                             className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-all duration-300 flex items-center gap-2 shadow-lg"
                         >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-                            </svg>
                             Add Listing
                         </button>
                     </div>
 
                     {advertisements.length === 0 ? (
                         <div className="bg-white rounded-3xl border-2 border-dashed border-gray-200 p-16 text-center">
-                            <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 rounded-2xl flex items-center justify-center">
-                                <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                                </svg>
-                            </div>
                             <h3 className="text-xl font-semibold text-gray-900 mb-2">No Listings</h3>
                             <p className="text-gray-500 mb-6">You don't have any listings yet. Start selling!</p>
                             <button
@@ -235,7 +229,7 @@ const UserProfilePage = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {advertisements.map(ad => (
                                 <div
-                                    key={ad.id}
+                                    key={ad.advertisementId}
                                     className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300"
                                 >
                                     <div className="h-48 bg-gray-100 flex items-center justify-center relative overflow-hidden">
@@ -243,22 +237,18 @@ const UserProfilePage = () => {
                                             className="w-full h-96 object-cover"
                                             src={ad.carData.image || "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"}
                                         />
-                                        <div className="absolute top-3 right-3 px-3 py-1 text-gray-600  bg-gray-100 text-sm font-bold rounded-lg shadow-lg">
+                                        <div className="absolute top-3 right-3 px-3 py-1 text-gray-600 bg-gray-100 text-sm font-bold rounded-lg shadow-lg">
                                             {ad.carData.price} PLN
                                         </div>
                                     </div>
-
                                     <div className="p-5">
-                                        <h3 className="text-lg font-bold  text-gray-900 mb-3 line-clamp-1">{ad.title}</h3>
-
+                                        <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-1">{ad.title}</h3>
                                         <div className="flex flex-wrap gap-2 mb-4">
                                             <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg">{ad.carData.carBrand}</span>
                                             <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg">{ad.carData.productionYear}</span>
                                             <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg">{ad.carData.mileage} km</span>
                                         </div>
-
                                         <p className="text-gray-500 text-sm line-clamp-2 mb-5">{ad.description}</p>
-
                                         <div className="flex gap-3">
                                             <button
                                                 onClick={() => navigate(`/cars/${ad.advertisementId}`)}
@@ -281,6 +271,53 @@ const UserProfilePage = () => {
                         </div>
                     )}
                 </div>
+
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-6">Friends' Listings</h2>
+                    {friendsAds.length === 0 ? (
+                        <div className="bg-white rounded-3xl border-2 border-dashed border-gray-200 p-16 text-center">
+                            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Listings from friends</h3>
+                            <p className="text-gray-500">Your friends haven't posted any listings yet.</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {friendsAds.map(ad => (
+                                <div
+                                    key={ad.advertisementId}
+                                    className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300"
+                                >
+                                    <div className="h-48 bg-gray-100 flex items-center justify-center relative overflow-hidden">
+                                        <img
+                                            className="w-full h-96 object-cover"
+                                            src={ad.carData.image || "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"}
+                                        />
+                                        <div className="absolute top-3 right-3 px-3 py-1 text-gray-600 bg-gray-100 text-sm font-bold rounded-lg shadow-lg">
+                                            {ad.carData.price} PLN
+                                        </div>
+                                    </div>
+                                    <div className="p-5">
+                                        <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-1">{ad.title}</h3>
+                                        <div className="flex flex-wrap gap-2 mb-4">
+                                            <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg">{ad.carData.carBrand}</span>
+                                            <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg">{ad.carData.productionYear}</span>
+                                            <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg">{ad.carData.mileage} km</span>
+                                        </div>
+                                        <p className="text-gray-500 text-sm line-clamp-2 mb-5">{ad.description}</p>
+                                        <div className="flex gap-3">
+                                            <button
+                                                onClick={() => navigate(`/cars/${ad.advertisementId}`)}
+                                                className="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-all duration-300 text-sm"
+                                            >
+                                                Details
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
             </div>
         </div>
     );
