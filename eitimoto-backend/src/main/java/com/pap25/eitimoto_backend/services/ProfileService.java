@@ -33,6 +33,9 @@ public class ProfileService {
             
             return UserProfileResponseDto.builder()
                     .username(user.getUsername())
+                    .email(user.getEmail())
+                    .contactNumber(user.getContactNumber())
+                    .location(user.getLocation())
                     .build();
         }
 

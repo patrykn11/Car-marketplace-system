@@ -7,8 +7,9 @@ const RegisterPage = () => {
     const navigate = useNavigate();
     const [userlog, setUserlog] = useState({ user: "", pass: "" });
     const [userEmail, setUserEmail] = useState('');
+    const [userContactNumber, setContactNumber] = useState('');
+    const [userLocation, setUserLocation] = useState('');
     const [error, setError] = useState('');
-
 
     const handlePassChange = (e) => {
         const value = e.target.value;
@@ -29,18 +30,32 @@ const RegisterPage = () => {
     const handleEmailChange = (e) => {
         const value = e.target.value;
         setUserEmail(value);
-
     }
+
+    const handleContactNumberChange = (e) => {
+        const value = e.target.value;
+        setContactNumber(value);
+    }
+
+    const handleLocationChange = (e) => {
+        const value = e.target.value;
+        setUserLocation(value);
+    }
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const data_login = {
             username: userlog.user,
             password: userlog.pass,
-            // email: userEmail
+            email: userEmail,
+            contactNumber: userContactNumber,
+            location: userLocation
         };
 
         try {
-            await register(data_login.username, data_login.password);
+            await register(data_login.username, data_login.password, data_login.email, 
+                           data_login.contactNumber, data_login.location);
             navigate('/');
         }
         catch (error) {
@@ -75,6 +90,18 @@ const RegisterPage = () => {
                     placeholder="Email"
                     value={userEmail}
                     onChange={handleEmailChange}
+                    className="w-full p-2 sm:p-3 resize-none rounded border border-black focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <input
+                    type="text"
+                    placeholder="+48 123 456 789"
+                    value={userContactNumber}
+                    onChange={handleContactNumberChange}
+                    className="w-full p-2 sm:p-3 resize-none rounded border border-black focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <input
+                    type="text"
+                    placeholder="Location ex. Warsaw"
+                    value={userLocation}
+                    onChange={handleLocationChange}
                     className="w-full p-2 sm:p-3 resize-none rounded border border-black focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 <Link to='/login' className="text-blue-600 hover:underline transition-all duration-200">Sign in</Link>
                 <button

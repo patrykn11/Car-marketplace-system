@@ -25,9 +25,14 @@ public class AuthService {
             throw new RuntimeException("Username already taken");
         }
 
-        var user = new User();
+        User user = new User();
+
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setEmail(request.getEmail());
+        user.setContactNumber(request.getContactNumber());
+        user.setLocation(request.getLocation());
+
         user.setRole(Role.USER);
 
         userRepository.save(user);
@@ -35,6 +40,10 @@ public class AuthService {
         var jwtToken = jwtService.generateToken(user);
         return AuthResponse.builder()
                 .token(jwtToken)
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .contactNumber(user.getContactNumber())
+                .location(user.getLocation())
                 .build();
     }
 
@@ -54,6 +63,10 @@ public class AuthService {
 
         return AuthResponse.builder()
                 .token(jwtToken)
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .contactNumber(user.getContactNumber())
+                .location(user.getLocation())
                 .build();
     }
 }

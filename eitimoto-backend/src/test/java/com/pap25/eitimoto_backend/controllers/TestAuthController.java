@@ -41,7 +41,7 @@ public class TestAuthController {
         AuthRequest request = new AuthRequest();
         request.setUsername("newuser");
         request.setPassword("password");
-        AuthResponse response = new AuthResponse("token123");
+        AuthResponse response = AuthResponse.builder().token("token123").build();
 
         when(authService.register(any(AuthRequest.class))).thenReturn(response);
 
@@ -57,7 +57,7 @@ public class TestAuthController {
         AuthRequest request = new AuthRequest();
         request.setUsername("existinguser");
         request.setPassword("password");
-        AuthResponse response = new AuthResponse("loginToken");
+        AuthResponse response = AuthResponse.builder().token("loginToken").build();
 
         when(authService.login(any(AuthRequest.class))).thenReturn(response);
 
