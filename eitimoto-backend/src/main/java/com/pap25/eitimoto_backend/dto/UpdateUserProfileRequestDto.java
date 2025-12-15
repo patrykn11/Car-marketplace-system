@@ -6,8 +6,7 @@ import lombok.Builder;
 @Data
 @Builder
 public class UpdateUserProfileRequestDto {
-        private String username;
-        private String contactNumber;
-        private String email;
-        private String location;
+        private String newContactNumber;
+        private String newEmail;
+        private String newLocation;
 }

@@ -11,6 +11,7 @@ import AddCarPage from './pages/AddCarPage';
 import EditCarPage from './pages/EditCarPage';
 import NotFoundPage from './pages/NotFoundPage';
 import CarFilms from './pages/Film';
+import UpdateProfilePage from './pages/UpdateProfilePage';
 import './App.css';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
           <Route path="edit-car/:id" element={<EditCarPage />} />
           <Route path="*" element={<NotFoundPage />} />
           <Route path="film" element={<CarFilms/>} />
+          <Route path="edit-profile" element={<UpdateProfilePage/>} />
         </Route>
       </Routes>
     </AuthProvider>

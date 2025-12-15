@@ -40,9 +40,13 @@ public class ProfileService {
         }
 
         public UserProfileResponseDto updateMyProfile(String username, UpdateUserProfileRequestDto dto) {  
-            User user = userRepository.findByUsername(username)  
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-            
+            User user = userRepository.findByUsername(username)
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+
+            if (!"".equals(dto.getNewEmail())) user.setEmail(dto.getNewEmail());
+            if (!"".equals(dto.getNewContactNumber())) user.setContactNumber(dto.getNewContactNumber());
+            if (!"".equals(dto.getNewLocation())) user.setLocation(dto.getNewLocation());
+
             userRepository.save(user);
             
             return UserProfileResponseDto.builder()

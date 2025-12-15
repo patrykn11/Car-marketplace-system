@@ -30,32 +30,32 @@ import com.pap25.eitimoto_backend.services.FriendRequestService;
 @RequestMapping("/api/profile")
 public class ProfileController {
 		
-		private final ProfileService profileService;
-		private final AdvertisementService advertisementService;
+	private final ProfileService profileService;
+	private final AdvertisementService advertisementService;
         private final FriendRequestService friendRequestService;
         @GetMapping("/friends")
         public ResponseEntity<List<UserProfileResponseDto>> getUserFriends() {
-            return ResponseEntity.ok(friendRequestService.getUserFriends());
+        	return ResponseEntity.ok(friendRequestService.getUserFriends());
         }
-		@GetMapping("/me")
-		public ResponseEntity<UserProfileResponseDto> getMyProfile(Authentication auth) {
-				String username = auth.getName();
-				UserProfileResponseDto dto = profileService.getMyProfile(username);
-				return ResponseEntity.ok(dto);
-		}
+	@GetMapping("/me")
+	public ResponseEntity<UserProfileResponseDto> getMyProfile(Authentication auth) {
+		String username = auth.getName();
+		UserProfileResponseDto dto = profileService.getMyProfile(username);
+		return ResponseEntity.ok(dto);
+	}
 
-		@PostMapping("/me")
-		public ResponseEntity<UserProfileResponseDto> updateMyProfile(Authentication auth, @RequestBody UpdateUserProfileRequestDto request) {
-				String username = auth.getName();
-				UserProfileResponseDto dto = profileService.updateMyProfile(username, request);
-				return ResponseEntity.ok(dto);
-		}
+	@PostMapping("/edit_profile/me")
+	public ResponseEntity<UserProfileResponseDto> updateMyProfile(Authentication auth, @RequestBody UpdateUserProfileRequestDto request) {
+		String username = auth.getName();
+		UserProfileResponseDto dto = profileService.updateMyProfile(username, request);
+		return ResponseEntity.ok(dto);
+	}
 
-		@GetMapping("/user/advertisements")
-		public ResponseEntity<List<AdvertisementResponseDto>> getUserAdvertisement() {
-			List<AdvertisementResponseDto> ads = advertisementService.getUserAdvertisement();
-        	return ResponseEntity.ok(ads);
-	    }
+	@GetMapping("/user/advertisements")
+	public ResponseEntity<List<AdvertisementResponseDto>> getUserAdvertisement() {
+		List<AdvertisementResponseDto> ads = advertisementService.getUserAdvertisement();
+		return ResponseEntity.ok(ads);
+	}
 
         @GetMapping("/friends/advertisements")
         public ResponseEntity<List<AdvertisementResponseDto>> getUserFriendsAdvertisement() {
