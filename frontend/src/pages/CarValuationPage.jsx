@@ -58,7 +58,7 @@ const CarValuationPage = () => {
             const result = response.data.price || response.data
             setValuation(result)
         } catch (err) {
-            console.error("Valueation error:", err)
+            console.error("Valuation error:", err)
             const mockPrice = Math.floor(Math.random() * (90000 - 5000) + 5000);
             setValuation(mockPrice);
         } finally {
