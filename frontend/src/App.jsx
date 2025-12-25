@@ -12,6 +12,7 @@ import EditCarPage from './pages/EditCarPage';
 import NotFoundPage from './pages/NotFoundPage';
 import CarFilms from './pages/Film';
 import UpdateProfilePage from './pages/UpdateProfilePage';
+import NewsPage from './pages/NewsPage';
 import './App.css';
 
 function App() {
@@ -28,8 +29,9 @@ function App() {
           <Route path="add-car" element={<AddCarPage />} />
           <Route path="edit-car/:id" element={<EditCarPage />} />
           <Route path="*" element={<NotFoundPage />} />
-          <Route path="film" element={<CarFilms/>} />
-          <Route path="edit-profile" element={<UpdateProfilePage/>} />
+          <Route path="film" element={<CarFilms />} />
+          <Route path="edit-profile" element={<UpdateProfilePage />} />
+          <Route path="news" element={<NewsPage />} />
         </Route>
       </Routes>
     </AuthProvider>

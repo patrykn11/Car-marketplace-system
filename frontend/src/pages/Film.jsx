@@ -1,7 +1,6 @@
 import React from "react";
 
 const CarFilms = () => {
-  // Wpisz tu ręcznie wszystkie linki do YouTube
   const videoUrls = [
     "https://www.youtube.com/watch?v=ckJaRjgf2aw",
     "https://www.youtube.com/watch?v=dH0pldINYbo",
@@ -12,7 +11,7 @@ const CarFilms = () => {
   const videoIds = videoUrls.map(url => {
     const match = url.match(/v=([a-zA-Z0-9_-]{11})/);
     return match ? match[1] : null;
-  }).filter(id => id); 
+  }).filter(id => id);
 
   return (
     <div className="min-h-screen p-6 bg-gray-100">
