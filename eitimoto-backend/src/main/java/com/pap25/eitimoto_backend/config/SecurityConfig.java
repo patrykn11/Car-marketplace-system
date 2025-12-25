@@ -40,9 +40,9 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/valuation/**").permitAll()
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/advertisements/**").permitAll()
                 .requestMatchers("/api/advertisements/**").authenticated()
-                .requestMatchers("/api/valuation/**").permitAll()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
