@@ -12,6 +12,7 @@ import EditCarPage from './pages/EditCarPage';
 import NotFoundPage from './pages/NotFoundPage';
 import CarFilms from './pages/Film';
 import UpdateProfilePage from './pages/UpdateProfilePage';
+import CarValuationPage from "./pages/CarValuationPage.jsx";
 import './App.css';
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
           <Route path="*" element={<NotFoundPage />} />
           <Route path="film" element={<CarFilms/>} />
           <Route path="edit-profile" element={<UpdateProfilePage/>} />
+          <Route path="valuation" element={<CarValuationPage/>} />
         </Route>
       </Routes>
     </AuthProvider>
