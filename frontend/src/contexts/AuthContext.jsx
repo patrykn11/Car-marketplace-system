@@ -11,12 +11,12 @@ export const AuthProvider = ({ children }) => {
     const [location, setLocation] = useState(localStorage.getItem("location"));
 
     const register = async (username, password, email, contactNumber, location) => {
-        const res = await fetch("http://localhost:3333/api/auth/register", {
+        const res = await fetch("/api/auth/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password, email, contactNumber, location})
+            body: JSON.stringify({ username, password, email, contactNumber, location })
         });
-        
+
         if (!res.ok) {
             throw new Error('Invalid credentials');
         }
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const login = async (username, password) => {
-        const res = await fetch("http://localhost:3333/api/auth/login", {
+        const res = await fetch("/api/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password })
@@ -71,21 +71,25 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem("email");
         localStorage.removeItem("contactNumber");
         localStorage.removeItem("location");
-        
+
         navigate("/");
     };
     const authFetch = (url, options = {}) => {
-        return fetch(url, {...options,
-            headers: {...(options.headers || {}), "Authorization": `Bearer ${token}`
+        return fetch(url, {
+            ...options,
+            headers: {
+                ...(options.headers || {}), "Authorization": `Bearer ${token}`
             }
         });
     };
 
     return (
         <AuthContext.Provider
-            value={{ token, login, register, logout, authFetch, 
-            isAuthenticated: !!token, 
-            username, email, contactNumber, location }}>
+            value={{
+                token, login, register, logout, authFetch,
+                isAuthenticated: !!token,
+                username, email, contactNumber, location
+            }}>
             {children}
         </AuthContext.Provider>
     );
