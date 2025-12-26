@@ -29,7 +29,7 @@ import com.pap25.eitimoto_backend.services.FriendRequestService;
 @RequiredArgsConstructor
 @RequestMapping("/api/profile")
 public class ProfileController {
-		
+
 	private final ProfileService profileService;
 	private final AdvertisementService advertisementService;
         private final FriendRequestService friendRequestService;

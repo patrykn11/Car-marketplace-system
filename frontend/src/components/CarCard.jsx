@@ -11,7 +11,7 @@ const CarCard = ({ car }) => {
         if (!window.confirm('Are you sure you want to delete this advertisement?')) return;
 
         try {
-            const response = await authFetch(`http://localhost:3333/api/advertisements/remove/${car.advertisementId}`, {
+            const response = await authFetch(`/api/advertisements/remove/${car.advertisementId}`, {
                 method: 'DELETE'
             });
 

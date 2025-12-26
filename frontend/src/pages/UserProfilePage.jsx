@@ -15,7 +15,7 @@ const UserProfilePage = () => {
     useEffect(() => {
         const fetchInvitations = async () => {
             try {
-                const response = await authFetch("http://localhost:3333/api/invitations");
+                const response = await authFetch("/api/invitations");
                 const data = await response.json();
                 setInvitations(data);
             } catch (error) {
@@ -36,10 +36,10 @@ const UserProfilePage = () => {
 
     async function fetchUserProfile() {
         try {
-            const { data: userData } = await api.get('/api/profile/me');
+            const { data: userData } = await api.get('/profile/me');
             setUser(userData);
 
-            const { data: userAdsData } = await api.get('/api/profile/user/advertisements');
+            const { data: userAdsData } = await api.get('/profile/user/advertisements');
             setAdvertisements(userAdsData);
         } catch (error) {
             console.error('Error:', error);
@@ -51,7 +51,7 @@ const UserProfilePage = () => {
 
     async function fetchFriendsAdvertisements() {
         try {
-            const { data: friendsAdsData } = await api.get('/api/profile/friends/advertisements');
+            const { data: friendsAdsData } = await api.get('/profile/friends/advertisements');
             setFriendsAds(friendsAdsData);
         } catch (error) {
             console.error('Error fetching friends ads:', error);
@@ -62,7 +62,7 @@ const UserProfilePage = () => {
         if (!window.confirm('Are you sure you want to delete this listing?')) return;
 
         try {
-            await api.delete(`/api/advertisements/remove/${adId}`);
+            await api.delete(`/advertisements/remove/${adId}`);
             setAdvertisements(advertisements.filter(ad => ad.advertisementId !== adId));
         } catch (error) {
             console.error('Error:', error);
@@ -70,26 +70,26 @@ const UserProfilePage = () => {
         }
     }
 
-    async function acceptInvitation(username){
-        try{
-            await authFetch(`http://localhost:3333/api/invitations/accept/${username}`,{
+    async function acceptInvitation(username) {
+        try {
+            await authFetch(`/api/invitations/accept/${username}`, {
                 method: 'POST',
-                headers:{ 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json' }
             });
             setInvitations(prev => prev.filter(inv => inv.username !== username));
-        } catch(error){
+        } catch (error) {
             console.error('Error: ', error);
         }
     }
 
-    async function declineInvitation(username){
-        try{
-            await authFetch(`http://localhost:3333/api/invitations/decline/${username}`,{
+    async function declineInvitation(username) {
+        try {
+            await authFetch(`/api/invitations/decline/${username}`, {
                 method: 'POST',
-                headers:{ 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json' }
             });
             setInvitations(prev => prev.filter(inv => inv.username !== username));
-        } catch(error){
+        } catch (error) {
             console.error('Error: ', error);
         }
     }

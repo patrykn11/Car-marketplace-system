@@ -13,6 +13,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import CarFilms from './pages/Film';
 import UpdateProfilePage from './pages/UpdateProfilePage';
 import CarValuationPage from "./pages/CarValuationPage.jsx";
+import NewsPage from './pages/NewsPage';
 import BrandsPage from './pages/BrandsPage.jsx';
 import ModelsPage from './pages/ModelsPage.jsx';
 import ModelDetailsPage from './pages/ModelDetailsPage.jsx';
@@ -32,9 +33,10 @@ function App() {
           <Route path="add-car" element={<AddCarPage />} />
           <Route path="edit-car/:id" element={<EditCarPage />} />
           <Route path="*" element={<NotFoundPage />} />
-          <Route path="film" element={<CarFilms/>} />
+          <Route path="film" element={<CarFilms />} />
+          <Route path="news" element={<NewsPage />} />
+          <Route path="valuation" element={<CarValuationPage />} />
           <Route path="edit-profile" element={<UpdateProfilePage/>} />
-          <Route path="valuation" element={<CarValuationPage/>} />
           <Route path="/catalog" element={<BrandsPage />} />
           <Route path="/catalog/brand/:brandId" element={<ModelsPage />} />
           <Route path="/catalog/details/:modelId" element={<ModelDetailsPage />} />

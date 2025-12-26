@@ -11,7 +11,7 @@ const CarListPage = () => {
     useEffect(() => {
         const fetchCars = async () => {
             try {
-                const response = await authFetch('http://localhost:3333/api/advertisements');
+                const response = await authFetch('/api/advertisements');
                 if (!response.ok) {
                     throw new Error('Failed to fetch advertisements');
                 }
