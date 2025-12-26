@@ -15,7 +15,7 @@ const UserProfilePage = () => {
     useEffect(() => {
         const fetchInvitations = async () => {
             try {
-                const response = await authFetch("http://localhost:3333/api/invitations");
+                const response = await authFetch("/api/invitations");
                 const data = await response.json();
                 setInvitations(data);
             } catch (error) {
@@ -36,19 +36,11 @@ const UserProfilePage = () => {
 
     async function fetchUserProfile() {
         try {
-            const userResponse = await authFetch('http://localhost:3333/api/profile/me');
-            if (!userResponse) {
-                throw new Error('Error fetching user data!');
-            }
-            const advertisementsResponse = await authFetch('http://localhost:3333/api/profile/user/advertisements');
-            if (!advertisementsResponse) {
-                throw new Error('Error fetching user`s advertisements data!');
-            }
-            const userData = await userResponse.json();
-            const advertisementsData = await advertisementsResponse.json();
-
+            const { data: userData } = await api.get('/profile/me');
             setUser(userData);
-            setAdvertisements(advertisementsData);
+
+            const { data: userAdsData } = await api.get('/profile/user/advertisements');
+            setAdvertisements(userAdsData);
         } catch (error) {
             console.error('Error:', error);
             navigate('/login');
@@ -59,12 +51,8 @@ const UserProfilePage = () => {
 
     async function fetchFriendsAdvertisements() {
         try {
-            const response = await authFetch('http://localhost:3333/api/profile/friends/advertisements')
-            if (!response.ok) {
-                throw new Error("Error fetching friends advertisements!");
-            }
-            const friendsAdvertisements = await response.json();
-            setFriendsAds(friendsAdvertisements);
+            const { data: friendsAdsData } = await api.get('/profile/friends/advertisements');
+            setFriendsAds(friendsAdsData);
         } catch (error) {
             console.error('Error fetching friends ads: ', error)
         }
@@ -83,7 +71,7 @@ const UserProfilePage = () => {
         if (!window.confirm('Are you sure you want to delete this listing?')) return;
 
         try {
-            await api.delete(`/api/advertisements/remove/${adId}`);
+            await api.delete(`/advertisements/remove/${adId}`);
             setAdvertisements(advertisements.filter(ad => ad.advertisementId !== adId));
         } catch (error) {
             console.error('Error:', error);
@@ -91,26 +79,26 @@ const UserProfilePage = () => {
         }
     }
 
-    async function acceptInvitation(username){
-        try{
-            await authFetch(`http://localhost:3333/api/invitations/accept/${username}`,{
+    async function acceptInvitation(username) {
+        try {
+            await authFetch(`/api/invitations/accept/${username}`, {
                 method: 'POST',
-                headers:{ 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json' }
             });
             setInvitations(prev => prev.filter(inv => inv.username !== username));
-        } catch(error){
+        } catch (error) {
             console.error('Error: ', error);
         }
     }
 
-    async function declineInvitation(username){
-        try{
-            await authFetch(`http://localhost:3333/api/invitations/decline/${username}`,{
+    async function declineInvitation(username) {
+        try {
+            await authFetch(`/api/invitations/decline/${username}`, {
                 method: 'POST',
-                headers:{ 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json' }
             });
             setInvitations(prev => prev.filter(inv => inv.username !== username));
-        } catch(error){
+        } catch (error) {
             console.error('Error: ', error);
         }
     }

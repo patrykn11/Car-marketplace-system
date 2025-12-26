@@ -13,6 +13,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import CarFilms from './pages/Film';
 import UpdateProfilePage from './pages/UpdateProfilePage';
 import CarValuationPage from "./pages/CarValuationPage.jsx";
+import NewsPage from './pages/NewsPage';
 import BrandsPage from './pages/BrandsPage.jsx';
 import ModelsPage from './pages/ModelsPage.jsx';
 import ModelDetailsPage from './pages/ModelDetailsPage.jsx';
