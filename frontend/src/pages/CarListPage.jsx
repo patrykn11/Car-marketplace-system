@@ -6,7 +6,6 @@ const CarListPage = () => {
     const [cars, setCars] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [carBrands, setCarBrands] = useState([]);
     const { authFetch } = useAuth();
 
     const [filters, setFilters] = useState({
@@ -30,9 +29,8 @@ const CarListPage = () => {
                     throw new Error('Failed to fetch advertisements');
                 }
                 const data = await response.json();
-                const uniqueBrands = [...new Set(data.map(adv => adv.carData?.carBrand))].sort();
+
                 setCars(data);
-                setCarBrands(uniqueBrands);
             } catch (err) {
                 console.error("Error fetching cars:", err);
                 setError(err.message);
@@ -43,6 +41,21 @@ const CarListPage = () => {
 
         fetchCars();
     }, [authFetch]);
+
+    const uniqueBrands = [...new Set(cars.map(ad => ad.carData?.carBrand))].filter(Boolean).sort();
+
+    const carsForModels = filters.brand 
+        ? cars.filter(car => car.carData?.carBrand === filters.brand)
+        : cars; 
+    
+    const uniqueModels = [...new Set(carsForModels.map(ad => ad.carData?.carModel))].filter(Boolean).sort();
+
+    const filteredCars = cars.filter(car => {
+        if (filters.brand && car.carData?.carBrand !== filters.brand) return false;
+        if (filters.model && car.carData?.carModel !== filters.model) return false;
+        
+        return true;
+    });
 
     if (loading) {
         return (
@@ -73,9 +86,17 @@ const CarListPage = () => {
                     {/* Brand */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Brand</label>
-                        <select className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                            <option>All brands</option>
-                            {carBrands.map((brandName, index) => (
+                        <select 
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                            value={filters.brand}
+                            onChange={(e) => setFilters({
+                                ...filters,
+                                brand: e.target.value,
+                                model: ''
+                            })}
+                        >
+                            <option value="">All brands</option>
+                            {uniqueBrands.map((brandName, index) => (
                                 <option key={index} value={brandName}>
                                     {brandName}
                                 </option>
@@ -86,10 +107,21 @@ const CarListPage = () => {
                     {/* Model */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Model</label>
-                        <select className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                            <option>All models</option>
-                            <option>Corolla</option>
-                            <option>Camry</option>
+                        <select 
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                            value={filters.model}
+                            onChange={(e) => setFilters({
+                                ...filters,
+                                model: e.target.value
+                            })}
+                        >
+                            <option value=''>All models</option>
+                            {uniqueModels.map((carModel, index) => (
+                                <option key={index} value={carModel}>
+                                    {carModel}
+                                </option>
+                            ))}
+    
                         </select>
                     </div>
 
