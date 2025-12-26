@@ -42,9 +42,14 @@ const Navbar = () => {
                                 className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                                 Car Reviews
                             </Link>
+
                             <Link to="/news"
                                 className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                                 News
+                            </Link>
+                            <Link to="/catalog"
+                            className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Catalogs
                             </Link>
                         </div>
                     </div>
