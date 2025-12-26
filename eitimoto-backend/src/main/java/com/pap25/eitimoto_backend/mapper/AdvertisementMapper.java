@@ -31,6 +31,7 @@ public class AdvertisementMapper {
                 .location(ad.getLocation())
                 .carData(carDto)
                 .username(ad.getUser().getUsername())
+                .contactNumber(ad.getUser().getContactNumber())
                 .build();
     }
 }

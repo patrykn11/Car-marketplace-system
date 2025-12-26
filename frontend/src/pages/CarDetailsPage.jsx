@@ -21,7 +21,9 @@ const CarDetailsPage = () => {
         const fetchCarDetails = async () => {
             try {
                 const response = await authFetch(`http://localhost:3333/api/advertisements/${id}`);
-                if (!response.ok) throw new Error('Failed to fetch car details');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch car details');
+                }
                 const data = await response.json();
                 setCar(data);
             } catch (err) {
@@ -186,7 +188,7 @@ const CarDetailsPage = () => {
                         <div className="mt-8 pt-6 border-t border-gray-200">
                             <h3 className="text-lg font-semibold mb-2">Seller Info</h3>
                             <p className="text-gray-600">Posted by: {car.username}</p>
-                            <p className="text-gray-600">Contact: {car.userPhoneNumber}</p>
+                            <p className="text-gray-600">Contact: {car.contactNumber}</p>
 
                             {isAuthenticated && username !== car.username && !isFriend && !acceptedInvitationFromUser && (
                                 invitationFromUser ? (
