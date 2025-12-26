@@ -36,11 +36,19 @@ const UserProfilePage = () => {
 
     async function fetchUserProfile() {
         try {
-            const { data: userData } = await api.get('/profile/me');
-            setUser(userData);
+            const userResponse = await authFetch('http://localhost:3333/api/profile/me');
+            if (!userResponse.ok) {
+                throw new Error('Failed to fetch user data!');
+            }
+            const advertisementsResponse = await authFetch('http://localhost:3333/api/profile/user/advertisements');
+            if (!advertisementsResponse.ok) {
+                throw new Error('Failed to fetch user`s advertisements!');
+            }
+            const userResponseData = await userResponse.json();
+            const advertisementsResponseData = await advertisementsResponse.json();
 
-            const { data: userAdsData } = await api.get('/profile/user/advertisements');
-            setAdvertisements(userAdsData);
+            setUser(userResponseData);
+            setAdvertisements(advertisementsResponseData);
         } catch (error) {
             console.error('Error:', error);
             navigate('/login');
@@ -51,21 +59,16 @@ const UserProfilePage = () => {
 
     async function fetchFriendsAdvertisements() {
         try {
-            const { data: friendsAdsData } = await api.get('/profile/friends/advertisements');
-            setFriendsAds(friendsAdsData);
+            const advertisementsResponse = await authFetch('http://localhost:3333/api/profile/friends/advertisements');
+            if (!advertisementsResponse.ok) {
+                throw new Error('Failed to fetch friends`s advertisements!');
+            }
+            const advertisementsResponseData = await advertisementsResponse.json();
+            setFriendsAds(advertisementsResponseData)
         } catch (error) {
             console.error('Error fetching friends ads: ', error)
         }
     }
-
-    // async function fetchFriendsAdvertisements() {
-    //     try {
-    //         const { data: friendsAdsData } = await api.get('/api/profile/friends/advertisements');
-    //         setFriendsAds(friendsAdsData);
-    //     } catch (error) {
-    //         console.error('Error fetching friends ads:', error);
-    //     }
-    // }
 
     async function deleteAdvertisement(adId) {
         if (!window.confirm('Are you sure you want to delete this listing?')) return;
