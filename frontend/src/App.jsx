@@ -34,6 +34,7 @@ function App() {
           <Route path="edit-car/:id" element={<EditCarPage />} />
           <Route path="*" element={<NotFoundPage />} />
           <Route path="film" element={<CarFilms/>} />
+          <Route path="news" element={<NewsPage/>} />
           <Route path="edit-profile" element={<UpdateProfilePage />} />
           <Route path="valuation" element={<CarValuationPage />} />
           <Route path="/catalog" element={<BrandsPage />} />
