@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import CarCard from '../components/CarCard';
-import { AuthProvider, useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const CarListPage = () => {
     const [cars, setCars] = useState([]);
@@ -27,7 +27,7 @@ const CarListPage = () => {
     useEffect(() => {
         const fetchCars = async () => {
             try {
-                const response = await authFetch('/api/advertisements');
+                const response = await authFetch('http://localhost:3333/api/advertisements');
                 if (!response.ok) {
                     throw new Error('Failed to fetch advertisements');
                 }
@@ -44,7 +44,7 @@ const CarListPage = () => {
         };
 
         fetchCars();
-    }, [authFetch]);
+    }, []);
 
     const uniqueBrands = [...new Set(cars.map(ad => ad.carData?.carBrand))].filter(Boolean).sort();
 
@@ -53,13 +53,6 @@ const CarListPage = () => {
         : cars; 
     
     const uniqueModels = [...new Set(carsForModels.map(ad => ad.carData?.carModel))].filter(Boolean).sort();
-
-    const filteredCars = cars.filter(car => {
-        if (filters.brand && car.carData?.carBrand !== filters.brand) return false;
-        if (filters.model && car.carData?.carModel !== filters.model) return false;
-        
-        return true;
-    });
 
     const handleSearchClick = () => {
         let result = [...cars];
@@ -137,7 +130,7 @@ const CarListPage = () => {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-64">
+            <div className="flex justify-center items-center h-64 dark:text-white">
                 <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
             </div>
         );
@@ -145,7 +138,7 @@ const CarListPage = () => {
 
     if (error) {
         return (
-            <div className="text-center text-red-600 p-8">
+            <div className="text-center text-red-600 dark:text-red-400 p-8">
                 <h2 className="text-2xl font-bold mb-2">Error</h2>
                 <p>{error}</p>
             </div>  
@@ -153,226 +146,225 @@ const CarListPage = () => {
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-8">Car Listings</h1>
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300 py-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 transition-colors">Car Listings</h1>
 
-            {/* Filter Panel */}
-            <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-                <h2 className="text-xl font-semibold text-gray-800 mb-6">Search Filters</h2>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6">
-                    {/* Brand */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Brand</label>
-                        <select 
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                            value={filters.brand}
-                            onChange={(e) => setFilters({
-                                ...filters,
-                                brand: e.target.value,
-                                model: ''
-                            })}
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-900/50 p-6 mb-8 border border-transparent dark:border-gray-700 transition-colors duration-300">
+                    <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-6 transition-colors">Search Filters</h2>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Brand</label>
+                            <select 
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
+                                value={filters.brand}
+                                onChange={(e) => setFilters({
+                                    ...filters,
+                                    brand: e.target.value,
+                                    model: ''
+                                })}
+                            >
+                                <option value="">All brands</option>
+                                {uniqueBrands.map((brandName, index) => (
+                                    <option key={index} value={brandName}>
+                                        {brandName}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Model</label>
+                            <select 
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
+                                value={filters.model}
+                                onChange={(e) => setFilters({
+                                    ...filters,
+                                    model: e.target.value
+                                })}
+                            >
+                                <option value=''>All models</option>
+                                {uniqueModels.map((carModel, index) => (
+                                    <option key={index} value={carModel}>
+                                        {carModel}
+                                    </option>
+                                ))}
+        
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Price from (zł)</label>
+                            <input 
+                                type="number"
+                                value={filters.minPrice} 
+                                onChange={(e) => setFilters({
+                                    ...filters,
+                                    minPrice: e.target.value
+                                })}
+                                placeholder="0" 
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 transition-colors" 
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Price to (zł)</label>
+                            <input 
+                                type="number" 
+                                value={filters.maxPrice}
+                                onChange={(e) => setFilters({
+                                    ...filters,
+                                    maxPrice: e.target.value
+                                })}
+                                placeholder="999999" 
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 transition-colors" 
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Year from</label>
+                            <input 
+                                type="number" 
+                                value={filters.minYear}
+                                onChange={(e) => setFilters({
+                                    ...filters,
+                                    minYear: e.target.value
+                                })}
+                                placeholder="2000" 
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 transition-colors" 
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Year to</label>
+                            <input 
+                                type="number"
+                                value={filters.maxYear}
+                                onChange={(e) => setFilters({
+                                    ...filters,
+                                    maxYear: e.target.value
+                                })} 
+                                placeholder="2024" 
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 transition-colors" 
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fuel type</label>
+                            <select
+                                value={filters.fuelType}
+                                onChange={(e) => setFilters({
+                                    ...filters,
+                                    fuelType: e.target.value
+                                })} 
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
+                            >
+                                <option value="">All types</option>
+                                <option value="Petrol">Petrol</option>
+                                <option value="Diesel">Diesel</option>
+                                <option value="Electric">Electric</option>
+                                <option value="Hybird">Hybrid</option>
+                                <option value="LPG">LPG</option>
+                                <option value="CNG">CNG</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Transmission</label>
+                            <select
+                                value={filters.transmission}
+                                onChange={(e) => setFilters({
+                                    ...filters,
+                                    transmission: e.target.value
+                                })} 
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
+                            >
+                                <option value="">All types</option>
+                                <option value="Manual">Manual</option>
+                                <option value="Automatic">Automatic</option>
+                                <option value="Semi-automatic">Semi-automatic</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mileage from (km)</label>
+                            <input 
+                                type="number"
+                                value={filters.minMileage}
+                                onChange={(e) => setFilters({
+                                    ...filters,
+                                    minMileage: e.target.value
+                                })}
+                                placeholder="0"
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 transition-colors" 
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mileage to (km)</label>
+                            <input 
+                                type="number" 
+                                value={filters.maxMileage}
+                                onChange={(e) => setFilters({
+                                    ...filters,
+                                    maxMileage: e.target.value
+                                })} 
+                                placeholder="999999" 
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 transition-colors" 
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sort by</label>
+                            <select
+                                value={filterSortingBy}
+                                onChange={e => setFilterSortingBy(e.target.value)} 
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
+                            >
+                                <option value="">All types</option>
+                                <option value="Price ascending">Price ascending</option>
+                                <option value="Price descending">Price descending</option>
+                                <option value="Year ascending">Year ascending</option>
+                                <option value="Year descending">Year descending</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="flex gap-4">
+                        <button
+                            onClick={handleSearchClick}
+                            className="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors shadow-sm"
                         >
-                            <option value="">All brands</option>
-                            {uniqueBrands.map((brandName, index) => (
-                                <option key={index} value={brandName}>
-                                    {brandName}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* Model */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Model</label>
-                        <select 
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                            value={filters.model}
-                            onChange={(e) => setFilters({
-                                ...filters,
-                                model: e.target.value
-                            })}
+                            Search
+                        </button>
+                        <button
+                            onClick={handleResetClick}
+                            className="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 font-medium rounded-md transition-colors shadow-sm"
                         >
-                            <option value=''>All models</option>
-                            {uniqueModels.map((carModel, index) => (
-                                <option key={index} value={carModel}>
-                                    {carModel}
-                                </option>
-                            ))}
-    
-                        </select>
-                    </div>
-
-                    {/* Price from */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Price from (zł)</label>
-                        <input 
-                            type="number"
-                            value={filters.minPrice} 
-                            onChange={(e) => setFilters({
-                                ...filters,
-                                minPrice: e.target.value
-                            })}
-                            placeholder="0" 
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
-                        />
-                    </div>
-
-                    {/* Price to */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Price to (zł)</label>
-                        <input 
-                            type="number" 
-                            value={filters.maxPrice}
-                            onChange={(e) => setFilters({
-                                ...filters,
-                                maxPrice: e.target.value
-                            })}
-                            placeholder="999999" 
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
-                    </div>
-
-                    {/* Year from */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Year from</label>
-                        <input 
-                            type="number" 
-                            value={filters.minYear}
-                            onChange={(e) => setFilters({
-                                ...filters,
-                                minYear: e.target.value
-                            })}
-                            placeholder="2000" 
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
-                    </div>
-
-                    {/* Year to */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Year to</label>
-                        <input 
-                            type="number"
-                            value={filters.maxYear}
-                            onChange={(e) => setFilters({
-                                ...filters,
-                                maxYear: e.target.value
-                            })} 
-                            placeholder="2024" 
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
-                    </div>
-
-                    {/* Fuel type */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Fuel type</label>
-                        <select
-                            value={filters.fuelType}
-                            onChange={(e) => setFilters({
-                                ...filters,
-                                fuelType: e.target.value
-                            })} 
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        >
-                            <option value="">All types</option>
-                            <option value="Petrol">Petrol</option>
-                            <option value="Diesel">Diesel</option>
-                            <option value="Electric">Electric</option>
-                            <option value="Hybird">Hybrid</option>
-                            <option value="LPG">LPG</option>
-                            <option value="CNG">CNG</option>
-                        </select>
-                    </div>
-
-                    {/* Transmission */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Transmission</label>
-                        <select
-                            value={filters.transmission}
-                            onChange={(e) => setFilters({
-                                ...filters,
-                                transmission: e.target.value
-                            })} 
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        >
-                            <option value="">All types</option>
-                            <option value="Manual">Manual</option>
-                            <option value="Automatic">Automatic</option>
-                            <option value="Semi-automatic">Semi-automatic</option>
-                        </select>
-                    </div>
-
-                    {/* Mileage from */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Mileage from (km)</label>
-                        <input 
-                            type="number"
-                            value={filters.minMileage}
-                            onChange={(e) => setFilters({
-                                ...filters,
-                                minMileage: e.target.value
-                            })}
-                            placeholder="0"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
-                        />
-                    </div>
-
-                    {/* Mileage to */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Mileage to (km)</label>
-                        <input 
-                            type="number"
-                            value={filters.maxMileage}
-                            onChange={(e) => setFilters({
-                                ...filters,
-                                maxMileage: e.target.value
-                            })} 
-                            placeholder="999999" 
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
-                    </div>
-
-                    {/* Sort by */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Sort by</label>
-                        <select
-                            value={filterSortingBy}
-                            onChange={e => setFilterSortingBy(e.target.value)} 
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        >
-                            <option value="">All types</option>
-                            <option value="Price ascending">Price ascending</option>
-                            <option value="Price descending">Price descending</option>
-                            <option value="Year ascending">Year ascending</option>
-                            <option value="Year descending">Year descending</option>
-                        </select>
+                            Reset
+                        </button>
                     </div>
                 </div>
 
-                {/* Buttons */}
-                <div className="flex gap-4">
-                    <button
-                        onClick={handleSearchClick}
-                        className="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors"
-                    >
-                        Serach
-                    </button>
-                    <button
-                        onClick={handleResetClick}
-                        className="px-6 py-2 bg-gray-300 text-gray-800 font-medium rounded-md hover:bg-gray-400 transition-colors"
-                    >
-                        Reset
-                    </button>
-                </div>
+                {displayedCars.length === 0 ? (
+                    <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors">
+                        <p className="text-xl text-gray-500 dark:text-gray-400">No cars found.</p>
+                        <button 
+                            onClick={handleResetClick}
+                            className="mt-4 text-blue-600 dark:text-blue-400 hover:underline"
+                        >
+                            Clear filters
+                        </button>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {displayedCars.map((car) => (
+                            <CarCard key={car.advertisementId} car={car} />
+                        ))}
+                    </div>
+                )}
             </div>
-
-            {cars.length === 0 ? (
-                <div className="text-center text-gray-500 py-12">
-                    <p className="text-xl">No cars found.</p>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {displayedCars.map((car) => (
-                        <CarCard key={car.id} car={car} />
-                    ))}
-                </div>
-            )}
         </div>
     );
 };

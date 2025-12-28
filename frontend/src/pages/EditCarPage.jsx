@@ -20,7 +20,7 @@ export default function EditCarPage() {
     const [carColor, setCarColor] = useState("");
     const [price, setPrice] = useState("");
     const [description, setDescription] = useState("");
-    const [location, setLocation] = useState(""); // Note: Location is not in backend DTO yet, keeping for UI consistency or future use
+    const [location, setLocation] = useState("");
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -71,7 +71,7 @@ export default function EditCarPage() {
             carBrand, carModel,
             productionYear, price,
             mileage, fuelType,
-            transmission, engineCapacity, // Note: engineCapacity might be missing in backend DTO/Entity mapping based on previous files
+            transmission, engineCapacity,
             power, carColor
         }
 
@@ -106,28 +106,28 @@ export default function EditCarPage() {
         }
     }
 
-    if (loading) return <div className="text-center mt-10">Loading...</div>;
+    
+    if (loading) return <div className="text-center mt-10 dark:text-white">Loading...</div>;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
             <div className="max-w-4xl mx-auto">
-                <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-                    {/* Header */}
+                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl dark:shadow-gray-900/50 overflow-hidden transition-colors duration-300">
+
                     <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-6">
                         <h2 className="text-3xl font-bold text-white">Edit Advertisement</h2>
                         <p className="text-blue-100 mt-2">Update your car listing details</p>
                     </div>
 
                     <form onSubmit={updateCar} className="p-8">
-                        {/* Basic Info Section */}
                         <div className="mb-8">
-                            <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                                <span className="bg-blue-100 text-blue-600 rounded-full w-8 h-8 flex items-center justify-center mr-3">1</span>
+                            <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center transition-colors">
+                                <span className="bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-300 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm">1</span>
                                 Basic Information
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                         Advertisement Title *
                                     </label>
                                     <input
@@ -135,13 +135,14 @@ export default function EditCarPage() {
                                         value={title}
                                         onChange={e => setTitle(e.target.value)}
                                         placeholder="e.g. BMW 3 Series in great condition"
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition
+                                                   bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400"
                                         required
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                         Price (PLN) *
                                     </label>
                                     <input
@@ -149,7 +150,8 @@ export default function EditCarPage() {
                                         value={price}
                                         onChange={e => setPrice(e.target.value)}
                                         placeholder="50000"
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition
+                                                   bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400"
                                         min="0"
                                         step="1000"
                                         required
@@ -158,15 +160,14 @@ export default function EditCarPage() {
                             </div>
                         </div>
 
-                        {/* Car Details Section */}
                         <div className="mb-8">
-                            <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                                <span className="bg-blue-100 text-blue-600 rounded-full w-8 h-8 flex items-center justify-center mr-3">2</span>
+                            <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center transition-colors">
+                                <span className="bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-300 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm">2</span>
                                 Vehicle Details
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                         Brand *
                                     </label>
                                     <input
@@ -174,13 +175,14 @@ export default function EditCarPage() {
                                         value={carBrand}
                                         onChange={e => setCarBrand(e.target.value)}
                                         placeholder="BMW"
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition
+                                                   bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400"
                                         required
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                         Model *
                                     </label>
                                     <input
@@ -188,19 +190,21 @@ export default function EditCarPage() {
                                         value={carModel}
                                         onChange={e => setCarModel(e.target.value)}
                                         placeholder="3 Series"
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition
+                                                   bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400"
                                         required
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                         Production Year *
                                     </label>
                                     <select
                                         value={productionYear}
                                         onChange={e => setProductionYear(e.target.value)}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition
+                                                   bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                                         required
                                     >
                                         <option value="">Select year</option>
@@ -213,7 +217,7 @@ export default function EditCarPage() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                         Mileage (km) *
                                     </label>
                                     <input
@@ -221,20 +225,22 @@ export default function EditCarPage() {
                                         value={mileage}
                                         onChange={e => setMileage(e.target.value)}
                                         placeholder="120000"
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition
+                                                   bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400"
                                         min="0"
                                         required
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                         Fuel Type *
                                     </label>
                                     <select
                                         value={fuelType}
                                         onChange={e => setFuelType(e.target.value)}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition
+                                                   bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                                         required
                                     >
                                         <option value="">Select fuel type</option>
@@ -248,13 +254,14 @@ export default function EditCarPage() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                         Transmission *
                                     </label>
                                     <select
                                         value={transmission}
                                         onChange={e => setTransmission(e.target.value)}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition
+                                                   bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                                         required
                                     >
                                         <option value="">Select transmission</option>
@@ -265,7 +272,7 @@ export default function EditCarPage() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                         Engine Capacity (L) *
                                     </label>
                                     <input
@@ -275,13 +282,14 @@ export default function EditCarPage() {
                                         placeholder="2.0"
                                         step="0.1"
                                         min="0"
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition
+                                                   bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400"
                                         required
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                         Power (HP) *
                                     </label>
                                     <input
@@ -290,13 +298,14 @@ export default function EditCarPage() {
                                         onChange={e => setPower(e.target.value)}
                                         placeholder="150"
                                         min="0"
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition
+                                                   bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400"
                                         required
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                         Color *
                                     </label>
                                     <input
@@ -304,13 +313,14 @@ export default function EditCarPage() {
                                         value={carColor}
                                         onChange={e => setCarColor(e.target.value)}
                                         placeholder="Black"
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition
+                                                   bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400"
                                         required
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                         Location *
                                     </label>
                                     <input
@@ -318,21 +328,21 @@ export default function EditCarPage() {
                                         value={location}
                                         onChange={e => setLocation(e.target.value)}
                                         placeholder="Warsaw"
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition
+                                                   bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400"
                                         required
                                     />
                                 </div>
                             </div>
                         </div>
 
-                        {/* Description Section */}
                         <div className="mb-8">
-                            <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                                <span className="bg-blue-100 text-blue-600 rounded-full w-8 h-8 flex items-center justify-center mr-3">3</span>
+                            <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center transition-colors">
+                                <span className="bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-300 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm">3</span>
                                 Description
                             </h3>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Detailed Description *
                                 </label>
                                 <textarea
@@ -340,21 +350,21 @@ export default function EditCarPage() {
                                     onChange={e => setDescription(e.target.value)}
                                     placeholder="Describe the vehicle condition, service history, additional features..."
                                     rows="6"
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
+                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none
+                                               bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400"
                                     required
                                 />
-                                <p className="text-sm text-gray-500 mt-2">
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 transition-colors">
                                     Minimum 50 characters. Be specific to increase chances of sale.
                                 </p>
                             </div>
                         </div>
 
-                        {/* Submit Button */}
-                        <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                        <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
                             <button
                                 type="button"
                                 onClick={() => window.location.href = '/'}
-                                className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition"
+                                className="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                             >
                                 Cancel
                             </button>
