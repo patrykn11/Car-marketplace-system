@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, useParams } from 'react-router-dom';
+import Comment from '../components/Comment';
 
 const CarDetailsPage = () => {
     const { id } = useParams();
-    const { token, authFetch, isAuthenticated, username } = useAuth();
+    const { authFetch, isAuthenticated, username } = useAuth();
     const navigate = useNavigate();
+
     const [car, setCar] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -16,25 +18,42 @@ const CarDetailsPage = () => {
     const [isFriend, setIsFriend] = useState(false);
     const [loadingInvite, setLoadingInvite] = useState(false);
 
+    const [comments, setComments] = useState([]);
+    const [newComment, setNewComment] = useState("");
+    const [replyingTo, setReplyingTo] = useState(null);
+    const [refreshSignal, setRefreshSignal] = useState(0);
+
+    const fetchComments = useCallback(async () => {
+        try {
+            const res = await authFetch(`http://localhost:3333/api/comment/getParents/${id}`);
+            if (res.ok) {
+                const data = await res.json();
+                setComments(data);
+            }
+        } catch (err) {
+            console.error("Error fetching comments:", err);
+        }
+    }, [id, authFetch]);
+
     useEffect(() => {
         const fetchCarDetails = async () => {
             try {
                 const response = await authFetch(`http://localhost:3333/api/advertisements/${id}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch car details');
-                }
+                if (!response.ok) throw new Error('Failed to fetch car details');
                 const data = await response.json();
                 setCar(data);
             } catch (err) {
-                console.error("Error fetching car details:", err);
                 setError(err.message);
             } finally {
                 setLoading(false);
             }
         };
 
-        if (id) fetchCarDetails();
-    }, [id, authFetch]);
+        if (id) {
+            fetchCarDetails();
+            fetchComments();
+        }
+    }, [id, authFetch, fetchComments]);
 
     useEffect(() => {
         if (!isAuthenticated || !car || username === car.username) return;
@@ -42,21 +61,16 @@ const CarDetailsPage = () => {
         const checkStatus = async () => {
             try {
                 const fromRes = await authFetch(`http://localhost:3333/api/invitations/from/${car.username}`);
-                const fromData = await fromRes.json();
-                setInvitationFromUser(fromData);
+                setInvitationFromUser(await fromRes.json());
 
                 const acceptedRes = await authFetch(`http://localhost:3333/api/invitations/Accepted/${car.username}`);
-                const acceptedData = await acceptedRes.json();
-                setAcceptedInvitationFromUser(acceptedData);
+                setAcceptedInvitationFromUser(await acceptedRes.json());
 
                 const sentRes = await authFetch(`http://localhost:3333/api/invitations/sent/${car.username}`);
-                const sentData = await sentRes.json();
-                setSentInvitation(sentData);
+                setSentInvitation(await sentRes.json());
 
                 const friendRes = await authFetch(`http://localhost:3333/api/friends/isFriend/${car.username}`);
-                const friendData = await friendRes.json();
-                setIsFriend(friendData);
-
+                setIsFriend(await friendRes.json());
             } catch (err) {
                 console.error('Error checking invitations/friend status:', err);
             }
@@ -64,6 +78,32 @@ const CarDetailsPage = () => {
 
         checkStatus();
     }, [isAuthenticated, car, username, authFetch]);
+
+    const handleAddComment = async (e) => {
+        e.preventDefault();
+        if (!newComment.trim()) return;
+
+        try {
+            const res = await authFetch(`http://localhost:3333/api/comment/add-com`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    advertisement_id: Number(id),
+                    content: newComment,
+                    parent_id: replyingTo ? Number(replyingTo) : null
+                })
+            });
+
+            if (res.ok) {
+                setNewComment("");
+                setReplyingTo(null);
+                fetchComments();
+                setRefreshSignal(prev => prev + 1);
+            }
+        } catch (err) {
+            console.error("Error adding comment:", err);
+        }
+    };
 
     const handleFriendAction = async () => {
         setLoadingInvite(true);
@@ -79,8 +119,6 @@ const CarDetailsPage = () => {
                 setSentInvitation(!invitationFromUser);
                 setAcceptedInvitationFromUser(invitationFromUser);
                 if (!invitationFromUser) setIsFriend(true);
-            } else {
-                alert('Action failed');
             }
         } catch (err) {
             console.error('Friend invitation error:', err);
@@ -97,25 +135,11 @@ const CarDetailsPage = () => {
         );
     }
 
-    if (error) {
+    if (error || !car) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 text-center p-4">
-                <h2 className="text-2xl font-bold text-red-600 dark:text-red-400">Error</h2>
-                <p className="text-gray-600 dark:text-gray-300 mt-2">{error}</p>
-                <button
-                    onClick={() => navigate('/cars')}
-                    className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-                >
-                    Back to Listings
-                </button>
-            </div>
-        );
-    }
-
-    if (!car) {
-        return (
-            <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900">
-                <div className="text-xl text-gray-500 dark:text-gray-400">Car not found</div>
+                <h2 className="text-2xl font-bold text-red-600">{error || "Car not found"}</h2>
+                <button onClick={() => navigate('/cars')} className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg">Back to Listings</button>
             </div>
         );
     }
@@ -123,25 +147,73 @@ const CarDetailsPage = () => {
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300 py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <button 
-                    onClick={() => navigate(-1)} 
-                    className="mb-4 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-1"
-                >
+                <button onClick={() => navigate(-1)} className="mb-4 text-gray-600 dark:text-gray-400 hover:text-blue-600 flex items-center gap-1 transition-colors">
                     &larr; Back
                 </button>
 
-                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700 transition-colors duration-300">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
                     <div className="md:flex">
                         
-                        <div className="md:w-1/2 bg-gray-200 dark:bg-gray-700 relative">
-                            <img
-                                className="w-full h-96 object-cover"
-                                src={car.image || "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"}
-                                alt={`${car.carData.carBrand} ${car.carData.carModel}`}
-                            />
+                        <div className="md:w-1/2 flex flex-col border-r border-gray-100 dark:border-gray-700">
+                            <div className="h-96 bg-gray-200 dark:bg-gray-700 relative">
+                                <img
+                                    className="w-full h-full object-cover"
+                                    src={car.image || "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"}
+                                    alt="Car"
+                                />
+                            </div>
+
+                            <div className="flex-1 flex flex-col bg-gray-50/50 dark:bg-gray-900/20 max-h-[500px]">
+                                <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center bg-white dark:bg-gray-800">
+                                    <h3 className="font-bold text-gray-900 dark:text-white">Comments ({comments.length})</h3>
+                                    {replyingTo && (
+                                        <button onClick={() => setReplyingTo(null)} className="text-xs text-red-500 hover:underline">
+                                            X
+                                        </button>
+                                    )}
+                                </div>
+
+                                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                                    {comments.length > 0 ? (
+                                        comments.map(c => (
+                                            <Comment 
+                                                key={c.comment_id} 
+                                                comment={c} 
+                                                refreshSignal={refreshSignal}
+                                                onReplyClick={(cid) => {
+                                                    setReplyingTo(cid);
+                                                    document.getElementById('commentInput').focus();
+                                                }} 
+                                            />
+                                        ))
+                                    ) : (
+                                        <p className="text-gray-500 text-center text-sm py-10">Brak komentarzy pod tym ogłoszeniem.</p>
+                                    )}
+                                </div>
+
+                                <div className="p-4 bg-white dark:bg-gray-800 border-t dark:border-gray-700">
+                                    {isAuthenticated ? (
+                                        <form onSubmit={handleAddComment} className="flex gap-2">
+                                            <input
+                                                id="commentInput"
+                                                type="text"
+                                                value={newComment}
+                                                onChange={(e) => setNewComment(e.target.value)}
+                                                placeholder={replyingTo ? `Odpowiadasz na #${replyingTo}...` : "Napisz komentarz..."}
+                                                className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                            />
+                                            <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                                                {replyingTo ? 'Odpowiedz' : 'Wyślij'}
+                                            </button>
+                                        </form>
+                                    ) : (
+                                        <p className="text-center text-sm text-gray-500">Zaloguj się, aby komentować.</p>
+                                    )}
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="md:w-1/2 p-8 flex flex-col">
+                        <div className="md:w-1/2 p-8 flex flex-col overflow-y-auto max-h-[900px]">
                             <div className="flex justify-between items-start mb-6">
                                 <div>
                                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 transition-colors">
@@ -167,14 +239,14 @@ const CarDetailsPage = () => {
 
                             <div className="prose max-w-none mb-8">
                                 <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white transition-colors">Description</h3>
-                                <p className="text-gray-600 dark:text-gray-300 whitespace-pre-line leading-relaxed transition-colors">
-                                    {car.description}
+                                <p className="text-gray-600 dark:text-gray-300 whitespace-pre-line leading-relaxed transition-colors italic">
+                                    "{car.description}"
                                 </p>
                             </div>
 
                             <div className="mt-auto pt-6 border-t border-gray-200 dark:border-gray-700 transition-colors">
                                 <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white transition-colors">Seller Info</h3>
-                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl">
                                     <div>
                                         <p className="text-gray-600 dark:text-gray-300">Posted by: <span className="font-medium text-gray-900 dark:text-white">{car.username}</span></p>
                                         <p className="text-gray-600 dark:text-gray-300">Contact: <span className="font-medium text-gray-900 dark:text-white">{car.contactNumber}</span></p>
@@ -201,6 +273,11 @@ const CarDetailsPage = () => {
                                             <span className="text-gray-500 dark:text-gray-400 text-sm italic">Request sent</span>
                                         )
                                     )}
+                                    {(isFriend || acceptedInvitationFromUser) && (
+                                        <span className="text-green-600 dark:text-green-400 font-bold flex items-center gap-1">
+                                            ✓ Friends
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -212,7 +289,7 @@ const CarDetailsPage = () => {
 };
 
 const DetailTile = ({ label, value }) => (
-    <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg transition-colors duration-300">
+    <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg transition-colors duration-300 border border-transparent hover:border-blue-500/30">
         <span className="block text-gray-500 dark:text-gray-400 text-sm mb-1">{label}</span>
         <span className="font-semibold text-gray-900 dark:text-gray-100">{value}</span>
     </div>
