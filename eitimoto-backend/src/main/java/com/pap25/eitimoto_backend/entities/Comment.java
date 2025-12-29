@@ -21,7 +21,7 @@ public class Comment {
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    // ZMIANA: advertisement_id -> listing_id
+    
     @JoinColumn(name="listing_id", nullable = false)
     private Advertisement advertisement;
 
