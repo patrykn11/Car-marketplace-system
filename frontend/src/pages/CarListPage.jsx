@@ -8,7 +8,6 @@ const CarListPage = () => {
     const [displayedCars, setDisplayedCars] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
     const [favorites, setFavorites] = useState([]); 
     
     const { isAuthenticated, authFetch } = useAuth();
@@ -20,6 +19,7 @@ const CarListPage = () => {
         minYear: '', maxYear: '', fuelType: '', transmission: '', 
         minMileage: '', maxMileage: ''
     });
+
 
     useEffect(() => {
         const fetchCars = async () => {
@@ -33,6 +33,7 @@ const CarListPage = () => {
 
                 setCars(data);
 
+               
                 const bodyTypeFromUrl = searchParams.get('bodyType');
                 if (bodyTypeFromUrl) {
                     setFilters(prev => ({ ...prev, bodyType: bodyTypeFromUrl }));
@@ -54,7 +55,6 @@ const CarListPage = () => {
 
         fetchCars();
     }, [searchParams]);
-
     useEffect(() => {
         const fetchFavorites = async () => {
             if (isAuthenticated) {
@@ -74,6 +74,7 @@ const CarListPage = () => {
 
         fetchFavorites();
     }, [isAuthenticated, authFetch]);
+
     const handleFavoriteToggle = (advertisementId, isLikedNow) => {
         setFavorites(prevIds => {
             if (isLikedNow) {
@@ -151,6 +152,7 @@ const CarListPage = () => {
                     <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-6 transition-colors">Search Filters</h2>
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6">
+                        
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Brand</label>
                             <select 
@@ -162,6 +164,151 @@ const CarListPage = () => {
                                 {uniqueBrands.map((brandName, index) => (
                                     <option key={index} value={brandName}>{brandName}</option>
                                 ))}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Model</label>
+                            <select 
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
+                                value={filters.model}
+                                onChange={(e) => setFilters({ ...filters, model: e.target.value })}
+                            >
+                                <option value=''>All models</option>
+                                {uniqueModels.map((carModel, index) => (
+                                    <option key={index} value={carModel}>{carModel}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Body type</label>
+                            <select
+                                value={filters.bodyType} 
+                                onChange={(e) => setFilters({ ...filters, bodyType: e.target.value })} 
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
+                            >
+                                <option value="">All types</option>
+                                <option value="Sedan">Sedan</option>
+                                <option value="Coupe">Coupe</option>
+                                <option value="SUV">SUV</option>
+                                <option value="Hatchback">Hatchback</option>
+                                <option value="Cabriolet">Cabriolet</option>
+                                <option value="Van">Van</option>
+                                <option value="Pickup">Pickup</option>
+                                <option value="Wagon">Wagon</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Price from (zł)</label>
+                            <input 
+                                type="number"
+                                value={filters.minPrice} 
+                                onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
+                                placeholder="0" 
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 transition-colors" 
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Price to (zł)</label>
+                            <input 
+                                type="number" 
+                                value={filters.maxPrice}
+                                onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
+                                placeholder="999999" 
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 transition-colors" 
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Year from</label>
+                            <input 
+                                type="number" 
+                                value={filters.minYear}
+                                onChange={(e) => setFilters({ ...filters, minYear: e.target.value })}
+                                placeholder="2000" 
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 transition-colors" 
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Year to</label>
+                            <input 
+                                type="number"
+                                value={filters.maxYear}
+                                onChange={(e) => setFilters({ ...filters, maxYear: e.target.value })} 
+                                placeholder="2024" 
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 transition-colors" 
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fuel type</label>
+                            <select
+                                value={filters.fuelType}
+                                onChange={(e) => setFilters({ ...filters, fuelType: e.target.value })} 
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
+                            >
+                                <option value="">All types</option>
+                                <option value="Petrol">Petrol</option>
+                                <option value="Diesel">Diesel</option>
+                                <option value="Electric">Electric</option>
+                                <option value="Hybird">Hybrid</option>
+                                <option value="LPG">LPG</option>
+                                <option value="CNG">CNG</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Transmission</label>
+                            <select
+                                value={filters.transmission}
+                                onChange={(e) => setFilters({ ...filters, transmission: e.target.value })} 
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
+                            >
+                                <option value="">All types</option>
+                                <option value="Manual">Manual</option>
+                                <option value="Automatic">Automatic</option>
+                                <option value="Semi-automatic">Semi-automatic</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mileage from (km)</label>
+                            <input 
+                                type="number"
+                                value={filters.minMileage}
+                                onChange={(e) => setFilters({ ...filters, minMileage: e.target.value })}
+                                placeholder="0"
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 transition-colors" 
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mileage to (km)</label>
+                            <input 
+                                type="number" 
+                                value={filters.maxMileage}
+                                onChange={(e) => setFilters({ ...filters, maxMileage: e.target.value })} 
+                                placeholder="999999" 
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 transition-colors" 
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sort by</label>
+                            <select
+                                value={filterSortingBy}
+                                onChange={e => setFilterSortingBy(e.target.value)} 
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
+                            >
+                                <option value="">Default</option>
+                                <option value="Price ascending">Price ascending</option>
+                                <option value="Price descending">Price descending</option>
+                                <option value="Year ascending">Year ascending</option>
+                                <option value="Year descending">Year descending</option>
                             </select>
                         </div>
                     </div>
@@ -184,7 +331,7 @@ const CarListPage = () => {
                                 key={car.advertisementId} 
                                 car={car} 
                                 isFavoriteInitial={favorites.includes(car.advertisementId)}
-                                onToggleFavorite={handleFavoriteToggle} 
+                                onToggleFavorite={handleFavoriteToggle}
                             />
                         ))}
                     </div>

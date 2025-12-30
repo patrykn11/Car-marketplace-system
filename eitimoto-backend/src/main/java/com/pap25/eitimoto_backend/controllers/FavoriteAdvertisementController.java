@@ -1,6 +1,6 @@
 package com.pap25.eitimoto_backend.controllers;
 
-import com.pap25.eitimoto_backend.entities.Advertisement;
+import com.pap25.eitimoto_backend.dto.AdvertisementResponseDto;
 import com.pap25.eitimoto_backend.services.FavoriteAdvertisementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +19,12 @@ public class FavoriteAdvertisementController {
     @GetMapping
     public ResponseEntity<List<Long>> getFavoriteAdvertisements() {
         List<Long> favorites = favoriteAdvertisementService.getFavoriteAdvertisements();
+        return ResponseEntity.ok(favorites);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<AdvertisementResponseDto>> getFavoriteAdvertisementsDetails() {
+        List<AdvertisementResponseDto> favorites = favoriteAdvertisementService.getFavoriteAdvertisementsDetails();
         return ResponseEntity.ok(favorites);
     }
 
