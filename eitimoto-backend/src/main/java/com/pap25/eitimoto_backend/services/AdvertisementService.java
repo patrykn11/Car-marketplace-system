@@ -6,6 +6,7 @@ import com.pap25.eitimoto_backend.entities.Advertisement;
 import com.pap25.eitimoto_backend.entities.User;
 import com.pap25.eitimoto_backend.repository.AdvertisementRepository;
 import com.pap25.eitimoto_backend.repository.CarRepository;
+import com.pap25.eitimoto_backend.repository.FavoriteAdvertisementRepository;
 import com.pap25.eitimoto_backend.entities.Car;
 import com.pap25.eitimoto_backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.pap25.eitimoto_backend.services.UserContextService;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Comparator;
 
 import jakarta.persistence.EntityNotFoundException;
 import com.pap25.eitimoto_backend.mapper.AdvertisementMapper;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequiredArgsConstructor
 public class AdvertisementService {
     private final AdvertisementRepository advertisementRepository;
+    private final FavoriteAdvertisementRepository favoriteAdvertisementRepository;
     private final UserContextService userContextService;
     private final AdvertisementMapper advertisementMapper;
     private final CarRepository carRepository;
@@ -43,7 +46,12 @@ public class AdvertisementService {
 
     public AdvertisementResponseDto getAdvertisementDtoById(Long id) {
         Advertisement ad = getAdvertisementById(id);
-        return advertisementMapper.toDto(ad);
+        AdvertisementResponseDto dto = advertisementMapper.toDto(ad);
+
+        long count = favoriteAdvertisementRepository.countByAdvertisementId(id);
+        dto.setLikesCount(count);
+
+        return dto;
     }
 
     @Transactional
@@ -131,5 +139,15 @@ public class AdvertisementService {
         List<Advertisement> ads = advertisementRepository.findByUserId(currentUser.getId());
 
         return ads.stream().map(ad -> advertisementMapper.toDto(ad)).collect(Collectors.toList());
+    }
+
+    public List<AdvertisementResponseDto> getTopPopularAdvertisements(int limit) {
+
+        List<AdvertisementResponseDto> allAds = getAdvertisements();
+
+        return allAds.stream()
+                .sorted(Comparator.comparingLong(AdvertisementResponseDto::getLikesCount).reversed())
+                .limit(limit)
+                .collect(Collectors.toList());
     }
 }

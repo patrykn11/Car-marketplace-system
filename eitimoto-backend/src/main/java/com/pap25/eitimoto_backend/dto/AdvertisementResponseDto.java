@@ -13,4 +13,5 @@ public class AdvertisementResponseDto {
     private CarDto carData;
     private String username;
     private String contactNumber;
+    private long likesCount;
 }

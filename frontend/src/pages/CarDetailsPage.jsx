@@ -11,17 +11,19 @@ const CarDetailsPage = () => {
     const [car, setCar] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
     const [invitationFromUser, setInvitationFromUser] = useState(false);
     const [acceptedInvitationFromUser, setAcceptedInvitationFromUser] = useState(false);
     const [sentInvitation, setSentInvitation] = useState(false);
     const [isFriend, setIsFriend] = useState(false);
     const [loadingInvite, setLoadingInvite] = useState(false);
-
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState("");
     const [replyingTo, setReplyingTo] = useState(null);
     const [refreshSignal, setRefreshSignal] = useState(0);
+
+    const [isLiked, setIsLiked] = useState(false);
+    const [likesCount, setLikesCount] = useState(0);
+    const [likeLoading, setLikeLoading] = useState(false);
 
     const fetchComments = useCallback(async () => {
         try {
@@ -38,10 +40,21 @@ const CarDetailsPage = () => {
     useEffect(() => {
         const fetchCarDetails = async () => {
             try {
-                const response = await authFetch(`http://localhost:3333/api/advertisements/${id}`);
+                const response = await fetch(`http://localhost:3333/api/advertisements/${id}`);
                 if (!response.ok) throw new Error('Failed to fetch car details');
                 const data = await response.json();
+                
                 setCar(data);
+                setLikesCount(data.likesCount || 0);
+
+                if (isAuthenticated) {
+                    const favRes = await authFetch('http://localhost:3333/api/favorites');
+                    if (favRes.ok) {
+                        const favIds = await favRes.json();
+                        setIsLiked(favIds.includes(Number(id)));
+                    }
+                }
+
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -53,7 +66,8 @@ const CarDetailsPage = () => {
             fetchCarDetails();
             fetchComments();
         }
-    }, [id, authFetch, fetchComments]);
+    }, [id, fetchComments]);
+
 
     useEffect(() => {
         if (!isAuthenticated || !car || username === car.username) return;
@@ -78,6 +92,39 @@ const CarDetailsPage = () => {
 
         checkStatus();
     }, [isAuthenticated, car, username, authFetch]);
+    const handleToggleFavorite = async () => {
+        if (!isAuthenticated) {
+            alert("Log in to add to favorites!");
+            return;
+        }
+        if (likeLoading) return;
+
+        setLikeLoading(true);
+        const previousLiked = isLiked;
+        
+        setIsLiked(!isLiked);
+        setLikesCount(prev => isLiked ? prev - 1 : prev + 1);
+
+        try {
+            let response;
+            if (!previousLiked) {
+                // Dodaj (POST)
+                response = await authFetch(`http://localhost:3333/api/favorites/${id}`, { method: 'POST' });
+            } else {
+                // Usuń (DELETE)
+                response = await authFetch(`http://localhost:3333/api/favorites/${id}`, { method: 'DELETE' });
+            }
+
+            if (!response.ok) throw new Error("Failed to update favorite");
+        } catch (err) {
+            console.error("Error toggling favorite:", err);
+            setIsLiked(previousLiked);
+            setLikesCount(prev => previousLiked ? prev + 1 : prev - 1);
+            alert("Could not update favorite status.");
+        } finally {
+            setLikeLoading(false);
+        }
+    };
 
     const handleAddComment = async (e) => {
         e.preventDefault();
@@ -221,9 +268,27 @@ const CarDetailsPage = () => {
                                     </h1>
                                     <p className="text-gray-500 dark:text-gray-400 text-lg transition-colors">{car.title}</p>
                                 </div>
-                                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 whitespace-nowrap">
-                                    {car.carData.price.toLocaleString()} PLN
-                                </span>
+                                
+                                <div className="flex flex-col items-end gap-2">
+                                    <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 whitespace-nowrap">
+                                        {car.carData.price.toLocaleString()} PLN
+                                    </span>
+                                    
+                                    <button 
+                                        onClick={handleToggleFavorite}
+                                        disabled={likeLoading}
+                                        className={`p-2 rounded-full shadow-sm border transition-all transform hover:scale-105 active:scale-95 ${
+                                            isLiked 
+                                            ? 'bg-red-50 border-red-200 text-red-500 dark:bg-red-900/20 dark:border-red-900' 
+                                            : 'bg-white border-gray-200 text-gray-400 hover:text-red-400 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300'
+                                        }`}
+                                        title={isLiked ? "Remove from favorites" : "Add to favorites"}
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" className={`h-8 w-8 ${isLiked ? 'fill-current' : 'fill-none'}`} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4 mb-8">
@@ -243,6 +308,15 @@ const CarDetailsPage = () => {
                                 <p className="text-gray-600 dark:text-gray-300 whitespace-pre-line leading-relaxed transition-colors italic">
                                     "{car.description}"
                                 </p>
+                            </div>
+
+                            <div className="mb-8 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl flex items-center justify-center gap-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-500 fill-red-500" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                                </svg>
+                                <span className="text-lg font-bold text-gray-800 dark:text-white">
+                                    {likesCount} {likesCount === 1 ? 'person likes' : 'people like'} this car
+                                </span>
                             </div>
 
                             <div className="mt-auto pt-6 border-t border-gray-200 dark:border-gray-700 transition-colors">

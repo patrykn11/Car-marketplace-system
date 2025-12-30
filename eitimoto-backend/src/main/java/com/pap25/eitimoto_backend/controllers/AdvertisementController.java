@@ -58,4 +58,10 @@ public class AdvertisementController {
         AdvertisementResponseDto updatedAd = advertisementService.updateAdvertisement(id, advertisement);
         return ResponseEntity.ok(updatedAd);
     }
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<AdvertisementResponseDto>> getPopularAdvertisements() {
+        List<AdvertisementResponseDto> popularAds = advertisementService.getTopPopularAdvertisements(3);
+        return ResponseEntity.ok(popularAds);
+    }
 }

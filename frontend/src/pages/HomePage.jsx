@@ -58,16 +58,19 @@ const BODY_TYPES = [
 const HomePage = () => {
     const [featuredCars, setFeaturedCars] = useState([]);
     const [popularBrands, setPopularBrands] = useState([]);
-    const { username, authFetch } = useAuth();
+    
+    const [favoriteIds, setFavoriteIds] = useState([]); 
+
+    const { username, authFetch, isAuthenticated } = useAuth(); 
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchHomeData = async () => {
             try {
-                const adsResponse = await authFetch('http://localhost:3333/api/advertisements');
+                const adsResponse = await fetch('http://localhost:3333/api/advertisements/popular');
                 if (adsResponse.ok) {
                     const adsData = await adsResponse.json();
-                    setFeaturedCars(adsData.slice(0, 3));
+                    setFeaturedCars(adsData);
                 }
 
                 const brandsResponse = await fetch('http://localhost:8000/api/catalog/brands');
@@ -75,14 +78,33 @@ const HomePage = () => {
                     const brandsData = await brandsResponse.json();
                     setPopularBrands(brandsData.slice(0, 4));
                 }
-
             } catch (error) {
                 console.error("Error fetching homepage data:", error);
             }
         };
 
         fetchHomeData();
-    }, [authFetch]);
+    }, []);
+
+    useEffect(() => {
+        const fetchFavorites = async () => {
+            if (isAuthenticated) {
+                try {
+                    const response = await authFetch('http://localhost:3333/api/favorites'); 
+                    if (response.ok) {
+                        const data = await response.json();
+                        setFavoriteIds(data);
+                    }
+                } catch (error) {
+                    console.error("Error fetching favorites:", error);
+                }
+            } else {
+                setFavoriteIds([]);
+            }
+        };
+
+        fetchFavorites();
+    }, [isAuthenticated, authFetch]);
 
     return (
         <div className="space-y-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -185,7 +207,11 @@ const HomePage = () => {
                 {featuredCars.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                         {featuredCars.map((car) => (
-                            <CarCard key={car.advertisementId} car={car} />
+                            <CarCard 
+                                key={car.advertisementId} 
+                                car={car} 
+                                isFavoriteInitial={favoriteIds.includes(car.advertisementId)}
+                            />
                         ))}
                     </div>
                 ) : (

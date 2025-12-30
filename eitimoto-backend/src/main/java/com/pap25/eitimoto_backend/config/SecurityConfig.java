@@ -42,8 +42,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()    
                 .requestMatchers("/api/valuation/**").permitAll()
                 .requestMatchers("/api/catalog/**").permitAll()
-                .requestMatchers("/api/advertisements").permitAll()
+                .requestMatchers("/api/advertisements/**").permitAll()
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/advertisements/**").permitAll()
+                .requestMatchers("api/favorites/**").authenticated()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
