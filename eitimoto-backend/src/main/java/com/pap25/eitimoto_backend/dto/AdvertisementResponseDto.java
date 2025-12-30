@@ -12,4 +12,6 @@ public class AdvertisementResponseDto {
     private String location;
     private CarDto carData;
     private String username;
+    private Long viewCount;
+    private Long clickCount;
 }

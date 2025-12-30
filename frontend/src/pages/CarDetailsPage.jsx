@@ -16,6 +16,19 @@ const CarDetailsPage = () => {
     const [isFriend, setIsFriend] = useState(false);
     const [loadingInvite, setLoadingInvite] = useState(false);
 
+    // stats state
+    const [showPhone, setShowPhone] = useState(false);
+
+    // track view logic
+    useEffect(() => {
+        if (id && !loading && car) {
+            // we only count view if it's not the owner viewing their own ad
+            if (username !== car.username) {
+                authFetch(`http://localhost:3333/api/advertisements/${id}/view`, { method: 'POST' }).catch(err => console.error(err));
+            }
+        }
+    }, [id, loading, car, username]);
+
     // Fetch car details
     useEffect(() => {
         const fetchCarDetails = async () => {
@@ -53,9 +66,7 @@ const CarDetailsPage = () => {
                 const sentData = await sentRes.json();
                 setSentInvitation(sentData);
 
-                const friendRes = await authFetch(`http://localhost:3333/api/friends/isFriend/${car.username}`);
-                const friendData = await friendRes.json();
-                setIsFriend(friendData);
+                setIsFriend(acceptedData);
 
             } catch (err) {
                 console.error('Error checking invitations/friend status:', err);
@@ -186,7 +197,22 @@ const CarDetailsPage = () => {
                         <div className="mt-8 pt-6 border-t border-gray-200">
                             <h3 className="text-lg font-semibold mb-2">Seller Info</h3>
                             <p className="text-gray-600">Posted by: {car.username}</p>
-                            <p className="text-gray-600">Contact: {car.userPhoneNumber}</p>
+                            <div className="flex items-center gap-2 mt-2">
+                                <span className="text-gray-600">Contact: </span>
+                                {showPhone ? (
+                                    <span className="font-semibold text-gray-900">{car.userPhoneNumber}</span>
+                                ) : (
+                                    <button
+                                        onClick={() => {
+                                            setShowPhone(true);
+                                            authFetch(`http://localhost:3333/api/advertisements/${id}/contact`, { method: 'POST' }).catch(err => console.error(err));
+                                        }}
+                                        className="text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline"
+                                    >
+                                        Show Number
+                                    </button>
+                                )}
+                            </div>
 
                             {isAuthenticated && username !== car.username && !isFriend && !acceptedInvitationFromUser && (
                                 invitationFromUser ? (

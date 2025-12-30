@@ -8,6 +8,9 @@ import com.pap25.eitimoto_backend.repository.AdvertisementRepository;
 import com.pap25.eitimoto_backend.repository.CarRepository;
 import com.pap25.eitimoto_backend.entities.Car;
 import com.pap25.eitimoto_backend.repository.UserRepository;
+import com.pap25.eitimoto_backend.dto.NotificationDto;
+import com.pap25.eitimoto_backend.dto.UserStatsDto;
+import com.pap25.eitimoto_backend.repository.FavoriteAdvertisementRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +31,8 @@ public class AdvertisementService {
     private final AdvertisementMapper advertisementMapper;
     private final CarRepository carRepository;
     private final UserRepository userRepository;
+    private final org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
+    private final FavoriteAdvertisementRepository favoriteAdvertisementRepository;
 
     public List<AdvertisementResponseDto> getAdvertisements() {
         return advertisementRepository.findAll()
@@ -121,6 +126,17 @@ public class AdvertisementService {
         // Save changes (cascaded to Car)
         advertisementRepository.save(ad);
 
+        // Notify subscribers
+        String message = "User " + currentUser.getUsername() + " has changed his post \"" + ad.getTitle() + "\"";
+        NotificationDto notification = NotificationDto.builder()
+                .message(message)
+                .advertisementId(ad.getAdvertisementId())
+                .timestamp(java.time.LocalDateTime.now())
+                .senderUsername(currentUser.getUsername())
+                .build();
+
+        messagingTemplate.convertAndSend("/topic/post/" + id, notification);
+
         return advertisementMapper.toDto(ad);
     }
 
@@ -130,5 +146,50 @@ public class AdvertisementService {
         List<Advertisement> ads = advertisementRepository.findByUserId(currentUser.getId());
 
         return ads.stream().map(ad -> advertisementMapper.toDto(ad)).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void incrementViewCount(Long id) {
+        Advertisement ad = getAdvertisementById(id);
+        if (ad.getViewCount() == null) {
+            ad.setViewCount(0L);
+        }
+        ad.setViewCount(ad.getViewCount() + 1);
+        advertisementRepository.save(ad);
+    }
+
+    @Transactional
+    public void incrementClickCount(Long id) {
+        Advertisement ad = getAdvertisementById(id);
+        if (ad.getClickCount() == null) {
+            ad.setClickCount(0L);
+        }
+        ad.setClickCount(ad.getClickCount() + 1);
+        advertisementRepository.save(ad);
+    }
+
+    public UserStatsDto getUserStats() {
+        User currentUser = userContextService.getCurrentUser();
+        List<Advertisement> userAds = advertisementRepository.findByUserId(currentUser.getId());
+
+        long totalViews = 0;
+        long totalContacts = 0;
+
+        for (Advertisement ad : userAds) {
+            if (ad.getViewCount() != null) totalViews += ad.getViewCount();
+            if (ad.getClickCount() != null) totalContacts += ad.getClickCount();
+        }
+
+        List<Long> adIds = userAds.stream().map(Advertisement::getAdvertisementId).collect(Collectors.toList());
+        long totalLikes = 0;
+        if (!adIds.isEmpty()) {
+            totalLikes = favoriteAdvertisementRepository.countByAdvertisementIdIn(adIds);
+        }
+
+        return UserStatsDto.builder()
+                .totalViews(totalViews)
+                .totalContacts(totalContacts)
+                .totalLikes(totalLikes)
+                .build();
     }
 }

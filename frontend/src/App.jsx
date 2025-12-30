@@ -1,5 +1,8 @@
 import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { WebSocketProvider } from './contexts/WebSocketContext';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import MainLayout from './layouts/MainLayout';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -22,26 +25,29 @@ import './App.css';
 function App() {
   return (
     <AuthProvider>
-      <Routes>
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<HomePage />} />
-          <Route path="login" element={<LoginPage />} />
-          <Route path="register" element={<RegisterPage />} />
-          <Route path="profile" element={<UserProfilePage />} />
-          <Route path="cars" element={<CarListPage />} />
-          <Route path="cars/:id" element={<CarDetailsPage />} />
-          <Route path="add-car" element={<AddCarPage />} />
-          <Route path="edit-car/:id" element={<EditCarPage />} />
-          <Route path="*" element={<NotFoundPage />} />
-          <Route path="film" element={<CarFilms />} />
-          <Route path="news" element={<NewsPage />} />
-          <Route path="valuation" element={<CarValuationPage />} />
-          <Route path="edit-profile" element={<UpdateProfilePage/>} />
-          <Route path="/catalog" element={<BrandsPage />} />
-          <Route path="/catalog/brand/:brandId" element={<ModelsPage />} />
-          <Route path="/catalog/details/:modelId" element={<ModelDetailsPage />} />
-        </Route>
-      </Routes>
+      <WebSocketProvider>
+        <ToastContainer />
+        <Routes>
+          <Route path="/" element={<MainLayout />}>
+            <Route index element={<HomePage />} />
+            <Route path="login" element={<LoginPage />} />
+            <Route path="register" element={<RegisterPage />} />
+            <Route path="profile" element={<UserProfilePage />} />
+            <Route path="cars" element={<CarListPage />} />
+            <Route path="cars/:id" element={<CarDetailsPage />} />
+            <Route path="add-car" element={<AddCarPage />} />
+            <Route path="edit-car/:id" element={<EditCarPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+            <Route path="film" element={<CarFilms />} />
+            <Route path="news" element={<NewsPage />} />
+            <Route path="valuation" element={<CarValuationPage />} />
+            <Route path="edit-profile" element={<UpdateProfilePage />} />
+            <Route path="/catalog" element={<BrandsPage />} />
+            <Route path="/catalog/brand/:brandId" element={<ModelsPage />} />
+            <Route path="/catalog/details/:modelId" element={<ModelDetailsPage />} />
+          </Route>
+        </Routes>
+      </WebSocketProvider>
     </AuthProvider>
   );
 }

@@ -1,10 +1,57 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import closeIcon from '../assets/close.png';
+import { useState, useEffect } from 'react';
+import { useWebSocket } from '../contexts/WebSocketContext';
 
 const CarCard = ({ car }) => {
     const carData = car.carData || {};
     const { isAuthenticated, username, authFetch } = useAuth();
+    const { subscribeToTopic, unsubscribeFromTopic } = useWebSocket();
+    const [isLiked, setIsLiked] = useState(false);
+    useEffect(() => {
+        if (isAuthenticated) {
+            checkIfLiked();
+        }
+    }, [isAuthenticated, car.advertisementId]);
+
+    const checkIfLiked = async () => {
+        try {
+            const response = await authFetch('/api/favorites');
+            if (response.ok) {
+                const favorites = await response.json(); // returns List<Long> IDs
+                if (favorites.includes(car.advertisementId)) {
+                    setIsLiked(true);
+                }
+            }
+        } catch (error) {
+            console.error("Error checking favorites:", error);
+        }
+    };
+
+    const handleLike = async (e) => {
+        e.preventDefault();
+        if (!isAuthenticated) return;
+
+        try {
+            if (isLiked) {
+                const response = await authFetch(`/api/favorites/${car.advertisementId}`, { method: 'DELETE' });
+                if (response.ok) {
+                    setIsLiked(false);
+                    unsubscribeFromTopic(car.advertisementId);
+                }
+            } else {
+                const response = await authFetch(`/api/favorites/${car.advertisementId}`, { method: 'POST' });
+                if (response.ok) {
+                    setIsLiked(true);
+                    subscribeToTopic(car.advertisementId);
+                }
+            }
+        } catch (error) {
+            console.error("Error toggling like:", error);
+        }
+    };
+
 
     const handleDelete = async (e) => {
         e.preventDefault(); // Prevent link navigation if wrapped in Link (though button is outside link here, good practice)
@@ -29,6 +76,17 @@ const CarCard = ({ car }) => {
 
     return (
         <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 relative group">
+            {isAuthenticated && username !== car.username && (
+                <button
+                    onClick={handleLike}
+                    className="absolute top-2 left-2 z-10 p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${isLiked ? 'text-red-500 fill-current' : 'text-gray-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                </button>
+            )}
+
             {isAuthenticated && username === car.username && (
                 <div className="absolute top-2 right-2 z-10 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
