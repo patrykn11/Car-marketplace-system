@@ -8,14 +8,21 @@ import com.pap25.eitimoto_backend.repository.AdvertisementRepository;
 import com.pap25.eitimoto_backend.repository.CarRepository;
 import com.pap25.eitimoto_backend.repository.FavoriteAdvertisementRepository;
 import com.pap25.eitimoto_backend.entities.Car;
+import com.pap25.eitimoto_backend.entities.FavoriteAdvertisement;
 import com.pap25.eitimoto_backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import com.pap25.eitimoto_backend.services.UserContextService;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Map;
+import java.util.function.Function;
+
 
 import jakarta.persistence.EntityNotFoundException;
 import com.pap25.eitimoto_backend.mapper.AdvertisementMapper;
@@ -148,6 +155,61 @@ public class AdvertisementService {
         return allAds.stream()
                 .sorted(Comparator.comparingLong(AdvertisementResponseDto::getLikesCount).reversed())
                 .limit(limit)
+                .collect(Collectors.toList());
+    }
+
+    public List<AdvertisementResponseDto> getPersonalizedRecommendations(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<FavoriteAdvertisement> favorites = favoriteAdvertisementRepository.findByUserId(user.getId());
+
+        List<Long> likedIds = favorites.stream()
+                .map(FavoriteAdvertisement::getAdvertisementId)
+                .collect(Collectors.toList());
+        if (likedIds.isEmpty()) {
+            likedIds.add(-1L);
+        }
+
+        List<Advertisement> recommendations = new ArrayList<>();
+
+        if (favorites.isEmpty()) {
+            recommendations = advertisementRepository.findRandomExcept(likedIds, PageRequest.of(0, 3));
+        } else {
+            List<Advertisement> likedAdsDetails = advertisementRepository.findAllById(likedIds);
+
+            String favoriteBrand = likedAdsDetails.stream()
+                    .map(ad -> ad.getCar().getCarBrand())
+                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                    .entrySet().stream()
+                    .max(Map.Entry.comparingByValue())
+                    .map(Map.Entry::getKey)
+                    .orElse(null);
+
+            if (favoriteBrand != null) {
+                recommendations = advertisementRepository.findRecommendationsByBrand(
+                        favoriteBrand,
+                        likedIds,
+                        PageRequest.of(0, 3)
+                );
+            }
+
+            if (recommendations.size() < 3) {
+                List<Long> foundIds = recommendations.stream().map(Advertisement::getAdvertisementId).collect(Collectors.toList());
+                likedIds.addAll(foundIds);
+
+                int needed = 3 - recommendations.size();
+                List<Advertisement> fillers = advertisementRepository.findRandomExcept(likedIds, PageRequest.of(0, needed));
+                recommendations.addAll(fillers);
+            }
+        }
+
+        return recommendations.stream()
+                .map(ad -> {
+                    AdvertisementResponseDto dto = advertisementMapper.toDto(ad);
+                    dto.setLikesCount(favoriteAdvertisementRepository.countByAdvertisementId(ad.getAdvertisementId()));
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 }

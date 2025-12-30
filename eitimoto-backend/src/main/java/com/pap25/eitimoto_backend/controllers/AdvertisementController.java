@@ -7,6 +7,7 @@ import org.apache.catalina.connector.Response;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,5 +64,15 @@ public class AdvertisementController {
     public ResponseEntity<List<AdvertisementResponseDto>> getPopularAdvertisements() {
         List<AdvertisementResponseDto> popularAds = advertisementService.getTopPopularAdvertisements(3);
         return ResponseEntity.ok(popularAds);
+    }
+
+    @GetMapping("/recommendations")
+    public ResponseEntity<List<AdvertisementResponseDto>> getRecommendations() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        if ("anonymousUser".equals(username)) {
+            return ResponseEntity.ok(List.of());
+        }
+        List<AdvertisementResponseDto> recommendations = advertisementService.getPersonalizedRecommendations(username);
+        return ResponseEntity.ok(recommendations);
     }
 }
