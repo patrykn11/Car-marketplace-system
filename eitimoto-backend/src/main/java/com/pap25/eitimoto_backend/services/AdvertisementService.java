@@ -53,6 +53,7 @@ public class AdvertisementService {
         Car car = new Car();
         car.setCarBrand(adDto.getCarData().getCarBrand());
         car.setCarModel(adDto.getCarData().getCarModel());
+        car.setCarBodyType(adDto.getCarData().getCarBodyType());
         car.setProductionYear(adDto.getCarData().getProductionYear());
         car.setPrice(adDto.getCarData().getPrice());
         car.setMileage(adDto.getCarData().getMileage());
@@ -109,6 +110,7 @@ public class AdvertisementService {
         Car car = ad.getCar();
         car.setCarBrand(adDto.getCarData().getCarBrand());
         car.setCarModel(adDto.getCarData().getCarModel());
+        car.setCarBodyType(adDto.getCarData().getCarBodyType());
         car.setProductionYear(adDto.getCarData().getProductionYear());
         car.setPrice(adDto.getCarData().getPrice());
         car.setMileage(adDto.getCarData().getMileage());
@@ -120,7 +122,6 @@ public class AdvertisementService {
 
         // Save changes (cascaded to Car)
         advertisementRepository.save(ad);
-
         return advertisementMapper.toDto(ad);
     }
 

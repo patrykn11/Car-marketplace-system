@@ -11,9 +11,9 @@ public class AdvertisementMapper {
 
     public AdvertisementResponseDto toDto(Advertisement ad) {
         CarDto carDto = CarDto.builder()
-                // .carId(ad.getCar().getCarId())
                 .carBrand(ad.getCar().getCarBrand())
                 .carModel(ad.getCar().getCarModel())
+                .carBodyType(ad.getCar().getCarBodyType())
                 .productionYear(ad.getCar().getProductionYear())
                 .mileage(ad.getCar().getMileage())
                 .price(ad.getCar().getPrice())

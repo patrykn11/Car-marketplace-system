@@ -228,6 +228,7 @@ const CarDetailsPage = () => {
 
                             <div className="grid grid-cols-2 gap-4 mb-8">
                                 <DetailTile label="Year" value={car.carData.productionYear} />
+                                <DetailTile label="Body type" value={car.carData.carBodyType} />
                                 <DetailTile label="Mileage" value={`${car.carData.mileage.toLocaleString()} km`} />
                                 <DetailTile label="Fuel Type" value={car.carData.fuelType} />
                                 <DetailTile label="Transmission" value={car.carData.transmission} />

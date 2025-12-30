@@ -158,6 +158,7 @@ const HomePage = () => {
                     {BODY_TYPES.map((type) => (
                         <div 
                             key={type.name}
+                            onClick={() => navigate(`/cars?bodyType=${type.name}`)}
                             className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md hover:border-blue-200 dark:hover:border-blue-700/50 cursor-pointer transition-all duration-300 flex flex-col items-center gap-3 group"
                         >
                             <div className="p-4 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">

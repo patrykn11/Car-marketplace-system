@@ -9,6 +9,7 @@ export default function AddCarPage() {
     const [title, setTitle] = useState("");
     const [carBrand, setCarBrand] = useState("");
     const [carModel, setCarModel] = useState("");
+    const [carBodyType, setCarBodyType] = useState("");
     const [productionYear, setProductionYear] = useState("");
     const [mileage, setMileage] = useState("");
     const [fuelType, setFuelType] = useState("");
@@ -30,7 +31,7 @@ export default function AddCarPage() {
         }
 
         const carData = {
-            carBrand, carModel,
+            carBrand, carModel, carBodyType,
             productionYear, price,
             mileage, fuelType,
             transmission, engineCapacity,
@@ -41,6 +42,11 @@ export default function AddCarPage() {
             title, description,
             location, carData
         }
+
+        console.log("------------------------------------------------");
+        console.log("🛠️ DEBUG: DANE WYSYŁANE DO BACKENDU:");
+        console.log(JSON.stringify(advertisementData, null, 2)); 
+        console.log("------------------------------------------------");
 
         try {
             const response = await authFetch('http://localhost:3333/api/advertisements/add', {
@@ -60,6 +66,7 @@ export default function AddCarPage() {
                 setTitle("");
                 setCarBrand("");
                 setCarModel("");
+                setCarBodyType("");
                 setProductionYear("");
                 setMileage("");
                 setFuelType("");
@@ -168,6 +175,27 @@ export default function AddCarPage() {
                                                    bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400"
                                         required
                                     />
+                                </div>
+
+                                 <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Body type *
+                                    </label>
+                                    <select
+                                        value={carBodyType} 
+                                        onChange={e => setCarBodyType(e.target.value)}
+                                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition
+                                                   bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                        required
+                                    >
+                                        <option value="">Select body type</option>
+                                        <option value="Sedan">Sedan</option>
+                                        <option value="Coupe">Coupe</option>
+                                        <option value="SUV">SUV</option>
+                                        <option value="Hatchback">Hatchback</option>
+                                        <option value="Cabriolet">Cabriolet</option>
+                                        <option value="Van">Van</option>
+                                    </select>
                                 </div>
 
                                 <div>
