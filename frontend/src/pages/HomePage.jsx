@@ -3,97 +3,91 @@ import { Link, useNavigate } from 'react-router-dom';
 import CarCard from '../components/CarCard';
 import { useAuth } from '../contexts/AuthContext';
 
-// Ikony dla Body Types
 const BODY_TYPES = [
-    {
-        name: "SUV",
-        icon: (<svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l2-8h12l-2 8H4z" /><path strokeLinecap="round" strokeLinejoin="round" d="M2 16h20" /><circle cx="6" cy="18" r="2" /><circle cx="18" cy="18" r="2" /><path strokeLinecap="round" strokeLinejoin="round" d="M6 8h12l1.5 8H4.5L6 8z" /></svg>)
-    },
-    {
-        name: "Sedan",
-        icon: (<svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M3 12h18l-3-6H6L3 12z" /><path strokeLinecap="round" strokeLinejoin="round" d="M2 16h20" /><circle cx="6" cy="18" r="2" /><circle cx="18" cy="18" r="2" /><path strokeLinecap="round" strokeLinejoin="round" d="M5 12v4" /><path strokeLinecap="round" strokeLinejoin="round" d="M19 12v4" /></svg>)
-    },
-    {
-        name: "Hatchback",
-        icon: (<svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M4 14h16" /><path strokeLinecap="round" strokeLinejoin="round" d="M4 14l2-8h10l4 8" /><circle cx="7" cy="17" r="2" /><circle cx="17" cy="17" r="2" /><path strokeLinecap="round" strokeLinejoin="round" d="M4 14v3" /></svg>)
-    },
-    {
-        name: "Coupe",
-        icon: (<svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M2 14h20" /><path strokeLinecap="round" strokeLinejoin="round" d="M2 14l3-7h14l3 7" /><circle cx="6" cy="17" r="2" /><circle cx="18" cy="17" r="2" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 7v7" /></svg>)
-    }
+    { name: "SUV", icon: (<svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l2-8h12l-2 8H4z" /><circle cx="6" cy="18" r="2" /><circle cx="18" cy="18" r="2" /></svg>) },
+    { name: "Sedan", icon: (<svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M3 12h18l-3-6H6L3 12z" /><circle cx="6" cy="18" r="2" /><circle cx="18" cy="18" r="2" /></svg>) },
+    { name: "Hatchback", icon: (<svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M4 14h16" /><circle cx="7" cy="17" r="2" /><circle cx="17" cy="17" r="2" /></svg>) },
+    { name: "Coupe", icon: (<svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M2 14h20" /><circle cx="6" cy="17" r="2" /><circle cx="18" cy="17" r="2" /></svg>) }
+];
+
+const BRAND_ADS = [
+    { id: 1, name: "BMW", slogan: "Sheer Driving Pleasure", logo: "https://upload.wikimedia.org/wikipedia/commons/4/44/BMW.svg", link: "/cars?brand=BMW", theme: "from-blue-600 to-blue-800" },
+    { id: 2, name: "Audi", slogan: "Vorsprung durch Technik", logo: "https://upload.wikimedia.org/wikipedia/commons/6/6f/Audi_logo_detail.svg", link: "/cars?brand=Audi", theme: "from-gray-800 to-gray-900" },
+    { id: 3, name: "Mercedes-Benz", slogan: "The Best or Nothing", logo: "https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg", link: "/cars?brand=Mercedes", theme: "from-black to-gray-800" },
+    { id: 4, name: "Tesla", slogan: "Electric Future", logo: "https://upload.wikimedia.org/wikipedia/commons/b/bd/Tesla_Motors.svg", link: "/cars?brand=Tesla", theme: "from-red-600 to-red-800" },
+    { id: 5, name: "Toyota", slogan: "Let's Go Places", logo: "https://upload.wikimedia.org/wikipedia/commons/9/9d/Toyota_carlogo.svg", link: "/cars?brand=Toyota", theme: "from-red-500 to-red-700" }
 ];
 
 const HomePage = () => {
-    // State
     const [featuredCars, setFeaturedCars] = useState([]);
     const [popularBrands, setPopularBrands] = useState([]);
     const [recommendedCars, setRecommendedCars] = useState([]);
     const [favoriteIds, setFavoriteIds] = useState([]);
+    const [brandAd, setBrandAd] = useState(null);
 
     const { username, authFetch, isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
-    // 1. Fetch Public Data
     useEffect(() => {
         const fetchHomeData = async () => {
-            try {
-                const adsResponse = await fetch('http://localhost:3333/api/advertisements/popular');
-                if (adsResponse.ok) setFeaturedCars(await adsResponse.json());
-
-                const brandsResponse = await fetch('http://localhost:8000/api/catalog/brands');
-                if (brandsResponse.ok) {
-                    const brandsData = await brandsResponse.json();
-                    setPopularBrands(brandsData.slice(0, 4));
-                }
-            } catch (error) {
-                console.error("Error fetching homepage data:", error);
+            const adsRes = await fetch('http://localhost:3333/api/advertisements/popular');
+            if (adsRes.ok) setFeaturedCars(await adsRes.json());
+            const brandsRes = await fetch('http://localhost:8000/api/catalog/brands');
+            if (brandsRes.ok) {
+                const data = await brandsRes.json();
+                setPopularBrands(data.slice(0, 4));
             }
         };
         fetchHomeData();
     }, []);
 
-    // 2. Fetch Private Data
     useEffect(() => {
-        const fetchPrivateData = async () => {
-            if (isAuthenticated) {
-                try {
-                    const favResponse = await authFetch('http://localhost:3333/api/favorites');
-                    if (favResponse.ok) setFavoriteIds(await favResponse.json());
-
-                    const recResponse = await authFetch('http://localhost:3333/api/advertisements/recommendations');
-                    if (recResponse.ok) setRecommendedCars(await recResponse.json());
-                } catch (error) {
-                    console.error("Error fetching private data:", error);
-                }
-            } else {
-                setFavoriteIds([]);
-                setRecommendedCars([]);
-            }
-        };
-        fetchPrivateData();
+        if (isAuthenticated) {
+            authFetch('http://localhost:3333/api/favorites')
+                .then(r => r.ok && r.json().then(setFavoriteIds));
+            authFetch('http://localhost:3333/api/advertisements/recommendations')
+                .then(r => r.ok && r.json().then(setRecommendedCars));
+        } else {
+            setFavoriteIds([]);
+            setRecommendedCars([]);
+        }
     }, [isAuthenticated, authFetch]);
 
-    return (
-        // Używamy width: 98% aby wykorzystać prawie cały ekran
-        <div className="w-full max-w-[98%] mx-auto py-6 px-2">
-            
-            {/* GRID GŁÓWNY: 3 KOLUMNY (Na dużych ekranach) */}
-            <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+    useEffect(() => {
+        const fetchBrandAd = async () => {
+            if (isAuthenticated) {
+                try {
+                    const res = await authFetch('http://localhost:3333/api/Ad');
+                    const favBrand = await res.text();
+                    console.log("Car brand:", favBrand);
+                    const ad = BRAND_ADS.find(a => a.name.toLowerCase() === favBrand.toLowerCase());
+                    if (ad) setBrandAd(ad);
+                    else setBrandAd(BRAND_ADS[Math.floor(Math.random() * BRAND_ADS.length)]);
+                } catch (err) {
+                    console.error(err);
+                    setBrandAd(BRAND_ADS[Math.floor(Math.random() * BRAND_ADS.length)]);
+                }
+            } else {
+                setBrandAd(BRAND_ADS[Math.floor(Math.random() * BRAND_ADS.length)]);
+            }
+        };
+        fetchBrandAd();
+    }, [isAuthenticated]);
 
-                {/* --- LEWA KOLUMNA: MOST POPULAR (Szerokość: 3/12) --- */}
+    return (
+        <div className="w-full max-w-[98%] mx-auto py-6 px-2">
+            <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
                 <aside className="xl:col-span-3 order-2 xl:order-1 flex flex-col gap-6">
                     <div className="flex items-center justify-between">
                         <h2 className="text-xl font-bold text-gray-900 dark:text-white">Popular Listings</h2>
                         <Link to="/cars" className="text-blue-600 text-sm hover:underline">View all</Link>
                     </div>
-                    
-                    {/* Lista pionowa popularnych */}
                     <div className="flex flex-col gap-6">
                         {featuredCars.length > 0 ? (
-                            featuredCars.map((car) => (
-                                <CarCard 
-                                    key={car.advertisementId} 
-                                    car={car} 
+                            featuredCars.map(car => (
+                                <CarCard
+                                    key={car.advertisementId}
+                                    car={car}
                                     isFavoriteInitial={favoriteIds.includes(car.advertisementId)}
                                 />
                             ))
@@ -103,10 +97,7 @@ const HomePage = () => {
                     </div>
                 </aside>
 
-                {/* --- ŚRODKOWA KOLUMNA: BANNER & KATEGORIE (Szerokość: 6/12) --- */}
                 <main className="xl:col-span-6 order-1 xl:order-2 space-y-8">
-                    
-                    {/* Hero Banner */}
                     <section className="text-center py-16 bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-3xl shadow-xl relative overflow-hidden">
                         <div className="relative z-10 px-4">
                             <h1 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight">
@@ -128,12 +119,37 @@ const HomePage = () => {
                         </div>
                     </section>
 
-                    {/* Popular Brands (W środku) */}
+                    {brandAd && (
+                        <section
+                            onClick={() => navigate(brandAd.link)}
+                            className={`cursor-pointer bg-gradient-to-br ${brandAd.theme} text-white rounded-3xl p-8 shadow-xl hover:scale-[1.02] transition-all`}
+                        >
+                            <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+                                <div>
+                                    <span className="inline-block bg-white/20 text-xs font-bold px-3 py-1 rounded-full mb-4">
+                                        Sponsored Brand
+                                    </span>
+                                    <h2 className="text-3xl font-extrabold tracking-tight">
+                                        {brandAd.name}
+                                    </h2>
+                                    <p className="text-lg opacity-90 mt-2">
+                                        {brandAd.slogan}
+                                    </p>
+                                </div>
+                                <img
+                                    src={brandAd.logo}
+                                    alt={brandAd.name}
+                                    className="h-20 bg-white p-4 rounded-2xl"
+                                />
+                            </div>
+                        </section>
+                    )}
+
                     <section>
                         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Popular Brands</h3>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                            {popularBrands.map((brand) => (
-                                <div 
+                            {popularBrands.map(brand => (
+                                <div
                                     key={brand.id}
                                     onClick={() => navigate(`/catalog/brand/${brand.id}`)}
                                     className="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center h-32"
@@ -145,12 +161,11 @@ const HomePage = () => {
                         </div>
                     </section>
 
-                    {/* Body Types (W środku) */}
                     <section>
                         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Body Types</h3>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                            {BODY_TYPES.map((type) => (
-                                <div 
+                            {BODY_TYPES.map(type => (
+                                <div
                                     key={type.name}
                                     onClick={() => navigate(`/cars?bodyType=${type.name}`)}
                                     className="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center h-32 group"
@@ -163,20 +178,18 @@ const HomePage = () => {
                     </section>
                 </main>
 
-                {/* --- PRAWA KOLUMNA: FOR YOU (Szerokość: 3/12) --- */}
                 <aside className="xl:col-span-3 order-3 flex flex-col gap-6">
                     <div className="flex items-center gap-2">
                         <h2 className="text-xl font-bold text-gray-900 dark:text-white">For You</h2>
                     </div>
 
                     {isAuthenticated ? (
-                        // ZALOGOWANY
                         recommendedCars.length > 0 ? (
                             <div className="flex flex-col gap-6">
-                                {recommendedCars.map((car) => (
-                                    <CarCard 
-                                        key={car.advertisementId} 
-                                        car={car} 
+                                {recommendedCars.map(car => (
+                                    <CarCard
+                                        key={car.advertisementId}
+                                        car={car}
                                         isFavoriteInitial={favoriteIds.includes(car.advertisementId)}
                                     />
                                 ))}
@@ -189,7 +202,6 @@ const HomePage = () => {
                             </div>
                         )
                     ) : (
-                        // NIEZALOGOWANY
                         <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm text-center sticky top-24">
                             <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">🔒</div>
                             <h3 className="font-bold text-gray-900 dark:text-white mb-2">Personalized Picks</h3>
@@ -199,7 +211,6 @@ const HomePage = () => {
                         </div>
                     )}
                 </aside>
-
             </div>
         </div>
     );
