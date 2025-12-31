@@ -11,10 +11,19 @@ const UserProfilePage = () => {
     
     const [loading, setLoading] = useState(true);
     const [invitations, setInvitations] = useState([]);
-    const [activeTab, setActiveTab] = useState('my-listings');
+    
+
+    const [invitationFromUser, setInvitationFromUser] = useState(false);
+    const [stats, setStats] = useState(null); // Stan dla statystyk
+    const [activeTab, setActiveTab] = useState('my-listings'); // Stan dla zakładek
 
     const { authFetch, isAuthenticated } = useAuth();
     const navigate = useNavigate();
+
+
+    useEffect(() => {
+        api.get('/profile/stats').then(res => setStats(res.data)).catch(err => console.error(err));
+    }, []);
 
     useEffect(() => {
         const fetchInvitations = async () => {
@@ -174,6 +183,49 @@ const UserProfilePage = () => {
                     </div>
                 )}
 
+                {/* ZMIANA: Sekcja Statystyk (z wersji lokalnej) */}
+                <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-lg p-6">
+                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Statistic Panel</h2>
+
+                    {stats ? (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl p-6 border border-indigo-100 dark:border-indigo-800/50 flex flex-col items-center justify-center text-center">
+                                <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-800 rounded-full flex items-center justify-center mb-3 text-indigo-600 dark:text-indigo-300">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </div>
+                                <span className="text-3xl font-bold text-gray-900 dark:text-white">{stats.totalViews}</span>
+                                <span className="text-sm text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide mt-1">Total Views</span>
+                            </div>
+
+                            <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl p-6 border border-emerald-100 dark:border-emerald-800/50 flex flex-col items-center justify-center text-center">
+                                <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-800 rounded-full flex items-center justify-center mb-3 text-emerald-600 dark:text-emerald-300">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                    </svg>
+                                </div>
+                                <span className="text-3xl font-bold text-gray-900 dark:text-white">{stats.totalContacts}</span>
+                                <span className="text-sm text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide mt-1">Contacts</span>
+                            </div>
+
+                            <div className="bg-rose-50 dark:bg-rose-900/20 rounded-2xl p-6 border border-rose-100 dark:border-rose-800/50 flex flex-col items-center justify-center text-center">
+                                <div className="w-12 h-12 bg-rose-100 dark:bg-rose-800 rounded-full flex items-center justify-center mb-3 text-rose-600 dark:text-rose-300">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                    </svg>
+                                </div>
+                                <span className="text-3xl font-bold text-gray-900 dark:text-white">{stats.totalLikes}</span>
+                                <span className="text-sm text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide mt-1">Opinions</span>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="text-center py-8 text-gray-500">Loading statistics...</div>
+                    )}
+                </div>
+
+                {/* ZMIANA: Nawigacja Zakładek (z wersji zdalnej) */}
                 <div className="flex space-x-2 border-b border-gray-200 dark:border-gray-700 pb-2">
                     <button
                         onClick={() => setActiveTab('my-listings')}
@@ -195,6 +247,7 @@ const UserProfilePage = () => {
                     </button>
                 </div>
 
+                {/* ZMIANA: Zawartość zakładek */}
                 {activeTab === 'my-listings' && (
                     <div>
                         <div className="flex justify-between items-center mb-6">

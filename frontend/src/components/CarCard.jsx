@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useWebSocket } from '../contexts/WebSocketContext';
 import closeIcon from '../assets/close.png';
 
 const CarCard = ({ car, isFavoriteInitial, onToggleFavorite }) => {
     const carData = car.carData || {};
     const { isAuthenticated, username, authFetch } = useAuth();
-
+    const { subscribeToTopic, unsubscribeFromTopic } = useWebSocket();
+    
+    // Używamy propsa isFavoriteInitial jako wartości początkowej 
     const [isLiked, setIsLiked] = useState(isFavoriteInitial || false);
     const [loading, setLoading] = useState(false);
 
@@ -27,21 +30,30 @@ const CarCard = ({ car, isFavoriteInitial, onToggleFavorite }) => {
         setLoading(true);
         const previousState = isLiked;
         
+        // Optymistyczna aktualizacja UI
         setIsLiked(!isLiked);
 
         try {
             let response;
             if (!previousState) {
-                response = await authFetch(`http://localhost:3333/api/favorites/${car.advertisementId}`, {
+                // Dodawanie do ulubionych
+                response = await authFetch(`/api/favorites/${car.advertisementId}`, {
                     method: 'POST'
                 });
             } else {
-                response = await authFetch(`http://localhost:3333/api/favorites/${car.advertisementId}`, {
+                // Usuwanie z ulubionych
+                response = await authFetch(`/api/favorites/${car.advertisementId}`, {
                     method: 'DELETE'
                 });
             }
 
             if (response.ok) {
+                if (!previousState) {
+                    subscribeToTopic(car.advertisementId);
+                } else {
+                    unsubscribeFromTopic(car.advertisementId);
+                }
+
                 if (onToggleFavorite) {
                     onToggleFavorite(car.advertisementId, !previousState);
                 }
@@ -50,7 +62,7 @@ const CarCard = ({ car, isFavoriteInitial, onToggleFavorite }) => {
             }
         } catch (error) {
             console.error("Error toggling favorite:", error);
-            setIsLiked(previousState);
+            setIsLiked(previousState); // Cofnij zmianę w razie błędu
             alert("Could not update favorites. Try again.");
         } finally {
             setLoading(false);
@@ -64,7 +76,7 @@ const CarCard = ({ car, isFavoriteInitial, onToggleFavorite }) => {
         if (!window.confirm('Are you sure you want to delete this advertisement?')) return;
 
         try {
-            const response = await authFetch(`http://localhost:3333/api/advertisements/remove/${car.advertisementId}`, {
+            const response = await authFetch(`/api/advertisements/remove/${car.advertisementId}`, {
                 method: 'DELETE'
             });
 
@@ -83,27 +95,31 @@ const CarCard = ({ car, isFavoriteInitial, onToggleFavorite }) => {
     return (
         <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg shadow-md overflow-hidden hover:shadow-lg dark:hover:shadow-gray-900/50 transition-all duration-300 relative group">
             
-            <button
-                onClick={handleToggleFavorite}
-                disabled={loading}
-                className="absolute top-2 left-2 z-20 p-2 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-700 transition-all shadow-sm group/heart"
-                title={isLiked ? "Remove from favorites" : "Add to favorites"}
-            >
-                <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    className={`h-6 w-6 transition-colors duration-300 ${
-                        isLiked 
-                            ? 'text-red-500 fill-red-500' 
-                            : 'text-gray-400 dark:text-gray-300 fill-none group-hover/heart:text-red-400'
-                    }`} 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor" 
-                    strokeWidth={2}
+            {/* Przycisk ulubionych - styl z B, ale warunek wyświetlania z A (brak własnego auta) */}
+            {isAuthenticated && username !== car.username && (
+                <button
+                    onClick={handleToggleFavorite}
+                    disabled={loading}
+                    className="absolute top-2 left-2 z-20 p-2 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-700 transition-all shadow-sm group/heart"
+                    title={isLiked ? "Remove from favorites" : "Add to favorites"}
                 >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-            </button>
+                    <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className={`h-6 w-6 transition-colors duration-300 ${
+                            isLiked 
+                                ? 'text-red-500 fill-red-500' 
+                                : 'text-gray-400 dark:text-gray-300 fill-none group-hover/heart:text-red-400'
+                        }`} 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor" 
+                        strokeWidth={2}
+                    >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                </button>
+            )}
 
+            {/* Przyciski edycji/usuwania - widoczne tylko dla właściciela */}
             {isAuthenticated && username === car.username && (
                 <div className="absolute top-2 right-2 z-10 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button

@@ -38,4 +38,9 @@ public class Advertisement {
 
 //    @Column(nullable=false)
 //    private AdvertisementStatus status;
+    @Column(columnDefinition = "bigint default 0")
+    private Long viewCount = 0L;
+
+    @Column(columnDefinition = "bigint default 0")
+    private Long clickCount = 0L;
 }
