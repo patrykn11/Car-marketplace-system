@@ -1,73 +1,110 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, useParams } from 'react-router-dom';
+import Comment from '../components/Comment';
 
 const CarDetailsPage = () => {
     const { id } = useParams();
-    const { token, authFetch, isAuthenticated, username } = useAuth();
+    const { authFetch, isAuthenticated, username } = useAuth();
     const navigate = useNavigate();
+
     const [car, setCar] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
+    
+    // Invitation & Friend State
     const [invitationFromUser, setInvitationFromUser] = useState(false);
     const [acceptedInvitationFromUser, setAcceptedInvitationFromUser] = useState(false);
     const [sentInvitation, setSentInvitation] = useState(false);
     const [isFriend, setIsFriend] = useState(false);
     const [loadingInvite, setLoadingInvite] = useState(false);
+    
+    // Comment State
+    const [comments, setComments] = useState([]);
+    const [newComment, setNewComment] = useState("");
+    const [replyingTo, setReplyingTo] = useState(null);
+    const [refreshSignal, setRefreshSignal] = useState(0);
 
-    // stats state
+    // Likes & Favorites State
+    const [isLiked, setIsLiked] = useState(false);
+    const [likesCount, setLikesCount] = useState(0);
+    const [likeLoading, setLikeLoading] = useState(false);
+
+    // UI State
     const [showPhone, setShowPhone] = useState(false);
 
-    // track view logic
+    const fetchComments = useCallback(async () => {
+        try {
+            const res = await authFetch(`http://localhost:3333/api/comment/getParents/${id}`);
+            if (res.ok) {
+                const data = await res.json();
+                setComments(data);
+            }
+        } catch (err) {
+            console.error("Error fetching comments:", err);
+        }
+    }, [id, authFetch]);
+
+    // 1. View Tracking Logic (From HEAD)
     useEffect(() => {
         if (id && !loading && car) {
             // we only count view if it's not the owner viewing their own ad
-            if (username !== car.username) {
+            if (isAuthenticated && username !== car.username) {
                 authFetch(`http://localhost:3333/api/advertisements/${id}/view`, { method: 'POST' }).catch(err => console.error(err));
             }
         }
-    }, [id, loading, car, username]);
+    }, [id, loading, car, username, isAuthenticated, authFetch]);
 
-    // Fetch car details
+    // 2. Fetch Car Details (From Incoming - includes likes/favs)
     useEffect(() => {
         const fetchCarDetails = async () => {
             try {
-                const response = await authFetch(`http://localhost:3333/api/advertisements/${id}`);
+                const response = await fetch(`http://localhost:3333/api/advertisements/${id}`);
                 if (!response.ok) throw new Error('Failed to fetch car details');
                 const data = await response.json();
+                
                 setCar(data);
+                setLikesCount(data.likesCount || 0);
+
+                if (isAuthenticated) {
+                    const favRes = await authFetch('http://localhost:3333/api/favorites');
+                    if (favRes.ok) {
+                        const favIds = await favRes.json();
+                        setIsLiked(favIds.includes(Number(id)));
+                    }
+                }
+
             } catch (err) {
-                console.error("Error fetching car details:", err);
                 setError(err.message);
             } finally {
                 setLoading(false);
             }
         };
 
-        if (id) fetchCarDetails();
-    }, [id, authFetch]);
+        if (id) {
+            fetchCarDetails();
+            fetchComments();
+        }
+    }, [id, fetchComments, isAuthenticated, authFetch]);
 
+    // 3. Check Friend/Invitation Status (Merged Logic)
     useEffect(() => {
         if (!isAuthenticated || !car || username === car.username) return;
 
         const checkStatus = async () => {
             try {
-
                 const fromRes = await authFetch(`http://localhost:3333/api/invitations/from/${car.username}`);
-                const fromData = await fromRes.json();
-                setInvitationFromUser(fromData);
+                setInvitationFromUser(await fromRes.json());
 
                 const acceptedRes = await authFetch(`http://localhost:3333/api/invitations/Accepted/${car.username}`);
-                const acceptedData = await acceptedRes.json();
-                setAcceptedInvitationFromUser(acceptedData);
+                setAcceptedInvitationFromUser(await acceptedRes.json());
 
                 const sentRes = await authFetch(`http://localhost:3333/api/invitations/sent/${car.username}`);
-                const sentData = await sentRes.json();
-                setSentInvitation(sentData);
+                setSentInvitation(await sentRes.json());
 
-                setIsFriend(acceptedData);
-
+                // Using the specific isFriend endpoint from Incoming changes
+                const friendRes = await authFetch(`http://localhost:3333/api/friends/isFriend/${car.username}`);
+                setIsFriend(await friendRes.json());
             } catch (err) {
                 console.error('Error checking invitations/friend status:', err);
             }
@@ -76,7 +113,66 @@ const CarDetailsPage = () => {
         checkStatus();
     }, [isAuthenticated, car, username, authFetch]);
 
-    // Handle add/accept friend
+    const handleToggleFavorite = async () => {
+        if (!isAuthenticated) {
+            alert("Log in to add to favorites!");
+            return;
+        }
+        if (likeLoading) return;
+
+        setLikeLoading(true);
+        const previousLiked = isLiked;
+        
+        setIsLiked(!isLiked);
+        setLikesCount(prev => isLiked ? prev - 1 : prev + 1);
+
+        try {
+            let response;
+            if (!previousLiked) {
+                // Add (POST)
+                response = await authFetch(`http://localhost:3333/api/favorites/${id}`, { method: 'POST' });
+            } else {
+                // Remove (DELETE)
+                response = await authFetch(`http://localhost:3333/api/favorites/${id}`, { method: 'DELETE' });
+            }
+
+            if (!response.ok) throw new Error("Failed to update favorite");
+        } catch (err) {
+            console.error("Error toggling favorite:", err);
+            setIsLiked(previousLiked);
+            setLikesCount(prev => previousLiked ? prev + 1 : prev - 1);
+            alert("Could not update favorite status.");
+        } finally {
+            setLikeLoading(false);
+        }
+    };
+
+    const handleAddComment = async (e) => {
+        e.preventDefault();
+        if (!newComment.trim()) return;
+
+        try {
+            const res = await authFetch(`http://localhost:3333/api/comment/add-com`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    advertisement_id: Number(id),
+                    content: newComment,
+                    parent_id: replyingTo ? Number(replyingTo) : null
+                })
+            });
+
+            if (res.ok) {
+                setNewComment("");
+                setReplyingTo(null);
+                fetchComments();
+                setRefreshSignal(prev => prev + 1);
+            }
+        } catch (err) {
+            console.error("Error adding comment:", err);
+        }
+    };
+
     const handleFriendAction = async () => {
         setLoadingInvite(true);
         try {
@@ -87,13 +183,10 @@ const CarDetailsPage = () => {
             const res = await authFetch(url, { method: 'POST' });
             if (res.ok) {
                 alert(invitationFromUser ? 'Invitation accepted' : 'Invitation sent');
-                // Update state after action
                 setInvitationFromUser(false);
                 setSentInvitation(!invitationFromUser);
                 setAcceptedInvitationFromUser(invitationFromUser);
-                if (!invitationFromUser) setIsFriend(true); // jeśli wysłaliśmy zaproszenie, w backendzie może od razu być zaakceptowane
-            } else {
-                alert('Action failed');
+                if (!invitationFromUser) setIsFriend(true);
             }
         } catch (err) {
             console.error('Friend invitation error:', err);
@@ -104,133 +197,206 @@ const CarDetailsPage = () => {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-screen">
+            <div className="flex justify-center items-center h-screen bg-gray-50 dark:bg-gray-900">
                 <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
             </div>
         );
     }
 
-    if (error) {
+    if (error || !car) {
         return (
-            <div className="text-center text-red-600 p-4">
-                <h2 className="text-2xl font-bold">Error</h2>
-                <p>{error}</p>
-                <button
-                    onClick={() => navigate('/cars')}
-                    className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                >
-                    Back to Listings
-                </button>
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 text-center p-4">
+                <h2 className="text-2xl font-bold text-red-600">{error || "Car not found"}</h2>
+                <button onClick={() => navigate('/cars')} className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg">Back to Listings</button>
             </div>
         );
     }
 
-    if (!car) {
-        return <div className="text-center p-4">Car not found</div>;
-    }
-
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-                <div className="md:flex">
-                    <div className="md:w-1/2">
-                        <img
-                            className="w-full h-96 object-cover"
-                            src={car.image || "https://images.unsplash.com/photo-1494976388531-d1058494cdd8"}
-                            alt={`${car.carData.carBrand} ${car.carData.carModel}`}
-                        />
-                    </div>
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300 py-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <button onClick={() => navigate(-1)} className="mb-4 text-gray-600 dark:text-gray-400 hover:text-blue-600 flex items-center gap-1 transition-colors">
+                    &larr; Back
+                </button>
 
-                    <div className="md:w-1/2 p-8">
-                        <div className="flex justify-between items-start">
-                            <div>
-                                <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                                    {car.carData.carBrand} {car.carData.carModel}
-                                </h1>
-                                <p className="text-gray-500 text-lg mb-4">{car.title}</p>
+                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+                    <div className="md:flex">
+                        
+                        {/* Image & Comments */}
+                        <div className="md:w-1/2 flex flex-col border-r border-gray-100 dark:border-gray-700">
+                            <div className="h-96 bg-gray-200 dark:bg-gray-700 relative">
+                                <img
+                                    className="w-full h-full object-cover"
+                                    src={car.image || "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"}
+                                    alt="Car"
+                                />
                             </div>
-                            <span className="text-2xl font-bold text-blue-600">
-                                {car.carData.price.toLocaleString()} PLN
-                            </span>
+
+                            <div className="flex-1 flex flex-col bg-gray-50/50 dark:bg-gray-900/20 max-h-[500px]">
+                                <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center bg-white dark:bg-gray-800">
+                                    <h3 className="font-bold text-gray-900 dark:text-white">Comments ({comments.length})</h3>
+                                    {replyingTo && (
+                                        <button onClick={() => setReplyingTo(null)} className="text-xs text-red-500 hover:underline">
+                                            X
+                                        </button>
+                                    )}
+                                </div>
+
+                                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                                    {comments.length > 0 ? (
+                                        comments.map(c => (
+                                            <Comment 
+                                                key={c.comment_id} 
+                                                comment={c} 
+                                                refreshSignal={refreshSignal}
+                                                onReplyClick={(cid) => {
+                                                    setReplyingTo(cid);
+                                                    document.getElementById('commentInput').focus();
+                                                }} 
+                                            />
+                                        ))
+                                    ) : (
+                                        <p className="text-gray-500 text-center text-sm py-10">Brak komentarzy pod tym ogłoszeniem.</p>
+                                    )}
+                                </div>
+
+                                <div className="p-4 bg-white dark:bg-gray-800 border-t dark:border-gray-700">
+                                    {isAuthenticated ? (
+                                        <form onSubmit={handleAddComment} className="flex gap-2">
+                                            <input
+                                                id="commentInput"
+                                                type="text"
+                                                value={newComment}
+                                                onChange={(e) => setNewComment(e.target.value)}
+                                                placeholder={replyingTo ? `Odpowiadasz na #${replyingTo}...` : "Napisz komentarz..."}
+                                                className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                            />
+                                            <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                                                {replyingTo ? 'Odpowiedz' : 'Wyślij'}
+                                            </button>
+                                        </form>
+                                    ) : (
+                                        <p className="text-center text-sm text-gray-500">Zaloguj się, aby komentować.</p>
+                                    )}
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4 mb-8">
-                            <div className="bg-gray-50 p-4 rounded-lg">
-                                <span className="block text-gray-500 text-sm">Year</span>
-                                <span className="font-semibold">{car.carData.productionYear}</span>
-                            </div>
-                            <div className="bg-gray-50 p-4 rounded-lg">
-                                <span className="block text-gray-500 text-sm">Mileage</span>
-                                <span className="font-semibold">{car.carData.mileage.toLocaleString()} km</span>
-                            </div>
-                            <div className="bg-gray-50 p-4 rounded-lg">
-                                <span className="block text-gray-500 text-sm">Fuel Type</span>
-                                <span className="font-semibold">{car.carData.fuelType}</span>
-                            </div>
-                            <div className="bg-gray-50 p-4 rounded-lg">
-                                <span className="block text-gray-500 text-sm">Transmission</span>
-                                <span className="font-semibold">{car.carData.transmission}</span>
-                            </div>
-                            <div className="bg-gray-50 p-4 rounded-lg">
-                                <span className="block text-gray-500 text-sm">Power</span>
-                                <span className="font-semibold">{car.carData.power} HP</span>
-                            </div>
-                            <div className="bg-gray-50 p-4 rounded-lg">
-                                <span className="block text-gray-500 text-sm">Color</span>
-                                <span className="font-semibold">{car.carData.carColor}</span>
-                            </div>
-                            <div className="bg-gray-50 p-4 rounded-lg">
-                                <span className="block text-gray-500 text-sm">Engine Capacity</span>
-                                <span className="font-semibold">{car.carData.engineCapacity} L</span>
-                            </div>
-                            <div className="bg-gray-50 p-4 rounded-lg">
-                                <span className="block text-gray-500 text-sm">Location</span>
-                                <span className="font-semibold">{car.location}</span>
-                            </div>
-                        </div>
-
-                        <div className="prose max-w-none">
-                            <h3 className="text-xl font-semibold mb-2">Description</h3>
-                            <p className="text-gray-600 whitespace-pre-line">{car.description}</p>
-                        </div>
-
-                        <div className="mt-8 pt-6 border-t border-gray-200">
-                            <h3 className="text-lg font-semibold mb-2">Seller Info</h3>
-                            <p className="text-gray-600">Posted by: {car.username}</p>
-                            <div className="flex items-center gap-2 mt-2">
-                                <span className="text-gray-600">Contact: </span>
-                                {showPhone ? (
-                                    <span className="font-semibold text-gray-900">{car.userPhoneNumber}</span>
-                                ) : (
-                                    <button
-                                        onClick={() => {
-                                            setShowPhone(true);
-                                            authFetch(`http://localhost:3333/api/advertisements/${id}/contact`, { method: 'POST' }).catch(err => console.error(err));
-                                        }}
-                                        className="text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline"
+                        {/* Details */}
+                        <div className="md:w-1/2 p-8 flex flex-col overflow-y-auto max-h-[900px]">
+                            <div className="flex justify-between items-start mb-6">
+                                <div>
+                                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 transition-colors">
+                                        {car.carData.carBrand} {car.carData.carModel}
+                                    </h1>
+                                    <p className="text-gray-500 dark:text-gray-400 text-lg transition-colors">{car.title}</p>
+                                </div>
+                                
+                                <div className="flex flex-col items-end gap-2">
+                                    <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 whitespace-nowrap">
+                                        {car.carData.price.toLocaleString()} PLN
+                                    </span>
+                                    
+                                    <button 
+                                        onClick={handleToggleFavorite}
+                                        disabled={likeLoading}
+                                        className={`p-2 rounded-full shadow-sm border transition-all transform hover:scale-105 active:scale-95 ${
+                                            isLiked 
+                                            ? 'bg-red-50 border-red-200 text-red-500 dark:bg-red-900/20 dark:border-red-900' 
+                                            : 'bg-white border-gray-200 text-gray-400 hover:text-red-400 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300'
+                                        }`}
+                                        title={isLiked ? "Remove from favorites" : "Add to favorites"}
                                     >
-                                        Show Number
+                                        <svg xmlns="http://www.w3.org/2000/svg" className={`h-8 w-8 ${isLiked ? 'fill-current' : 'fill-none'}`} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                        </svg>
                                     </button>
-                                )}
+                                </div>
                             </div>
 
-                            {isAuthenticated && username !== car.username && !isFriend && !acceptedInvitationFromUser && (
-                                invitationFromUser ? (
-                                    <button
-                                        onClick={handleFriendAction}
-                                        className="mt-4 px-4 py-2 rounded-lg font-medium bg-blue-100 hover:bg-blue-200 text-blue-700 transition"
-                                    >
-                                        Accept {car.username}'s invitation
-                                    </button>
-                                ) : !sentInvitation ? (
-                                    <button
-                                        onClick={handleFriendAction}
-                                        className="mt-4 px-4 py-2 rounded-lg font-medium bg-green-100 hover:bg-green-200 text-green-700 transition"
-                                    >
-                                        Add {car.username} to friends
-                                    </button>
-                                ) : null
-                            )}
+                            <div className="grid grid-cols-2 gap-4 mb-8">
+                                <DetailTile label="Year" value={car.carData.productionYear} />
+                                <DetailTile label="Body type" value={car.carData.carBodyType} />
+                                <DetailTile label="Mileage" value={`${car.carData.mileage.toLocaleString()} km`} />
+                                <DetailTile label="Fuel Type" value={car.carData.fuelType} />
+                                <DetailTile label="Transmission" value={car.carData.transmission} />
+                                <DetailTile label="Power" value={`${car.carData.power} HP`} />
+                                <DetailTile label="Color" value={car.carData.carColor} />
+                                <DetailTile label="Engine" value={`${car.carData.engineCapacity} L`} />
+                                <DetailTile label="Location" value={car.location} />
+                            </div>
+
+                            <div className="prose max-w-none mb-8">
+                                <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white transition-colors">Description</h3>
+                                <p className="text-gray-600 dark:text-gray-300 whitespace-pre-line leading-relaxed transition-colors italic">
+                                    "{car.description}"
+                                </p>
+                            </div>
+
+                            <div className="mb-8 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl flex items-center justify-center gap-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-500 fill-red-500" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                                </svg>
+                                <span className="text-lg font-bold text-gray-800 dark:text-white">
+                                    {likesCount} {likesCount === 1 ? 'person likes' : 'people like'} this car
+                                </span>
+                            </div>
+
+                            <div className="mt-auto pt-6 border-t border-gray-200 dark:border-gray-700 transition-colors">
+                                <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white transition-colors">Seller Info</h3>
+                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl">
+                                    <div>
+                                        <p className="text-gray-600 dark:text-gray-300">Posted by: <span className="font-medium text-gray-900 dark:text-white">{car.username}</span></p>
+                                        
+                                        {/* Contact Phone Logic - Merged from HEAD */}
+                                        <div className="text-gray-600 dark:text-gray-300 flex items-center gap-2 mt-1">
+                                            <span>Contact:</span> 
+                                            {showPhone ? (
+                                                <span className="font-medium text-gray-900 dark:text-white">{car.contactNumber || car.userPhoneNumber}</span>
+                                            ) : (
+                                                <button
+                                                    onClick={() => {
+                                                        setShowPhone(true);
+                                                        // Only call API if specifically needed for tracking, otherwise just showing state is fine
+                                                        authFetch(`http://localhost:3333/api/advertisements/${id}/contact`, { method: 'POST' }).catch(err => console.error(err));
+                                                    }}
+                                                    className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium hover:underline"
+                                                >
+                                                    Show Number
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Friend / Invite Logic */}
+                                    {isAuthenticated && username !== car.username && !isFriend && !acceptedInvitationFromUser && (
+                                        invitationFromUser ? (
+                                            <button
+                                                onClick={handleFriendAction}
+                                                disabled={loadingInvite}
+                                                className="px-4 py-2 rounded-lg font-medium transition-colors bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-300"
+                                            >
+                                                Accept {car.username}'s invitation
+                                            </button>
+                                        ) : !sentInvitation ? (
+                                            <button
+                                                onClick={handleFriendAction}
+                                                disabled={loadingInvite}
+                                                className="px-4 py-2 rounded-lg font-medium transition-colors bg-green-100 hover:bg-green-200 text-green-700 dark:bg-green-900/30 dark:hover:bg-green-900/50 dark:text-green-300"
+                                            >
+                                                Add {car.username} to friends
+                                            </button>
+                                        ) : (
+                                            <span className="text-gray-500 dark:text-gray-400 text-sm italic">Request sent</span>
+                                        )
+                                    )}
+                                    {(isFriend || acceptedInvitationFromUser) && (
+                                        <span className="text-green-600 dark:text-green-400 font-bold flex items-center gap-1">
+                                            ✓ Friends
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -238,5 +404,12 @@ const CarDetailsPage = () => {
         </div>
     );
 };
+
+const DetailTile = ({ label, value }) => (
+    <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg transition-colors duration-300 border border-transparent hover:border-blue-500/30">
+        <span className="block text-gray-500 dark:text-gray-400 text-sm mb-1">{label}</span>
+        <span className="font-semibold text-gray-900 dark:text-gray-100">{value}</span>
+    </div>
+);
 
 export default CarDetailsPage;

@@ -1,10 +1,14 @@
 package com.pap25.eitimoto_backend.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AdvertisementDto {
     private String title;
     private String description;
@@ -12,4 +16,5 @@ public class AdvertisementDto {
     private CarDto carData; // pełne dane samochodu
     private Long viewCount;
     private Long clickCount;
+
 }

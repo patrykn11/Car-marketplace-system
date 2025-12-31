@@ -25,6 +25,9 @@ public class Car {
     private String carModel;
 
     @Column(nullable = false)
+    private String carBodyType;
+
+    @Column(nullable = false)
     private Integer productionYear;
 
     @Column(nullable = false)

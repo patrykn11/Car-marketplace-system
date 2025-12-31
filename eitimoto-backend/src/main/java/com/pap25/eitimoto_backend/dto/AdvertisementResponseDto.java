@@ -14,4 +14,6 @@ public class AdvertisementResponseDto {
     private String username;
     private Long viewCount;
     private Long clickCount;
+    private String contactNumber;
+    private long likesCount;
 }

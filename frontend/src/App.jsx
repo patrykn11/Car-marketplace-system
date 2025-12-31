@@ -3,6 +3,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { WebSocketProvider } from './contexts/WebSocketContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ThemeProvider } from './contexts/ThemeContext.jsx';
 import MainLayout from './layouts/MainLayout';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -27,6 +28,7 @@ function App() {
     <AuthProvider>
       <WebSocketProvider>
         <ToastContainer />
+      <ThemeProvider>
         <Routes>
           <Route path="/" element={<MainLayout />}>
             <Route index element={<HomePage />} />
@@ -42,11 +44,13 @@ function App() {
             <Route path="news" element={<NewsPage />} />
             <Route path="valuation" element={<CarValuationPage />} />
             <Route path="edit-profile" element={<UpdateProfilePage />} />
+
             <Route path="/catalog" element={<BrandsPage />} />
             <Route path="/catalog/brand/:brandId" element={<ModelsPage />} />
             <Route path="/catalog/details/:modelId" element={<ModelDetailsPage />} />
           </Route>
         </Routes>
+      </ThemeProvider>
       </WebSocketProvider>
     </AuthProvider>
   );
