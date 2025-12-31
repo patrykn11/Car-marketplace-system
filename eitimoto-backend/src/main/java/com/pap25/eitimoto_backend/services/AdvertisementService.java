@@ -12,7 +12,7 @@ import com.pap25.eitimoto_backend.entities.FavoriteAdvertisement;
 import com.pap25.eitimoto_backend.repository.UserRepository;
 import com.pap25.eitimoto_backend.dto.NotificationDto;
 import com.pap25.eitimoto_backend.dto.UserStatsDto;
-import com.pap25.eitimoto_backend.repository.FavoriteAdvertisementRepository;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -42,7 +42,6 @@ public class AdvertisementService {
     private final CarRepository carRepository;
     private final UserRepository userRepository;
     private final org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
-    private final FavoriteAdvertisementRepository favoriteAdvertisementRepository;
 
     public List<AdvertisementResponseDto> getAdvertisements() {
         return advertisementRepository.findAll()
@@ -208,6 +207,7 @@ public class AdvertisementService {
                 .totalContacts(totalContacts)
                 .totalLikes(totalLikes)
                 .build();
+    }
     public List<AdvertisementResponseDto> getTopPopularAdvertisements(int limit) {
 
         List<AdvertisementResponseDto> allAds = getAdvertisements();
@@ -273,3 +273,4 @@ public class AdvertisementService {
                 .collect(Collectors.toList());
     }
 }
+
