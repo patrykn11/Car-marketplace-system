@@ -75,4 +75,26 @@ public class AdvertisementController {
         List<AdvertisementResponseDto> recommendations = advertisementService.getPersonalizedRecommendations(username);
         return ResponseEntity.ok(recommendations);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<AdvertisementResponseDto>> searchAdvertisements(
+            @RequestParam(required = false) String keywords,
+            @RequestParam(required = false) String brand,
+            @RequestParam(required = false) String model,
+            @RequestParam(required = false) String bodyType,
+            @RequestParam(required = false) Integer minPrice,
+            @RequestParam(required = false) Integer maxPrice,
+            @RequestParam(required = false) Integer minYear,
+            @RequestParam(required = false) Integer maxYear,
+            @RequestParam(required = false) String fuelType,
+            @RequestParam(required = false) String transmission,
+            @RequestParam(required = false) Integer minMileage,
+            @RequestParam(required = false) Integer maxMileage
+    ) {
+        List<AdvertisementResponseDto> results = advertisementService.searchAds(
+                keywords, brand, model, bodyType, minPrice, maxPrice,
+                minYear, maxYear, fuelType, transmission, minMileage, maxMileage
+        );
+        return ResponseEntity.ok(results);
+    }
 }

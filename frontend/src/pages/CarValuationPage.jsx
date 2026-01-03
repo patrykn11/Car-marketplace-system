@@ -47,16 +47,23 @@ const CarValuationPage = () => {
         }
 
         try {
-            const response = await api.post("/valuation/calculate", {
-                brand: formData.brand,
-                model: formData.model,
-                productionYear: formData.productionYear,
-                mileage: formData.mileage,
-                fuelType: formData.fuelType
-            })
+            const response = await fetch("http://localhost:3333/api/valuation/calculate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    brand: formData.brand,
+                    model: formData.model,
+                    productionYear: formData.productionYear,
+                    mileage: formData.mileage,
+                    fuelType: formData.fuelType
+                })
+            });
 
-            const result = response.data.price || response.data
-            setValuation(result)
+            const data = await response.json();
+            const result = data.price ?? data;
+            setValuation(result);
         } catch (err) {
             console.error("Valuation error:", err)
             const mockPrice = Math.floor(Math.random() * (90000 - 5000) + 5000);

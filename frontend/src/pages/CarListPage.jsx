@@ -17,7 +17,7 @@ const CarListPage = () => {
     const [filters, setFilters] = useState({
         brand: '', model: '', bodyType: '', minPrice: '', maxPrice: '', 
         minYear: '', maxYear: '', fuelType: '', transmission: '', 
-        minMileage: '', maxMileage: ''
+        minMileage: '', maxMileage: '', keywords: ''
     });
 
 
@@ -93,48 +93,45 @@ const CarListPage = () => {
     
     const uniqueModels = [...new Set(carsForModels.map(ad => ad.carData?.carModel))].filter(Boolean).sort();
 
-    const handleSearchClick = () => {
-        let result = [...cars];
+    const handleSearchClick = async () => {
+        setLoading(true);
+        try {
+            const params = new URLSearchParams();
 
-        if (filters.brand) result = result.filter(car => car.carData?.carBrand === filters.brand);
-        if (filters.model) result = result.filter(car => car.carData?.carModel === filters.model);
-        if (filters.bodyType) result = result.filter(car => car.carData?.carBodyType === filters.bodyType);
-        if (filters.minPrice) result = result.filter(car => Number(car.carData?.price) >= Number(filters.minPrice));
-        if (filters.maxPrice) result = result.filter(car => Number(car.carData?.price) <= Number(filters.maxPrice));
-        if (filters.minYear) result = result.filter(car => Number(car.carData?.productionYear) >= Number(filters.minYear));
-        if (filters.maxYear) result = result.filter(car => Number(car.carData?.productionYear) <= Number(filters.maxYear));
-        if (filters.fuelType) result = result.filter(car => car.carData?.fuelType === filters.fuelType);
-        if (filters.transmission) result = result.filter(car => car.carData?.transmission === filters.transmission);
-        if (filters.minMileage) result = result.filter(car => Number(car.carData?.mileage) >= Number(filters.minMileage));
-        if (filters.maxMileage) result = result.filter(car => Number(car.carData?.mileage) <= Number(filters.maxMileage));
+            if (filters.keywords) params.append('keywords', filters.keywords);
+            if (filters.brand) params.append('brand', filters.brand);
+            if (filters.model) params.append('model', filters.model);
+            if (filters.bodyType) params.append('bodyType', filters.bodyType);
+            if (filters.minPrice) params.append('minPrice', filters.minPrice);
+            if (filters.maxPrice) params.append('maxPrice', filters.maxPrice);
+            if (filters.minYear) params.append('minYear', filters.minYear);
+            if (filters.maxYear) params.append('maxYear', filters.maxYear);
+            if (filters.fuelType) params.append('fuelType', filters.fuelType);
+            if (filters.transmission) params.append('transmission', filters.transmission);
+            if (filters.minMileage) params.append('minMileage', filters.minMileage);
+            if (filters.maxMileage) params.append('maxMileage', filters.maxMileage);
 
-        if (filterSortingBy) {
-            switch (filterSortingBy) {
-                case "Price ascending":
-                    result.sort((a, b) => Number(a.carData?.price) - Number(b.carData?.price));
-                    break;
-                case "Price descending":
-                    result.sort((a, b) => Number(b.carData?.price) - Number(a.carData?.price));
-                    break;
-                case "Year ascending":
-                    result.sort((a, b) => Number(a.carData?.productionYear) - Number(b.carData?.productionYear));
-                    break;
-                case "Year descending":
-                    result.sort((a, b) => Number(b.carData?.productionYear) - Number(a.carData?.productionYear));
-                    break;
-                default:
-                    break;
+            const response = await fetch(`http://localhost:3333/api/advertisements/search?${params.toString()}`);
+
+            if (!response.ok) {
+                throw new Error('Search failed');
             }
-        }
 
-        setDisplayedCars(result);
-    }
+            const data = await response.json();
+            setDisplayedCars(data);
+        } catch (err) {
+            console.error("Search error:", err);
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleResetClick = () => {
         setFilters({
             brand: '', model: '', bodyType: '', minPrice: '', maxPrice: '', 
             minYear: '', maxYear: '', fuelType: '', transmission: '', 
-            minMileage: '', maxMileage: ''
+            minMileage: '', maxMileage: '', keywords: ''
         });
         setFilterSortingBy("");
         setDisplayedCars(cars);
@@ -310,6 +307,16 @@ const CarListPage = () => {
                                 <option value="Year ascending">Year ascending</option>
                                 <option value="Year descending">Year descending</option>
                             </select>
+                        </div>
+                        <div className="col-span-full">
+                            <label>Słowa kluczowe (AI Search)</label>
+                            <input
+                                type="text"
+                                placeholder="np. sportowe auto z niskim spalaniem na dojazdy do pracy"
+                                value={filters.keywords}
+                                onChange={e => setFilters({...filters, keywords: e.target.value})}
+                                className="..."
+                            />
                         </div>
                     </div>
                     

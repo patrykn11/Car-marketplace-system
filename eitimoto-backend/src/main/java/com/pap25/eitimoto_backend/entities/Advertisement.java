@@ -7,6 +7,9 @@ import lombok.Builder;
 
 import java.time.LocalDateTime;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Array;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Data
 @NoArgsConstructor
@@ -43,4 +46,8 @@ public class Advertisement {
 
     @Column(columnDefinition = "bigint default 0")
     private Long clickCount = 0L;
+
+    @Column(name = "embedding", columnDefinition = "vector(1536)") // 1536 OpenAI size
+    @JdbcTypeCode(SqlTypes.VECTOR)
+    private float[] embedding;
 }
