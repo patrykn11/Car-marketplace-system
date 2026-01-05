@@ -13,7 +13,7 @@ public class EmbeddingService {
 
     private final EmbeddingModel embeddingModel;
 
-    public float[] generateAdvertisementEmbedding(AdvertisementDto dto) {
+    public List<Double> generateAdvertisementEmbedding(AdvertisementDto dto) {
         String text = String.format(
                 "Car: %s %s, Year: %d, Description: %s, Body: %s, Fuel: %s",
                 dto.getCarData().getCarBrand(),
@@ -27,17 +27,11 @@ public class EmbeddingService {
         return embedText(text);
     }
 
-    public float[] embedText(String text) {
-        List<Double> embeddingList = embeddingModel.embed(text);
-
-        float[] floatArray = new float[embeddingList.size()];
-        for (int i = 0; i < embeddingList.size(); i++) {
-            floatArray[i] = embeddingList.get(i).floatValue();
-        }
-        return floatArray;
+    public List<Double> embedText(String text) {
+        return embeddingModel.embed(text);
     }
 
-    public float[] generateSearchEmbedding(String keywords, String brand, String model, String bodyType) {
+    public List<Double> generateSearchEmbedding(String keywords, String brand, String model, String bodyType) {
         String queryText = String.format(
                 "Looking for car: %s %s %s. User requirements: %s",
                 brand != null ? brand : "",

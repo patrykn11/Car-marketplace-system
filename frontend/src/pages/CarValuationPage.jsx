@@ -47,7 +47,7 @@ const CarValuationPage = () => {
         }
 
         try {
-            const response = await fetch("http://localhost:3333/api/valuation/calculate", {
+            const response = await fetch("http://localhost:8000/api/valuation/calculate", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

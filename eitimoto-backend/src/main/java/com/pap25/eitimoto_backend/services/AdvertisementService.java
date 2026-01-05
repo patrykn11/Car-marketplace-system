@@ -95,7 +95,7 @@ public class AdvertisementService {
                 .build();
 
         try {
-            float[] embedding = embeddingService.generateAdvertisementEmbedding(adDto);
+            List<Double> embedding = embeddingService.generateAdvertisementEmbedding(adDto);
             ad.setEmbedding(embedding);
         } catch (Exception e) {
             System.err.println("Embedding generation error: " + e.getMessage());
@@ -152,7 +152,7 @@ public class AdvertisementService {
         car.setEngineCapacity(adDto.getCarData().getEngineCapacity());
 
         try {
-            float[] newEmbedding = embeddingService.generateAdvertisementEmbedding(adDto);
+            List<Double> newEmbedding = embeddingService.generateAdvertisementEmbedding(adDto);
             ad.setEmbedding(newEmbedding);
         } catch (Exception e) {
             System.err.println("Embedding update error: " + e.getMessage());
@@ -301,10 +301,12 @@ public class AdvertisementService {
 
         if (keywords != null && !keywords.isEmpty()) {
             String searchContext = keywords;
-            float[] queryVector = embeddingService.embedText(searchContext);
+            List<Double> vectorList = embeddingService.embedText(searchContext);
+
+            String vectorString = vectorList.toString();
 
             ads = advertisementRepository.findBySemantics(
-                    queryVector, brand, model, bodyType, fuelType, transmission,
+                    vectorString, brand, model, bodyType, fuelType, transmission,
                     minPrice, maxPrice, minYear, maxYear, minMileage, maxMileage
             );
         } else {

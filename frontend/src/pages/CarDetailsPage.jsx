@@ -35,7 +35,7 @@ const CarDetailsPage = () => {
 
     const fetchComments = useCallback(async () => {
         try {
-            const res = await authFetch(`http://localhost:3333/api/comment/getParents/${id}`);
+            const res = await authFetch(`http://localhost:8000/api/comment/getParents/${id}`);
             if (res.ok) {
                 const data = await res.json();
                 setComments(data);
@@ -50,7 +50,7 @@ const CarDetailsPage = () => {
         if (id && !loading && car) {
             // we only count view if it's not the owner viewing their own ad
             if (isAuthenticated && username !== car.username) {
-                authFetch(`http://localhost:3333/api/advertisements/${id}/view`, { method: 'POST' }).catch(err => console.error(err));
+                authFetch(`http://localhost:8000/api/advertisements/${id}/view`, { method: 'POST' }).catch(err => console.error(err));
             }
         }
     }, [id, loading, car, username, isAuthenticated, authFetch]);
@@ -59,7 +59,7 @@ const CarDetailsPage = () => {
     useEffect(() => {
         const fetchCarDetails = async () => {
             try {
-                const response = await fetch(`http://localhost:3333/api/advertisements/${id}`);
+                const response = await fetch(`http://localhost:8000/api/advertisements/${id}`);
                 if (!response.ok) throw new Error('Failed to fetch car details');
                 const data = await response.json();
                 
@@ -67,7 +67,7 @@ const CarDetailsPage = () => {
                 setLikesCount(data.likesCount || 0);
 
                 if (isAuthenticated) {
-                    const favRes = await authFetch('http://localhost:3333/api/favorites');
+                    const favRes = await authFetch('http://localhost:8000/api/favorites');
                     if (favRes.ok) {
                         const favIds = await favRes.json();
                         setIsLiked(favIds.includes(Number(id)));
@@ -93,17 +93,17 @@ const CarDetailsPage = () => {
 
         const checkStatus = async () => {
             try {
-                const fromRes = await authFetch(`http://localhost:3333/api/invitations/from/${car.username}`);
+                const fromRes = await authFetch(`http://localhost:8000/api/invitations/from/${car.username}`);
                 setInvitationFromUser(await fromRes.json());
 
-                const acceptedRes = await authFetch(`http://localhost:3333/api/invitations/Accepted/${car.username}`);
+                const acceptedRes = await authFetch(`http://localhost:8000/api/invitations/Accepted/${car.username}`);
                 setAcceptedInvitationFromUser(await acceptedRes.json());
 
-                const sentRes = await authFetch(`http://localhost:3333/api/invitations/sent/${car.username}`);
+                const sentRes = await authFetch(`http://localhost:8000/api/invitations/sent/${car.username}`);
                 setSentInvitation(await sentRes.json());
 
                 // Using the specific isFriend endpoint from Incoming changes
-                const friendRes = await authFetch(`http://localhost:3333/api/friends/isFriend/${car.username}`);
+                const friendRes = await authFetch(`http://localhost:8000/api/friends/isFriend/${car.username}`);
                 setIsFriend(await friendRes.json());
             } catch (err) {
                 console.error('Error checking invitations/friend status:', err);
@@ -130,10 +130,10 @@ const CarDetailsPage = () => {
             let response;
             if (!previousLiked) {
                 // Add (POST)
-                response = await authFetch(`http://localhost:3333/api/favorites/${id}`, { method: 'POST' });
+                response = await authFetch(`http://localhost:8000/api/favorites/${id}`, { method: 'POST' });
             } else {
                 // Remove (DELETE)
-                response = await authFetch(`http://localhost:3333/api/favorites/${id}`, { method: 'DELETE' });
+                response = await authFetch(`http://localhost:8000/api/favorites/${id}`, { method: 'DELETE' });
             }
 
             if (!response.ok) throw new Error("Failed to update favorite");
@@ -152,7 +152,7 @@ const CarDetailsPage = () => {
         if (!newComment.trim()) return;
 
         try {
-            const res = await authFetch(`http://localhost:3333/api/comment/add-com`, {
+            const res = await authFetch(`http://localhost:8000/api/comment/add-com`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -177,8 +177,8 @@ const CarDetailsPage = () => {
         setLoadingInvite(true);
         try {
             const url = invitationFromUser
-                ? `http://localhost:3333/api/invitations/accept/${car.username}`
-                : `http://localhost:3333/api/invitations/add/${car.username}`;
+                ? `http://localhost:8000/api/invitations/accept/${car.username}`
+                : `http://localhost:8000/api/invitations/add/${car.username}`;
 
             const res = await authFetch(url, { method: 'POST' });
             if (res.ok) {
@@ -358,7 +358,7 @@ const CarDetailsPage = () => {
                                                     onClick={() => {
                                                         setShowPhone(true);
                                                         // Only call API if specifically needed for tracking, otherwise just showing state is fine
-                                                        authFetch(`http://localhost:3333/api/advertisements/${id}/contact`, { method: 'POST' }).catch(err => console.error(err));
+                                                        authFetch(`http://localhost:8000/api/advertisements/${id}/contact`, { method: 'POST' }).catch(err => console.error(err));
                                                     }}
                                                     className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium hover:underline"
                                                 >

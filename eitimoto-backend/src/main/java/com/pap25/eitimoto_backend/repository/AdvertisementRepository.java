@@ -43,11 +43,11 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement, Lo
           AND (:maxYear IS NULL OR c.production_year <= :maxYear)
           AND (:minMileage IS NULL OR c.mileage >= :minMileage)
           AND (:maxMileage IS NULL OR c.mileage <= :maxMileage)
-        ORDER BY a.embedding <=> :queryVector ASC
+        ORDER BY a.embedding <=> cast(:queryVector as vector) ASC
         LIMIT 20
         """, nativeQuery = true)
     List<Advertisement> findBySemantics(
-            @Param("queryVector") float[] queryVector,
+            @Param("queryVector") String queryVector,
             @Param("brand") String brand,
             @Param("model") String model,
             @Param("bodyType") String bodyType,

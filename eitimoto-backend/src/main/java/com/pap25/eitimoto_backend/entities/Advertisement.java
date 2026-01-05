@@ -1,15 +1,15 @@
 package com.pap25.eitimoto_backend.entities;
 
+import com.pap25.eitimoto_backend.converters.VectorConverter;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
-import java.time.LocalDateTime;
 import jakarta.persistence.*;
-import org.hibernate.annotations.Array;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import org.hibernate.annotations.ColumnTransformer;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -39,15 +39,14 @@ public class Advertisement {
     @Column(nullable=false)
     private String location;
 
-//    @Column(nullable=false)
-//    private AdvertisementStatus status;
     @Column(columnDefinition = "bigint default 0")
     private Long viewCount = 0L;
 
     @Column(columnDefinition = "bigint default 0")
     private Long clickCount = 0L;
 
-    @Column(name = "embedding", columnDefinition = "vector(1536)") // 1536 OpenAI size
-    @JdbcTypeCode(SqlTypes.VECTOR)
-    private float[] embedding;
+    @Column(name = "embedding", columnDefinition = "vector(1536)")
+    @Convert(converter = VectorConverter.class)
+    @ColumnTransformer(write = "?::vector")
+    private List<Double> embedding;
 }

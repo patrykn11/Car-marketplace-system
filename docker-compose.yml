@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:latest
+    image: pgvector/pgvector:pg16
     ports:
       - "3001:5432"
     restart: always

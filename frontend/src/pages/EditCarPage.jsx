@@ -32,7 +32,7 @@ export default function EditCarPage() {
 
         const fetchAd = async () => {
             try {
-                const response = await fetch(`http://localhost:3333/api/advertisements/${id}`);
+                const response = await fetch(`http://localhost:8000/api/advertisements/${id}`);
                 if (response.ok) {
                     const data = await response.json();
                     setTitle(data.title);
@@ -84,7 +84,7 @@ export default function EditCarPage() {
         }
 
         try {
-            const response = await authFetch(`http://localhost:3333/api/advertisements/update/${id}`, {
+            const response = await authFetch(`http://localhost:8000/api/advertisements/update/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

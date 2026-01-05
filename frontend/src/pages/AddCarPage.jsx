@@ -49,7 +49,7 @@ export default function AddCarPage() {
         console.log("------------------------------------------------");
 
         try {
-            const response = await authFetch('http://localhost:3333/api/advertisements/add', {
+            const response = await authFetch('http://localhost:8000/api/advertisements/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

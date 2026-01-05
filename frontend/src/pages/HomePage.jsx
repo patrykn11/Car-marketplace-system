@@ -30,7 +30,7 @@ const HomePage = () => {
 
     useEffect(() => {
         const fetchHomeData = async () => {
-            const adsRes = await fetch('http://localhost:3333/api/advertisements/popular');
+            const adsRes = await fetch('http://localhost:8000/api/advertisements/popular');
             if (adsRes.ok) setFeaturedCars(await adsRes.json());
             const brandsRes = await fetch('http://localhost:8000/api/catalog/brands');
             if (brandsRes.ok) {
@@ -43,9 +43,9 @@ const HomePage = () => {
 
     useEffect(() => {
         if (isAuthenticated) {
-            authFetch('http://localhost:3333/api/favorites')
+            authFetch('http://localhost:8000/api/favorites')
                 .then(r => r.ok && r.json().then(setFavoriteIds));
-            authFetch('http://localhost:3333/api/advertisements/recommendations')
+            authFetch('http://localhost:8000/api/advertisements/recommendations')
                 .then(r => r.ok && r.json().then(setRecommendedCars));
         } else {
             setFavoriteIds([]);
@@ -57,7 +57,7 @@ const HomePage = () => {
         const fetchBrandAd = async () => {
             if (isAuthenticated) {
                 try {
-                    const res = await authFetch('http://localhost:3333/api/Ad');
+                    const res = await authFetch('http://localhost:8000/api/Ad');
                     const favBrand = await res.text();
                     console.log("Car brand:", favBrand);
                     const ad = BRAND_ADS.find(a => a.name.toLowerCase() === favBrand.toLowerCase());
