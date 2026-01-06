@@ -8,22 +8,40 @@ const UserProfilePage = () => {
     const [myAdvertisements, setMyAdvertisements] = useState([]);
     const [favoriteAds, setFavoriteAds] = useState([]);
     const [friendsAds, setFriendsAds] = useState([]);
-    
+
     const [loading, setLoading] = useState(true);
     const [invitations, setInvitations] = useState([]);
-    
+
 
     const [invitationFromUser, setInvitationFromUser] = useState(false);
-    const [stats, setStats] = useState(null); // Stan dla statystyk
-    const [activeTab, setActiveTab] = useState('my-listings'); // Stan dla zakładek
+    const [stats, setStats] = useState(null);
+    const [activeTab, setActiveTab] = useState('my-listings');
 
     const { authFetch, isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
 
     useEffect(() => {
-        api.get('/profile/stats').then(res => setStats(res.data)).catch(err => console.error(err));
-    }, []);
+        const fetchStats = async () => {
+            try {
+                const response = await authFetch('http://localhost:8000/api/profile/stats');
+                if (response.ok) {
+                    const data = await response.json();
+                    setStats(data);
+                } else {
+                    console.error('Failed to fetch stats');
+                    setStats({ totalViews: 0, totalContacts: 0, totalLikes: 0 });
+                }
+            } catch (err) {
+                console.error('Error fetching stats:', err);
+                setStats({ totalViews: 0, totalContacts: 0, totalLikes: 0 });
+            }
+        };
+
+        if (isAuthenticated) {
+            fetchStats();
+        }
+    }, [authFetch, isAuthenticated]);
 
     useEffect(() => {
         const fetchInvitations = async () => {
@@ -259,10 +277,10 @@ const UserProfilePage = () => {
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {myAdvertisements.map(ad => (
-                                    <AdCard 
-                                        key={ad.advertisementId} 
-                                        ad={ad} 
-                                        navigate={navigate} 
+                                    <AdCard
+                                        key={ad.advertisementId}
+                                        ad={ad}
+                                        navigate={navigate}
                                         onDelete={() => deleteAdvertisement(ad.advertisementId)}
                                         isOwner={true}
                                     />
@@ -280,12 +298,12 @@ const UserProfilePage = () => {
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {favoriteAds.map(ad => (
-                                    <AdCard 
-                                        key={ad.advertisementId} 
-                                        ad={ad} 
+                                    <AdCard
+                                        key={ad.advertisementId}
+                                        ad={ad}
                                         navigate={navigate}
                                         customAction={
-                                            <button 
+                                            <button
                                                 onClick={() => removeFromFavorites(ad.advertisementId)}
                                                 className="text-red-500 hover:text-red-700 text-sm font-medium"
                                             >
@@ -337,7 +355,7 @@ const AdCard = ({ ad, navigate, onDelete, isOwner, customAction }) => (
                 <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded">{ad.carData.carBrand}</span>
                 <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded">{ad.carData.productionYear}</span>
             </div>
-            
+
             <div className="mt-auto flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-700">
                 <button
                     onClick={() => navigate(`/cars/${ad.advertisementId}`)}
@@ -345,7 +363,7 @@ const AdCard = ({ ad, navigate, onDelete, isOwner, customAction }) => (
                 >
                     View Details
                 </button>
-                
+
                 {isOwner && (
                     <button onClick={onDelete} className="text-red-500 hover:text-red-700 text-sm">Delete</button>
                 )}
