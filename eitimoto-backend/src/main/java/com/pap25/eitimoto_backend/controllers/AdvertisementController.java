@@ -2,19 +2,16 @@ package com.pap25.eitimoto_backend.controllers;
 
 import com.pap25.eitimoto_backend.dto.AdvertisementDto;
 import com.pap25.eitimoto_backend.dto.AdvertisementResponseDto;
-import com.pap25.eitimoto_backend.entities.Advertisement;
-import org.apache.catalina.connector.Response;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
 import com.pap25.eitimoto_backend.services.AdvertisementService;
-import com.pap25.eitimoto_backend.repository.AdvertisementRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -36,15 +33,28 @@ public class AdvertisementController {
         return ResponseEntity.ok(ad);
     }
 
+    @GetMapping("/{id}/image")
+    public ResponseEntity<byte[]> getAdvertisementImage(@PathVariable Long id) {
+        byte[] image = advertisementService.getAdvertisementImage(id);
+        if (image != null) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.IMAGE_JPEG);
+            return ResponseEntity.ok().headers(headers).body(image);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
     @GetMapping("/user")
     public ResponseEntity<List<AdvertisementResponseDto>> getUserAdvertisements() {
         List<AdvertisementResponseDto> ads = advertisementService.getUserAdvertisement();
         return ResponseEntity.ok(ads);
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<AdvertisementResponseDto> addAdvertisements(@RequestBody AdvertisementDto advertisement) {
-        AdvertisementResponseDto saveAd =  advertisementService.addAdvertisement(advertisement);
+    @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<AdvertisementResponseDto> addAdvertisements(
+            @RequestPart("advertisement") AdvertisementDto advertisement,
+            @RequestPart("imageFile") MultipartFile imageFile) throws IOException {
+        AdvertisementResponseDto saveAd =  advertisementService.addAdvertisement(advertisement, imageFile);
         return ResponseEntity.ok(saveAd);
     }
 

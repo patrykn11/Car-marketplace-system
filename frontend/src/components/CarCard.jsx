@@ -92,6 +92,10 @@ const CarCard = ({ car, isFavoriteInitial, onToggleFavorite }) => {
         }
     };
 
+    const imageUrl = car.hasImage 
+        ? `http://localhost:8000/api/advertisements/${car.advertisementId}/image`
+        : "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60";
+
     return (
         <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg shadow-md overflow-hidden hover:shadow-lg dark:hover:shadow-gray-900/50 transition-all duration-300 relative group">
             
@@ -147,7 +151,7 @@ const CarCard = ({ car, isFavoriteInitial, onToggleFavorite }) => {
 
             <Link to={`/cars/${car.advertisementId}`} className="block h-48 overflow-hidden bg-gray-200 dark:bg-gray-700 relative">
                 <img
-                    src={car.image || "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"}
+                    src={imageUrl}
                     alt={`${carData.carBrand} ${carData.carModel}`}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />

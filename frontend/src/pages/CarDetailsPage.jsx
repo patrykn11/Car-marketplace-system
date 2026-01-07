@@ -11,14 +11,14 @@ const CarDetailsPage = () => {
     const [car, setCar] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
+
     // Invitation & Friend State
     const [invitationFromUser, setInvitationFromUser] = useState(false);
     const [acceptedInvitationFromUser, setAcceptedInvitationFromUser] = useState(false);
     const [sentInvitation, setSentInvitation] = useState(false);
     const [isFriend, setIsFriend] = useState(false);
     const [loadingInvite, setLoadingInvite] = useState(false);
-    
+
     // Comment State
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState("");
@@ -62,7 +62,7 @@ const CarDetailsPage = () => {
                 const response = await fetch(`http://localhost:8000/api/advertisements/${id}`);
                 if (!response.ok) throw new Error('Failed to fetch car details');
                 const data = await response.json();
-                
+
                 setCar(data);
                 setLikesCount(data.likesCount || 0);
 
@@ -122,7 +122,7 @@ const CarDetailsPage = () => {
 
         setLikeLoading(true);
         const previousLiked = isLiked;
-        
+
         setIsLiked(!isLiked);
         setLikesCount(prev => isLiked ? prev - 1 : prev + 1);
 
@@ -221,13 +221,16 @@ const CarDetailsPage = () => {
 
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
                     <div className="md:flex">
-                        
+
                         {/* Image & Comments */}
                         <div className="md:w-1/2 flex flex-col border-r border-gray-100 dark:border-gray-700">
                             <div className="h-96 bg-gray-200 dark:bg-gray-700 relative">
                                 <img
                                     className="w-full h-full object-cover"
-                                    src={car.image || "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"}
+                                    src={car.hasImage
+                                        ? `http://localhost:8000/api/advertisements/${id}/image`
+                                        : "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
+                                    }
                                     alt="Car"
                                 />
                             </div>
@@ -245,14 +248,14 @@ const CarDetailsPage = () => {
                                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                                     {comments.length > 0 ? (
                                         comments.map(c => (
-                                            <Comment 
-                                                key={c.comment_id} 
-                                                comment={c} 
+                                            <Comment
+                                                key={c.comment_id}
+                                                comment={c}
                                                 refreshSignal={refreshSignal}
                                                 onReplyClick={(cid) => {
                                                     setReplyingTo(cid);
                                                     document.getElementById('commentInput').focus();
-                                                }} 
+                                                }}
                                             />
                                         ))
                                     ) : (
@@ -291,20 +294,19 @@ const CarDetailsPage = () => {
                                     </h1>
                                     <p className="text-gray-500 dark:text-gray-400 text-lg transition-colors">{car.title}</p>
                                 </div>
-                                
+
                                 <div className="flex flex-col items-end gap-2">
                                     <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 whitespace-nowrap">
                                         {car.carData.price.toLocaleString()} PLN
                                     </span>
-                                    
-                                    <button 
+
+                                    <button
                                         onClick={handleToggleFavorite}
                                         disabled={likeLoading}
-                                        className={`p-2 rounded-full shadow-sm border transition-all transform hover:scale-105 active:scale-95 ${
-                                            isLiked 
-                                            ? 'bg-red-50 border-red-200 text-red-500 dark:bg-red-900/20 dark:border-red-900' 
-                                            : 'bg-white border-gray-200 text-gray-400 hover:text-red-400 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300'
-                                        }`}
+                                        className={`p-2 rounded-full shadow-sm border transition-all transform hover:scale-105 active:scale-95 ${isLiked
+                                                ? 'bg-red-50 border-red-200 text-red-500 dark:bg-red-900/20 dark:border-red-900'
+                                                : 'bg-white border-gray-200 text-gray-400 hover:text-red-400 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300'
+                                            }`}
                                         title={isLiked ? "Remove from favorites" : "Add to favorites"}
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" className={`h-8 w-8 ${isLiked ? 'fill-current' : 'fill-none'}`} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -347,10 +349,10 @@ const CarDetailsPage = () => {
                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl">
                                     <div>
                                         <p className="text-gray-600 dark:text-gray-300">Posted by: <span className="font-medium text-gray-900 dark:text-white">{car.username}</span></p>
-                                        
+
                                         {/* Contact Phone Logic - Merged from HEAD */}
                                         <div className="text-gray-600 dark:text-gray-300 flex items-center gap-2 mt-1">
-                                            <span>Contact:</span> 
+                                            <span>Contact:</span>
                                             {showPhone ? (
                                                 <span className="font-medium text-gray-900 dark:text-white">{car.contactNumber || car.userPhoneNumber}</span>
                                             ) : (

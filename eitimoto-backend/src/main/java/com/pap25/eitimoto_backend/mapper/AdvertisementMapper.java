@@ -34,6 +34,7 @@ public class AdvertisementMapper {
                 .viewCount(ad.getViewCount())
                 .clickCount(ad.getClickCount())
                 .contactNumber(ad.getUser().getContactNumber())
+                .hasImage(ad.getImage() != null && ad.getImage().length > 0)
                 .build();
     }
 }

@@ -8,6 +8,8 @@ import lombok.Builder;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnTransformer;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.List;
 
@@ -16,7 +18,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @Entity
-@Table( name = "Advertisement" )
+@Table( name = "advertisement" )
 public class Advertisement {
 
     @Id
@@ -44,6 +46,9 @@ public class Advertisement {
 
     @Column(columnDefinition = "bigint default 0")
     private Long clickCount = 0L;
+
+    @JdbcTypeCode(SqlTypes.VARBINARY)
+    private byte[] image;
 
     @Column(name = "embedding", columnDefinition = "vector(1536)")
     @Convert(converter = VectorConverter.class)

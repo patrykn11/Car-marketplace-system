@@ -19,7 +19,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import com.pap25.eitimoto_backend.services.UserContextService;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,6 +59,11 @@ public class AdvertisementService {
                 .orElseThrow(() -> new EntityNotFoundException("Advertisement not found with id: " + id));
     }
 
+    public byte[] getAdvertisementImage(Long id) {
+        Advertisement advertisement = getAdvertisementById(id);
+        return advertisement.getImage();
+    }
+
     public AdvertisementResponseDto getAdvertisementDtoById(Long id) {
         Advertisement ad = getAdvertisementById(id);
         AdvertisementResponseDto dto = advertisementMapper.toDto(ad);
@@ -68,7 +75,7 @@ public class AdvertisementService {
     }
 
     @Transactional
-    public AdvertisementResponseDto addAdvertisement(AdvertisementDto adDto) {
+    public AdvertisementResponseDto addAdvertisement(AdvertisementDto adDto, MultipartFile imageFile) throws IOException {
         User user = userContextService.getCurrentUser();
 
         Car car = new Car();
@@ -94,6 +101,10 @@ public class AdvertisementService {
                 .car(car)
                 .build();
 
+        if (imageFile != null && !imageFile.isEmpty()) {
+            ad.setImage(imageFile.getBytes());
+        }
+
         try {
             List<Double> embedding = embeddingService.generateAdvertisementEmbedding(adDto);
             ad.setEmbedding(embedding);
@@ -103,6 +114,16 @@ public class AdvertisementService {
 
         advertisementRepository.save(ad);
         return advertisementMapper.toDto(ad);
+    }
+
+    @Transactional
+    public AdvertisementResponseDto addAdvertisement(AdvertisementDto adDto) {
+        try {
+            return addAdvertisement(adDto, null);
+        } catch (IOException e) {
+            // This should not happen when the file is null, but we need to handle the exception
+            throw new RuntimeException("Error while adding advertisement without image", e);
+        }
     }
 
 

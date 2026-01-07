@@ -20,6 +20,16 @@ export default function AddCarPage() {
     const [price, setPrice] = useState("");
     const [description, setDescription] = useState("");
     const [location, setLocation] = useState("");
+    const [imageFile, setImageFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImageFile(file);
+            setImagePreview(URL.createObjectURL(file));
+        }
+    };
 
     async function addCar(ev) {
         ev.preventDefault();
@@ -36,26 +46,34 @@ export default function AddCarPage() {
             mileage, fuelType,
             transmission, engineCapacity,
             power, carColor
-        }
+        };
 
         const advertisementData = {
             title, description,
             location, carData
+        };
+
+        const formData = new FormData();
+        formData.append("advertisement", new Blob([JSON.stringify(advertisementData)], { type: "application/json" }));
+        if (imageFile) {
+            formData.append("imageFile", imageFile);
         }
 
         console.log("------------------------------------------------");
-        console.log("🛠️ DEBUG: DANE WYSYŁANE DO BACKENDU:");
-        console.log(JSON.stringify(advertisementData, null, 2)); 
+        console.log("🛠️ DEBUG: DANE WYSYŁANE DO BACKENDU (FormData):");
+        for (let [key, value] of formData.entries()) {
+            console.log(key, value);
+        }
         console.log("------------------------------------------------");
 
         try {
             const response = await authFetch('http://localhost:8000/api/advertisements/add', {
                 method: 'POST',
+                // Content-Type is not set, browser will set it to multipart/form-data
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(advertisementData)
+                body: formData
             });
 
             if (response.ok) {
@@ -77,7 +95,8 @@ export default function AddCarPage() {
                 setPrice("");
                 setDescription("");
                 setLocation("");
-                setDescription("");
+                setImageFile(null);
+                setImagePreview(null);
 
                 navigate('/');
             } else {
@@ -101,6 +120,7 @@ export default function AddCarPage() {
                     </div>
 
                     <form onSubmit={addCar} className="p-8">
+                        {/* Existing form fields */}
                         <div className="mb-8">
                             <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center transition-colors">
                                 <span className="bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-300 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm">1</span>
@@ -337,10 +357,37 @@ export default function AddCarPage() {
                                 </div>
                             </div>
                         </div>
-
+                        
                         <div className="mb-8">
                             <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center transition-colors">
                                 <span className="bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-300 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm">3</span>
+                                Photo
+                            </h3>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Upload Image *
+                                </label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageChange}
+                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
+                                               file:rounded-full file:border-0 file:text-sm file:font-semibold
+                                               file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100
+                                               dark:file:bg-blue-900/50 dark:file:text-blue-300 dark:hover:file:bg-blue-900"
+                                    required
+                                />
+                                {imagePreview && (
+                                    <div className="mt-4">
+                                        <img src={imagePreview} alt="Image preview" className="w-full h-auto max-w-xs rounded-lg shadow-md" />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="mb-8">
+                            <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center transition-colors">
+                                <span className="bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-300 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm">4</span>
                                 Description
                             </h3>
                             <div>
@@ -365,7 +412,7 @@ export default function AddCarPage() {
                         <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
                             <button
                                 type="button"
-                                onClick={() => window.location.href = '/'}
+                                onClick={() => navigate('/')}
                                 className="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                             >
                                 Cancel

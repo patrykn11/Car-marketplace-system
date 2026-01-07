@@ -342,7 +342,10 @@ const AdCard = ({ ad, navigate, onDelete, isOwner, customAction }) => (
         <div className="h-48 bg-gray-100 dark:bg-gray-700 relative">
             <img
                 className="w-full h-full object-cover"
-                src={ad.carData.image || "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"}
+                src={ad.hasImage
+                    ? `http://localhost:8000/api/advertisements/${ad.advertisementId}/image`
+                    : "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
+                }
                 alt={ad.title}
             />
             <div className="absolute top-3 right-3 px-3 py-1 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm text-gray-900 dark:text-white text-sm font-bold rounded-lg shadow-lg">
