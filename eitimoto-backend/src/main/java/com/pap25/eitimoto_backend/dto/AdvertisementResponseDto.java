@@ -17,8 +17,8 @@ public class AdvertisementResponseDto {
     private CarDto carData;
     private String username;
     private Long viewCount;
-    private Long clickCount;
+    private Long contactCount;
     private String contactNumber;
-    private long likesCount;
+    private Long likeCount;
     private boolean hasImage;
 }

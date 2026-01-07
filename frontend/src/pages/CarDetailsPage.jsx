@@ -172,16 +172,22 @@ const CarDetailsPage = () => {
             console.error("Error adding comment:", err);
         }
     };
-
     const handleFriendAction = async () => {
         setLoadingInvite(true);
         try {
             const url = invitationFromUser
                 ? `http://localhost:8000/api/invitations/accept/${car.username}`
                 : `http://localhost:8000/api/invitations/add/${car.username}`;
-
             const res = await authFetch(url, { method: 'POST' });
             if (res.ok) {
+                // If we are sending an invitation (adding friend), increment the contact count
+                if (!invitationFromUser) {
+                    try {
+                        await authFetch(`http://localhost:8000/api/advertisements/${id}/contact`, { method: 'POST' });
+                    } catch (statsErr) {
+                        console.error('Error incrementing contact stats:', statsErr);
+                    }
+                }
                 alert(invitationFromUser ? 'Invitation accepted' : 'Invitation sent');
                 setInvitationFromUser(false);
                 setSentInvitation(!invitationFromUser);
@@ -259,7 +265,7 @@ const CarDetailsPage = () => {
                                             />
                                         ))
                                     ) : (
-                                        <p className="text-gray-500 text-center text-sm py-10">Brak komentarzy pod tym ogłoszeniem.</p>
+                                        <p className="text-gray-500 text-center text-sm py-10">No comments for this advertisement.</p>
                                     )}
                                 </div>
 
@@ -271,15 +277,15 @@ const CarDetailsPage = () => {
                                                 type="text"
                                                 value={newComment}
                                                 onChange={(e) => setNewComment(e.target.value)}
-                                                placeholder={replyingTo ? `Odpowiadasz na #${replyingTo}...` : "Napisz komentarz..."}
+                                                placeholder={replyingTo ? `Replying to #${replyingTo}...` : "Write a comment..."}
                                                 className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                             />
                                             <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                                                {replyingTo ? 'Odpowiedz' : 'Wyślij'}
+                                                {replyingTo ? 'Reply' : 'Send'}
                                             </button>
                                         </form>
                                     ) : (
-                                        <p className="text-center text-sm text-gray-500">Zaloguj się, aby komentować.</p>
+                                        <p className="text-center text-sm text-gray-500">Log in to comment.</p>
                                     )}
                                 </div>
                             </div>
@@ -304,8 +310,8 @@ const CarDetailsPage = () => {
                                         onClick={handleToggleFavorite}
                                         disabled={likeLoading}
                                         className={`p-2 rounded-full shadow-sm border transition-all transform hover:scale-105 active:scale-95 ${isLiked
-                                                ? 'bg-red-50 border-red-200 text-red-500 dark:bg-red-900/20 dark:border-red-900'
-                                                : 'bg-white border-gray-200 text-gray-400 hover:text-red-400 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300'
+                                            ? 'bg-red-50 border-red-200 text-red-500 dark:bg-red-900/20 dark:border-red-900'
+                                            : 'bg-white border-gray-200 text-gray-400 hover:text-red-400 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300'
                                             }`}
                                         title={isLiked ? "Remove from favorites" : "Add to favorites"}
                                     >

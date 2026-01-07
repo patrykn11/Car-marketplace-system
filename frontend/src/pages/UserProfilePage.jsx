@@ -201,7 +201,6 @@ const UserProfilePage = () => {
                     </div>
                 )}
 
-                {/* ZMIANA: Sekcja Statystyk (z wersji lokalnej) */}
                 <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-lg p-6">
                     <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Statistic Panel</h2>
 

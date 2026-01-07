@@ -45,7 +45,10 @@ public class Advertisement {
     private Long viewCount = 0L;
 
     @Column(columnDefinition = "bigint default 0")
-    private Long clickCount = 0L;
+    private Long contactCount = 0L;
+
+    @Column(columnDefinition = "bigint default 0")
+    private Long likeCount = 0L;
 
     @JdbcTypeCode(SqlTypes.VARBINARY)
     private byte[] image;

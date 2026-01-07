@@ -69,7 +69,7 @@ public class AdvertisementService {
         AdvertisementResponseDto dto = advertisementMapper.toDto(ad);
 
         long count = favoriteAdvertisementRepository.countByAdvertisementId(id);
-        dto.setLikesCount(count);
+        dto.setLikeCount(count);
 
         return dto;
     }
@@ -215,12 +215,22 @@ public class AdvertisementService {
     }
 
     @Transactional
-    public void incrementClickCount(Long id) {
+    public void incrementContactCount(Long id) {
         Advertisement ad = getAdvertisementById(id);
-        if (ad.getClickCount() == null) {
-            ad.setClickCount(0L);
+        if (ad.getContactCount() == null) {
+            ad.setContactCount(0L);
         }
-        ad.setClickCount(ad.getClickCount() + 1);
+        ad.setContactCount(ad.getContactCount() + 1);
+        advertisementRepository.save(ad);
+    }
+
+    @Transactional
+    public void incrementLikeCount(Long id) {
+        Advertisement ad = getAdvertisementById(id);
+        if (ad.getLikeCount() == null) {
+            ad.setLikeCount(0L);
+        }
+        ad.setLikeCount(ad.getLikeCount() + 1);
         advertisementRepository.save(ad);
     }
 
@@ -233,7 +243,7 @@ public class AdvertisementService {
 
         for (Advertisement ad : userAds) {
             if (ad.getViewCount() != null) totalViews += ad.getViewCount();
-            if (ad.getClickCount() != null) totalContacts += ad.getClickCount();
+            if (ad.getContactCount() != null) totalContacts += ad.getContactCount();
         }
 
         List<Long> adIds = userAds.stream().map(Advertisement::getAdvertisementId).collect(Collectors.toList());
@@ -253,7 +263,7 @@ public class AdvertisementService {
         List<AdvertisementResponseDto> allAds = getAdvertisements();
 
         return allAds.stream()
-                .sorted(Comparator.comparingLong(AdvertisementResponseDto::getLikesCount).reversed())
+                .sorted(Comparator.comparingLong(AdvertisementResponseDto::getLikeCount).reversed())
                 .limit(limit)
                 .collect(Collectors.toList());
     }
@@ -307,7 +317,7 @@ public class AdvertisementService {
         return recommendations.stream()
                 .map(ad -> {
                     AdvertisementResponseDto dto = advertisementMapper.toDto(ad);
-                    dto.setLikesCount(favoriteAdvertisementRepository.countByAdvertisementId(ad.getAdvertisementId()));
+                    dto.setLikeCount(favoriteAdvertisementRepository.countByAdvertisementId(ad.getAdvertisementId()));
                     return dto;
                 })
                 .collect(Collectors.toList());

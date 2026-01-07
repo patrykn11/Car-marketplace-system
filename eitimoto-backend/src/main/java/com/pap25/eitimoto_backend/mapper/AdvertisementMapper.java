@@ -32,8 +32,9 @@ public class AdvertisementMapper {
                 .carData(carDto)
                 .username(ad.getUser().getUsername())
                 .viewCount(ad.getViewCount())
-                .clickCount(ad.getClickCount())
+                .contactCount(ad.getContactCount())
                 .contactNumber(ad.getUser().getContactNumber())
+                .likeCount(ad.getLikeCount())
                 .hasImage(ad.getImage() != null && ad.getImage().length > 0)
                 .build();
     }

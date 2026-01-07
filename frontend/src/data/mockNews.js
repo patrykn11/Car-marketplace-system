@@ -1,4 +1,3 @@
-
 export const newsData = [
     {
         id: 1,
@@ -47,5 +46,53 @@ export const newsData = [
         category: "Industry",
         image: "https://images.unsplash.com/photo-1591768793318-92cf0c36326c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
         summary: "Heavy-duty logistics companies are split between hydrogen fuel cells and battery electric powertrains for long-haul transport."
+    },
+    {
+        id: 7,
+        title: "BMW Launches 'Neue Klasse' Platform",
+        date: "December 10, 2025",
+        category: "New Models",
+        image: "https://images.unsplash.com/photo-1555215696-997763907158?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+        summary: "BMW unveils its revolutionary EV-first platform, promising 30% faster charging and a new design language for the 3-Series successor."
+    },
+    {
+        id: 8,
+        title: "BYD Overtakes Global Sales Records",
+        date: "December 08, 2025",
+        category: "Industry",
+        image: "https://images.unsplash.com/photo-1542362567-b07e54358753?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+        summary: "The Chinese giant cements its position as the world's largest plug-in vehicle manufacturer, expanding rapidly into European markets."
+    },
+    {
+        id: 9,
+        title: "EU Mandates Universal Plug & Charge",
+        date: "December 05, 2025",
+        category: "Regulation",
+        image: "https://images.unsplash.com/photo-1620882657388-724d26279d8c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+        summary: "New EU legislation requires all public charging stations to support automatic 'Plug & Charge' payment protocols by mid-2026."
+    },
+    {
+        id: 10,
+        title: "Synthetic Fuels: A Lifeline for ICE?",
+        date: "December 03, 2025",
+        category: "Sustainability",
+        image: "https://images.unsplash.com/photo-1616401784845-180882ba9ba8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+        summary: "Major sports car manufacturers form an alliance to produce carbon-neutral e-fuels, hoping to save internal combustion engines."
+    },
+    {
+        id: 11,
+        title: "Rivian R2 Deliveries Begin",
+        date: "November 30, 2025",
+        category: "EVs",
+        image: "https://images.unsplash.com/photo-1621451537084-482c73073a0f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+        summary: "The highly anticipated, smaller Rivian SUV starts reaching customers, challenging the Model Y's dominance in the adventure segment."
+    },
+    {
+        id: 12,
+        title: "Level 4 Autonomy Approved in SF",
+        date: "November 28, 2025",
+        category: "Technology",
+        image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+        summary: "Regulators grant full approval for steering-wheel-free robotaxis to operate city-wide in San Francisco during daylight hours."
     }
 ];
