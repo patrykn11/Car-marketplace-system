@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import CarCard from '../components/CarCard';
+import AppTutorial from '../components/AppTutorial';
 import { useAuth } from '../contexts/AuthContext';
 
 const BODY_TYPES = [
@@ -76,8 +77,9 @@ const HomePage = () => {
 
     return (
         <div className="w-full max-w-[98%] mx-auto py-6 px-2">
+            <AppTutorial />
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
-                <aside className="xl:col-span-3 order-2 xl:order-1 flex flex-col gap-6">
+                <aside id="most-popular-section" className="xl:col-span-3 order-2 xl:order-1 flex flex-col gap-6">
                     <div className="flex items-center justify-between">
                         <h2 className="text-xl font-bold text-gray-900 dark:text-white">Popular Listings</h2>
                         <Link to="/cars" className="text-blue-600 text-sm hover:underline">View all</Link>
@@ -98,7 +100,7 @@ const HomePage = () => {
                 </aside>
 
                 <main className="xl:col-span-6 order-1 xl:order-2 space-y-8">
-                    <section className="text-center py-16 bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-3xl shadow-xl relative overflow-hidden">
+                    <section id="welcome-banner" className="text-center py-16 bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-3xl shadow-xl relative overflow-hidden">
                         <div className="relative z-10 px-4">
                             <h1 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight">
                                 Welcome, {username || "Guest"}!
@@ -178,7 +180,7 @@ const HomePage = () => {
                     </section>
                 </main>
 
-                <aside className="xl:col-span-3 order-3 flex flex-col gap-6">
+                <aside id="for-you-section" className="xl:col-span-3 order-3 flex flex-col gap-6">
                     <div className="flex items-center gap-2">
                         <h2 className="text-xl font-bold text-gray-900 dark:text-white">For You</h2>
                     </div>
