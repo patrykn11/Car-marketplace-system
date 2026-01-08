@@ -309,20 +309,37 @@ const CarListPage = () => {
                             </select>
                         </div>
                         <div className="col-span-full">
-                            <label>Słowa kluczowe (AI Search)</label>
-                            <input
-                                type="text"
-                                placeholder="np. sportowe auto z niskim spalaniem na dojazdy do pracy"
-                                value={filters.keywords}
-                                onChange={e => setFilters({...filters, keywords: e.target.value})}
-                                className="..."
-                            />
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2 flex items-center gap-2">
+                                    <span className="text-blue-600 text-lg"></span> 
+                                    AI Smart Search
+                                </label>
+                                
+                            <div className="relative group">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg className="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+
+                                <input
+                                    type="text"
+                                    placeholder="e.g. Sporty car with low fuel consumption for city driving..."
+                                    value={filters.keywords}
+                                    onChange={e => setFilters({...filters, keywords: e.target.value})}
+                                    className="block w-full pl-10 pr-24 py-3 border border-gray-300 dark:border-gray-600 rounded-xl leading-5 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm shadow-sm transition-all duration-200"
+                                />
+                                
+                                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <span className="text-xs font-bold text-blue-600/70 dark:text-blue-400/70 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-md border border-blue-100 dark:border-blue-800">
+                                        AI Powered
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div className="flex gap-4">
-                        <button onClick={handleSearchClick} className="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors shadow-sm">Search</button>
-                        <button onClick={handleResetClick} className="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 font-medium rounded-md transition-colors shadow-sm">Reset</button>
+                        <div className="flex gap-4">
+                            <button onClick={handleSearchClick} className="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors shadow-sm">Search</button>
+                            <button onClick={handleResetClick} className="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 font-medium rounded-md transition-colors shadow-sm">Reset</button>
+                        </div>         
                     </div>
                 </div>
 
