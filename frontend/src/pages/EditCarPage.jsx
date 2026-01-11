@@ -25,7 +25,7 @@ export default function EditCarPage() {
 
     useEffect(() => {
         if (!isAuthenticated) {
-            alert("You must be logged in to edit an advertisement");
+
             navigate('/login');
             return;
         }
@@ -53,12 +53,12 @@ export default function EditCarPage() {
 
                     setLoading(false);
                 } else {
-                    alert("Failed to fetch advertisement details");
+                    console.error("Failed to fetch advertisement details");
                     navigate('/');
                 }
             } catch (error) {
                 console.error("Error fetching ad:", error);
-                alert("Error connecting to server");
+                console.error("Error connecting to server");
                 navigate('/');
             }
         };
@@ -96,20 +96,20 @@ export default function EditCarPage() {
             if (response.ok) {
                 const data = await response.json();
                 console.log("Success:", data);
-                alert("Advertisement updated successfully!");
+                // alert("Advertisement updated successfully!");
                 navigate('/');
             } else {
                 const error = await response.text();
                 console.error("Error:", response.status, error);
-                alert(`Error updating advertisement: ${response.status}`);
+                console.error(`Error updating advertisement: ${response.status}`);
             }
         } catch (err) {
             console.error("Network error:", err);
-            alert("Error connecting to server");
+            console.error("Error connecting to server");
         }
     }
 
-    
+
     if (loading) return <div className="text-center mt-10 dark:text-white">Loading...</div>;
 
     return (

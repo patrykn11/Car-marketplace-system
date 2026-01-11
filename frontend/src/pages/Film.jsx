@@ -2,15 +2,14 @@ import React from "react";
 
 const CarFilms = () => {
   const videoUrls = [
-    "https://www.youtube.com/watch?v=ckJaRjgf2aw",
-    "https://www.youtube.com/watch?v=dH0pldINYbo",
-    "https://www.youtube.com/watch?v=fPYho_m142c",
-    "https://www.youtube.com/watch?v=ckJaRjgf2aw",
-    "https://www.youtube.com/watch?v=dH0pldINYbo",
-    "https://www.youtube.com/watch?v=fPYho_m142c",
-    "https://www.youtube.com/watch?v=O91S3lbW1p8",
-    "https://www.youtube.com/watch?v=LI3ir07O17s",
-    "https://www.youtube.com/watch?v=eXDxCu-yj6I"
+    "https://www.youtube.com/watch?v=iFHqpr2h7jI",
+    "https://www.youtube.com/watch?v=AC7ducKIfUk",
+    "https://www.youtube.com/watch?v=rcYgIGD6BYY",
+    "https://www.youtube.com/watch?v=h89FK4Kz-EE",
+    "https://www.youtube.com/watch?v=-w2JRpdYR6Y",
+    "https://www.youtube.com/watch?v=fH-RlNwvRGQ",
+    "https://www.youtube.com/watch?v=UsMD7dJwK1g",
+    "https://www.youtube.com/watch?v=Eten26XKTv4"
   ];
 
   const videoIds = videoUrls.map(url => {

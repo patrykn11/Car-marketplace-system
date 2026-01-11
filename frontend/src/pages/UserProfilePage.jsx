@@ -102,13 +102,13 @@ const UserProfilePage = () => {
     }
 
     async function deleteAdvertisement(adId) {
-        if (!window.confirm('Are you sure you want to delete this listing?')) return;
+        // Removed confirmation as per request
+        // if (!window.confirm('Are you sure you want to delete this listing?')) return;
         try {
             await api.delete(`/advertisements/remove/${adId}`);
             setMyAdvertisements(prev => prev.filter(ad => ad.advertisementId !== adId));
         } catch (error) {
             console.error('Error:', error);
-            alert('Failed to delete listing');
         }
     }
     const removeFromFavorites = async (adId) => {

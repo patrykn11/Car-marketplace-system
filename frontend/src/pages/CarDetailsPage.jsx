@@ -115,7 +115,6 @@ const CarDetailsPage = () => {
 
     const handleToggleFavorite = async () => {
         if (!isAuthenticated) {
-            alert("Log in to add to favorites!");
             return;
         }
         if (likeLoading) return;
@@ -141,7 +140,7 @@ const CarDetailsPage = () => {
             console.error("Error toggling favorite:", err);
             setIsLiked(previousLiked);
             setLikesCount(prev => previousLiked ? prev + 1 : prev - 1);
-            alert("Could not update favorite status.");
+            console.error("Could not update favorite status.");
         } finally {
             setLikeLoading(false);
         }
@@ -180,7 +179,6 @@ const CarDetailsPage = () => {
                 : `http://localhost:8000/api/invitations/add/${car.username}`;
             const res = await authFetch(url, { method: 'POST' });
             if (res.ok) {
-                // If we are sending an invitation (adding friend), increment the contact count
                 if (!invitationFromUser) {
                     try {
                         await authFetch(`http://localhost:8000/api/advertisements/${id}/contact`, { method: 'POST' });
@@ -188,7 +186,7 @@ const CarDetailsPage = () => {
                         console.error('Error incrementing contact stats:', statsErr);
                     }
                 }
-                alert(invitationFromUser ? 'Invitation accepted' : 'Invitation sent');
+
                 setInvitationFromUser(false);
                 setSentInvitation(!invitationFromUser);
                 setAcceptedInvitationFromUser(invitationFromUser);

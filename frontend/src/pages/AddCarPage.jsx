@@ -35,7 +35,6 @@ export default function AddCarPage() {
         ev.preventDefault();
 
         if (!isAuthenticated) {
-            alert("You must be logged in to add an advertisement");
             navigate('/login');
             return;
         }
@@ -79,7 +78,7 @@ export default function AddCarPage() {
             if (response.ok) {
                 const data = await response.json();
                 console.log("Success:", data);
-                alert("Advertisement added successfully!");
+
 
                 setTitle("");
                 setCarBrand("");
@@ -102,11 +101,11 @@ export default function AddCarPage() {
             } else {
                 const error = await response.text();
                 console.error("Error:", response.status, error);
-                alert(`Error adding advertisement: ${response.status}`);
+                console.error(`Error adding advertisement: ${response.status}`);
             }
         } catch (err) {
             console.error("Network error:", err);
-            alert("Error connecting to server");
+            console.error("Error connecting to server");
         }
     }
 
@@ -197,12 +196,12 @@ export default function AddCarPage() {
                                     />
                                 </div>
 
-                                 <div>
+                                <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                         Body type *
                                     </label>
                                     <select
-                                        value={carBodyType} 
+                                        value={carBodyType}
                                         onChange={e => setCarBodyType(e.target.value)}
                                         className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition
                                                    bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -357,7 +356,7 @@ export default function AddCarPage() {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div className="mb-8">
                             <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center transition-colors">
                                 <span className="bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-300 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm">3</span>
