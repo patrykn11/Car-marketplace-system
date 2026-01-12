@@ -17,7 +17,7 @@ const CarListPage = () => {
     const [filters, setFilters] = useState({
         brand: '', model: '', bodyType: '', minPrice: '', maxPrice: '', 
         minYear: '', maxYear: '', fuelType: '', transmission: '', 
-        minMileage: '', maxMileage: ''
+        minMileage: '', maxMileage: '', keywords: ''
     });
 
 
@@ -25,7 +25,7 @@ const CarListPage = () => {
         const fetchCars = async () => {
             try {
                 setLoading(true);
-                const response = await fetch('http://localhost:3333/api/advertisements');
+                const response = await fetch('http://localhost:8000/api/advertisements');
                 if (!response.ok) {
                     throw new Error('Failed to fetch advertisements');
                 }
@@ -59,7 +59,7 @@ const CarListPage = () => {
         const fetchFavorites = async () => {
             if (isAuthenticated) {
                 try {
-                    const response = await authFetch('http://localhost:3333/api/favorites'); 
+                    const response = await authFetch('http://localhost:8000/api/favorites');
                     if (response.ok) {
                         const data = await response.json();
                         setFavorites(data);
@@ -93,48 +93,45 @@ const CarListPage = () => {
     
     const uniqueModels = [...new Set(carsForModels.map(ad => ad.carData?.carModel))].filter(Boolean).sort();
 
-    const handleSearchClick = () => {
-        let result = [...cars];
+    const handleSearchClick = async () => {
+        setLoading(true);
+        try {
+            const params = new URLSearchParams();
 
-        if (filters.brand) result = result.filter(car => car.carData?.carBrand === filters.brand);
-        if (filters.model) result = result.filter(car => car.carData?.carModel === filters.model);
-        if (filters.bodyType) result = result.filter(car => car.carData?.carBodyType === filters.bodyType);
-        if (filters.minPrice) result = result.filter(car => Number(car.carData?.price) >= Number(filters.minPrice));
-        if (filters.maxPrice) result = result.filter(car => Number(car.carData?.price) <= Number(filters.maxPrice));
-        if (filters.minYear) result = result.filter(car => Number(car.carData?.productionYear) >= Number(filters.minYear));
-        if (filters.maxYear) result = result.filter(car => Number(car.carData?.productionYear) <= Number(filters.maxYear));
-        if (filters.fuelType) result = result.filter(car => car.carData?.fuelType === filters.fuelType);
-        if (filters.transmission) result = result.filter(car => car.carData?.transmission === filters.transmission);
-        if (filters.minMileage) result = result.filter(car => Number(car.carData?.mileage) >= Number(filters.minMileage));
-        if (filters.maxMileage) result = result.filter(car => Number(car.carData?.mileage) <= Number(filters.maxMileage));
+            if (filters.keywords) params.append('keywords', filters.keywords);
+            if (filters.brand) params.append('brand', filters.brand);
+            if (filters.model) params.append('model', filters.model);
+            if (filters.bodyType) params.append('bodyType', filters.bodyType);
+            if (filters.minPrice) params.append('minPrice', filters.minPrice);
+            if (filters.maxPrice) params.append('maxPrice', filters.maxPrice);
+            if (filters.minYear) params.append('minYear', filters.minYear);
+            if (filters.maxYear) params.append('maxYear', filters.maxYear);
+            if (filters.fuelType) params.append('fuelType', filters.fuelType);
+            if (filters.transmission) params.append('transmission', filters.transmission);
+            if (filters.minMileage) params.append('minMileage', filters.minMileage);
+            if (filters.maxMileage) params.append('maxMileage', filters.maxMileage);
 
-        if (filterSortingBy) {
-            switch (filterSortingBy) {
-                case "Price ascending":
-                    result.sort((a, b) => Number(a.carData?.price) - Number(b.carData?.price));
-                    break;
-                case "Price descending":
-                    result.sort((a, b) => Number(b.carData?.price) - Number(a.carData?.price));
-                    break;
-                case "Year ascending":
-                    result.sort((a, b) => Number(a.carData?.productionYear) - Number(b.carData?.productionYear));
-                    break;
-                case "Year descending":
-                    result.sort((a, b) => Number(b.carData?.productionYear) - Number(a.carData?.productionYear));
-                    break;
-                default:
-                    break;
+            const response = await fetch(`http://localhost:8000/api/advertisements/search?${params.toString()}`);
+
+            if (!response.ok) {
+                throw new Error('Search failed');
             }
-        }
 
-        setDisplayedCars(result);
-    }
+            const data = await response.json();
+            setDisplayedCars(data);
+        } catch (err) {
+            console.error("Search error:", err);
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleResetClick = () => {
         setFilters({
             brand: '', model: '', bodyType: '', minPrice: '', maxPrice: '', 
             minYear: '', maxYear: '', fuelType: '', transmission: '', 
-            minMileage: '', maxMileage: ''
+            minMileage: '', maxMileage: '', keywords: ''
         });
         setFilterSortingBy("");
         setDisplayedCars(cars);
@@ -311,11 +308,38 @@ const CarListPage = () => {
                                 <option value="Year descending">Year descending</option>
                             </select>
                         </div>
-                    </div>
-                    
-                    <div className="flex gap-4">
-                        <button onClick={handleSearchClick} className="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors shadow-sm">Search</button>
-                        <button onClick={handleResetClick} className="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 font-medium rounded-md transition-colors shadow-sm">Reset</button>
+                        <div className="col-span-full">
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2 flex items-center gap-2">
+                                    <span className="text-blue-600 text-lg"></span> 
+                                    AI Smart Search
+                                </label>
+                                
+                            <div className="relative group">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg className="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+
+                                <input
+                                    type="text"
+                                    placeholder="e.g. Sporty car with low fuel consumption for city driving..."
+                                    value={filters.keywords}
+                                    onChange={e => setFilters({...filters, keywords: e.target.value})}
+                                    className="block w-full pl-10 pr-24 py-3 border border-gray-300 dark:border-gray-600 rounded-xl leading-5 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm shadow-sm transition-all duration-200"
+                                />
+                                
+                                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <span className="text-xs font-bold text-blue-600/70 dark:text-blue-400/70 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-md border border-blue-100 dark:border-blue-800">
+                                        AI Powered
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex gap-4">
+                            <button onClick={handleSearchClick} className="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors shadow-sm">Search</button>
+                            <button onClick={handleResetClick} className="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 font-medium rounded-md transition-colors shadow-sm">Reset</button>
+                        </div>         
                     </div>
                 </div>
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import CarCard from '../components/CarCard';
+import AppTutorial from '../components/AppTutorial';
 import { useAuth } from '../contexts/AuthContext';
 
 const BODY_TYPES = [
@@ -12,7 +13,7 @@ const BODY_TYPES = [
 
 const BRAND_ADS = [
     { id: 1, name: "BMW", slogan: "Sheer Driving Pleasure", logo: "https://upload.wikimedia.org/wikipedia/commons/4/44/BMW.svg", link: "/cars?brand=BMW", theme: "from-blue-600 to-blue-800" },
-    { id: 2, name: "Audi", slogan: "Vorsprung durch Technik", logo: "https://upload.wikimedia.org/wikipedia/commons/6/6f/Audi_logo_detail.svg", link: "/cars?brand=Audi", theme: "from-gray-800 to-gray-900" },
+    { id: 2, name: "Audi", slogan: "Vorsprung durch Technik", logo: "https://logowik.com/content/uploads/images/562_audi.jpg", link: "/cars?brand=Audi", theme: "from-gray-800 to-gray-900" },
     { id: 3, name: "Mercedes-Benz", slogan: "The Best or Nothing", logo: "https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg", link: "/cars?brand=Mercedes", theme: "from-black to-gray-800" },
     { id: 4, name: "Tesla", slogan: "Electric Future", logo: "https://upload.wikimedia.org/wikipedia/commons/b/bd/Tesla_Motors.svg", link: "/cars?brand=Tesla", theme: "from-red-600 to-red-800" },
     { id: 5, name: "Toyota", slogan: "Let's Go Places", logo: "https://upload.wikimedia.org/wikipedia/commons/9/9d/Toyota_carlogo.svg", link: "/cars?brand=Toyota", theme: "from-red-500 to-red-700" }
@@ -30,7 +31,7 @@ const HomePage = () => {
 
     useEffect(() => {
         const fetchHomeData = async () => {
-            const adsRes = await fetch('http://localhost:3333/api/advertisements/popular');
+            const adsRes = await fetch('http://localhost:8000/api/advertisements/popular');
             if (adsRes.ok) setFeaturedCars(await adsRes.json());
             const brandsRes = await fetch('http://localhost:8000/api/catalog/brands');
             if (brandsRes.ok) {
@@ -43,9 +44,9 @@ const HomePage = () => {
 
     useEffect(() => {
         if (isAuthenticated) {
-            authFetch('http://localhost:3333/api/favorites')
+            authFetch('http://localhost:8000/api/favorites')
                 .then(r => r.ok && r.json().then(setFavoriteIds));
-            authFetch('http://localhost:3333/api/advertisements/recommendations')
+            authFetch('http://localhost:8000/api/advertisements/recommendations')
                 .then(r => r.ok && r.json().then(setRecommendedCars));
         } else {
             setFavoriteIds([]);
@@ -57,7 +58,7 @@ const HomePage = () => {
         const fetchBrandAd = async () => {
             if (isAuthenticated) {
                 try {
-                    const res = await authFetch('http://localhost:3333/api/Ad');
+                    const res = await authFetch('http://localhost:8000/api/Ad');
                     const favBrand = await res.text();
                     console.log("Car brand:", favBrand);
                     const ad = BRAND_ADS.find(a => a.name.toLowerCase() === favBrand.toLowerCase());
@@ -76,8 +77,9 @@ const HomePage = () => {
 
     return (
         <div className="w-full max-w-[98%] mx-auto py-6 px-2">
+            <AppTutorial />
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
-                <aside className="xl:col-span-3 order-2 xl:order-1 flex flex-col gap-6">
+                <aside id="most-popular-section" className="xl:col-span-3 order-2 xl:order-1 flex flex-col gap-6">
                     <div className="flex items-center justify-between">
                         <h2 className="text-xl font-bold text-gray-900 dark:text-white">Popular Listings</h2>
                         <Link to="/cars" className="text-blue-600 text-sm hover:underline">View all</Link>
@@ -98,7 +100,7 @@ const HomePage = () => {
                 </aside>
 
                 <main className="xl:col-span-6 order-1 xl:order-2 space-y-8">
-                    <section className="text-center py-16 bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-3xl shadow-xl relative overflow-hidden">
+                    <section id="welcome-banner" className="text-center py-16 bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-3xl shadow-xl relative overflow-hidden">
                         <div className="relative z-10 px-4">
                             <h1 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight">
                                 Welcome, {username || "Guest"}!
@@ -178,7 +180,7 @@ const HomePage = () => {
                     </section>
                 </main>
 
-                <aside className="xl:col-span-3 order-3 flex flex-col gap-6">
+                <aside id="for-you-section" className="xl:col-span-3 order-3 flex flex-col gap-6">
                     <div className="flex items-center gap-2">
                         <h2 className="text-xl font-bold text-gray-900 dark:text-white">For You</h2>
                     </div>

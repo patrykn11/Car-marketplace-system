@@ -11,14 +11,14 @@ const CarDetailsPage = () => {
     const [car, setCar] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
+
     // Invitation & Friend State
     const [invitationFromUser, setInvitationFromUser] = useState(false);
     const [acceptedInvitationFromUser, setAcceptedInvitationFromUser] = useState(false);
     const [sentInvitation, setSentInvitation] = useState(false);
     const [isFriend, setIsFriend] = useState(false);
     const [loadingInvite, setLoadingInvite] = useState(false);
-    
+
     // Comment State
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState("");
@@ -35,7 +35,7 @@ const CarDetailsPage = () => {
 
     const fetchComments = useCallback(async () => {
         try {
-            const res = await authFetch(`http://localhost:3333/api/comment/getParents/${id}`);
+            const res = await authFetch(`http://localhost:8000/api/comment/getParents/${id}`);
             if (res.ok) {
                 const data = await res.json();
                 setComments(data);
@@ -50,7 +50,7 @@ const CarDetailsPage = () => {
         if (id && !loading && car) {
             // we only count view if it's not the owner viewing their own ad
             if (isAuthenticated && username !== car.username) {
-                authFetch(`http://localhost:3333/api/advertisements/${id}/view`, { method: 'POST' }).catch(err => console.error(err));
+                authFetch(`http://localhost:8000/api/advertisements/${id}/view`, { method: 'POST' }).catch(err => console.error(err));
             }
         }
     }, [id, loading, car, username, isAuthenticated, authFetch]);
@@ -59,15 +59,15 @@ const CarDetailsPage = () => {
     useEffect(() => {
         const fetchCarDetails = async () => {
             try {
-                const response = await fetch(`http://localhost:3333/api/advertisements/${id}`);
+                const response = await fetch(`http://localhost:8000/api/advertisements/${id}`);
                 if (!response.ok) throw new Error('Failed to fetch car details');
                 const data = await response.json();
-                
+
                 setCar(data);
                 setLikesCount(data.likesCount || 0);
 
                 if (isAuthenticated) {
-                    const favRes = await authFetch('http://localhost:3333/api/favorites');
+                    const favRes = await authFetch('http://localhost:8000/api/favorites');
                     if (favRes.ok) {
                         const favIds = await favRes.json();
                         setIsLiked(favIds.includes(Number(id)));
@@ -93,17 +93,17 @@ const CarDetailsPage = () => {
 
         const checkStatus = async () => {
             try {
-                const fromRes = await authFetch(`http://localhost:3333/api/invitations/from/${car.username}`);
+                const fromRes = await authFetch(`http://localhost:8000/api/invitations/from/${car.username}`);
                 setInvitationFromUser(await fromRes.json());
 
-                const acceptedRes = await authFetch(`http://localhost:3333/api/invitations/Accepted/${car.username}`);
+                const acceptedRes = await authFetch(`http://localhost:8000/api/invitations/Accepted/${car.username}`);
                 setAcceptedInvitationFromUser(await acceptedRes.json());
 
-                const sentRes = await authFetch(`http://localhost:3333/api/invitations/sent/${car.username}`);
+                const sentRes = await authFetch(`http://localhost:8000/api/invitations/sent/${car.username}`);
                 setSentInvitation(await sentRes.json());
 
                 // Using the specific isFriend endpoint from Incoming changes
-                const friendRes = await authFetch(`http://localhost:3333/api/friends/isFriend/${car.username}`);
+                const friendRes = await authFetch(`http://localhost:8000/api/friends/isFriend/${car.username}`);
                 setIsFriend(await friendRes.json());
             } catch (err) {
                 console.error('Error checking invitations/friend status:', err);
@@ -115,14 +115,13 @@ const CarDetailsPage = () => {
 
     const handleToggleFavorite = async () => {
         if (!isAuthenticated) {
-            alert("Log in to add to favorites!");
             return;
         }
         if (likeLoading) return;
 
         setLikeLoading(true);
         const previousLiked = isLiked;
-        
+
         setIsLiked(!isLiked);
         setLikesCount(prev => isLiked ? prev - 1 : prev + 1);
 
@@ -130,10 +129,10 @@ const CarDetailsPage = () => {
             let response;
             if (!previousLiked) {
                 // Add (POST)
-                response = await authFetch(`http://localhost:3333/api/favorites/${id}`, { method: 'POST' });
+                response = await authFetch(`http://localhost:8000/api/favorites/${id}`, { method: 'POST' });
             } else {
                 // Remove (DELETE)
-                response = await authFetch(`http://localhost:3333/api/favorites/${id}`, { method: 'DELETE' });
+                response = await authFetch(`http://localhost:8000/api/favorites/${id}`, { method: 'DELETE' });
             }
 
             if (!response.ok) throw new Error("Failed to update favorite");
@@ -141,7 +140,7 @@ const CarDetailsPage = () => {
             console.error("Error toggling favorite:", err);
             setIsLiked(previousLiked);
             setLikesCount(prev => previousLiked ? prev + 1 : prev - 1);
-            alert("Could not update favorite status.");
+            console.error("Could not update favorite status.");
         } finally {
             setLikeLoading(false);
         }
@@ -152,7 +151,7 @@ const CarDetailsPage = () => {
         if (!newComment.trim()) return;
 
         try {
-            const res = await authFetch(`http://localhost:3333/api/comment/add-com`, {
+            const res = await authFetch(`http://localhost:8000/api/comment/add-com`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -172,17 +171,22 @@ const CarDetailsPage = () => {
             console.error("Error adding comment:", err);
         }
     };
-
     const handleFriendAction = async () => {
         setLoadingInvite(true);
         try {
             const url = invitationFromUser
-                ? `http://localhost:3333/api/invitations/accept/${car.username}`
-                : `http://localhost:3333/api/invitations/add/${car.username}`;
-
+                ? `http://localhost:8000/api/invitations/accept/${car.username}`
+                : `http://localhost:8000/api/invitations/add/${car.username}`;
             const res = await authFetch(url, { method: 'POST' });
             if (res.ok) {
-                alert(invitationFromUser ? 'Invitation accepted' : 'Invitation sent');
+                if (!invitationFromUser) {
+                    try {
+                        await authFetch(`http://localhost:8000/api/advertisements/${id}/contact`, { method: 'POST' });
+                    } catch (statsErr) {
+                        console.error('Error incrementing contact stats:', statsErr);
+                    }
+                }
+
                 setInvitationFromUser(false);
                 setSentInvitation(!invitationFromUser);
                 setAcceptedInvitationFromUser(invitationFromUser);
@@ -221,13 +225,16 @@ const CarDetailsPage = () => {
 
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
                     <div className="md:flex">
-                        
+
                         {/* Image & Comments */}
                         <div className="md:w-1/2 flex flex-col border-r border-gray-100 dark:border-gray-700">
                             <div className="h-96 bg-gray-200 dark:bg-gray-700 relative">
                                 <img
                                     className="w-full h-full object-cover"
-                                    src={car.image || "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"}
+                                    src={car.hasImage
+                                        ? `http://localhost:8000/api/advertisements/${id}/image`
+                                        : "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
+                                    }
                                     alt="Car"
                                 />
                             </div>
@@ -245,18 +252,18 @@ const CarDetailsPage = () => {
                                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                                     {comments.length > 0 ? (
                                         comments.map(c => (
-                                            <Comment 
-                                                key={c.comment_id} 
-                                                comment={c} 
+                                            <Comment
+                                                key={c.comment_id}
+                                                comment={c}
                                                 refreshSignal={refreshSignal}
                                                 onReplyClick={(cid) => {
                                                     setReplyingTo(cid);
                                                     document.getElementById('commentInput').focus();
-                                                }} 
+                                                }}
                                             />
                                         ))
                                     ) : (
-                                        <p className="text-gray-500 text-center text-sm py-10">Brak komentarzy pod tym ogłoszeniem.</p>
+                                        <p className="text-gray-500 text-center text-sm py-10">No comments for this advertisement.</p>
                                     )}
                                 </div>
 
@@ -268,15 +275,15 @@ const CarDetailsPage = () => {
                                                 type="text"
                                                 value={newComment}
                                                 onChange={(e) => setNewComment(e.target.value)}
-                                                placeholder={replyingTo ? `Odpowiadasz na #${replyingTo}...` : "Napisz komentarz..."}
+                                                placeholder={replyingTo ? `Replying to #${replyingTo}...` : "Write a comment..."}
                                                 className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                             />
                                             <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                                                {replyingTo ? 'Odpowiedz' : 'Wyślij'}
+                                                {replyingTo ? 'Reply' : 'Send'}
                                             </button>
                                         </form>
                                     ) : (
-                                        <p className="text-center text-sm text-gray-500">Zaloguj się, aby komentować.</p>
+                                        <p className="text-center text-sm text-gray-500">Log in to comment.</p>
                                     )}
                                 </div>
                             </div>
@@ -291,20 +298,19 @@ const CarDetailsPage = () => {
                                     </h1>
                                     <p className="text-gray-500 dark:text-gray-400 text-lg transition-colors">{car.title}</p>
                                 </div>
-                                
+
                                 <div className="flex flex-col items-end gap-2">
                                     <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 whitespace-nowrap">
                                         {car.carData.price.toLocaleString()} PLN
                                     </span>
-                                    
-                                    <button 
+
+                                    <button
                                         onClick={handleToggleFavorite}
                                         disabled={likeLoading}
-                                        className={`p-2 rounded-full shadow-sm border transition-all transform hover:scale-105 active:scale-95 ${
-                                            isLiked 
-                                            ? 'bg-red-50 border-red-200 text-red-500 dark:bg-red-900/20 dark:border-red-900' 
+                                        className={`p-2 rounded-full shadow-sm border transition-all transform hover:scale-105 active:scale-95 ${isLiked
+                                            ? 'bg-red-50 border-red-200 text-red-500 dark:bg-red-900/20 dark:border-red-900'
                                             : 'bg-white border-gray-200 text-gray-400 hover:text-red-400 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300'
-                                        }`}
+                                            }`}
                                         title={isLiked ? "Remove from favorites" : "Add to favorites"}
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" className={`h-8 w-8 ${isLiked ? 'fill-current' : 'fill-none'}`} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -347,10 +353,10 @@ const CarDetailsPage = () => {
                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl">
                                     <div>
                                         <p className="text-gray-600 dark:text-gray-300">Posted by: <span className="font-medium text-gray-900 dark:text-white">{car.username}</span></p>
-                                        
+
                                         {/* Contact Phone Logic - Merged from HEAD */}
                                         <div className="text-gray-600 dark:text-gray-300 flex items-center gap-2 mt-1">
-                                            <span>Contact:</span> 
+                                            <span>Contact:</span>
                                             {showPhone ? (
                                                 <span className="font-medium text-gray-900 dark:text-white">{car.contactNumber || car.userPhoneNumber}</span>
                                             ) : (
@@ -358,7 +364,7 @@ const CarDetailsPage = () => {
                                                     onClick={() => {
                                                         setShowPhone(true);
                                                         // Only call API if specifically needed for tracking, otherwise just showing state is fine
-                                                        authFetch(`http://localhost:3333/api/advertisements/${id}/contact`, { method: 'POST' }).catch(err => console.error(err));
+                                                        authFetch(`http://localhost:8000/api/advertisements/${id}/contact`, { method: 'POST' }).catch(err => console.error(err));
                                                     }}
                                                     className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium hover:underline"
                                                 >

@@ -19,6 +19,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import com.pap25.eitimoto_backend.services.UserContextService;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
@@ -29,7 +33,6 @@ import java.util.function.Function;
 
 import jakarta.persistence.EntityNotFoundException;
 import com.pap25.eitimoto_backend.mapper.AdvertisementMapper;
-import org.springframework.web.bind.annotation.PathVariable;
 
 
 @Service
@@ -42,6 +45,7 @@ public class AdvertisementService {
     private final CarRepository carRepository;
     private final UserRepository userRepository;
     private final org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
+    private final EmbeddingService embeddingService;
 
     public List<AdvertisementResponseDto> getAdvertisements() {
         return advertisementRepository.findAll()
@@ -55,18 +59,23 @@ public class AdvertisementService {
                 .orElseThrow(() -> new EntityNotFoundException("Advertisement not found with id: " + id));
     }
 
+    public byte[] getAdvertisementImage(Long id) {
+        Advertisement advertisement = getAdvertisementById(id);
+        return advertisement.getImage();
+    }
+
     public AdvertisementResponseDto getAdvertisementDtoById(Long id) {
         Advertisement ad = getAdvertisementById(id);
         AdvertisementResponseDto dto = advertisementMapper.toDto(ad);
 
         long count = favoriteAdvertisementRepository.countByAdvertisementId(id);
-        dto.setLikesCount(count);
+        dto.setLikeCount(count);
 
         return dto;
     }
 
     @Transactional
-    public AdvertisementResponseDto addAdvertisement(AdvertisementDto adDto) {
+    public AdvertisementResponseDto addAdvertisement(AdvertisementDto adDto, MultipartFile imageFile) throws IOException {
         User user = userContextService.getCurrentUser();
 
         Car car = new Car();
@@ -83,14 +92,38 @@ public class AdvertisementService {
         car.setEngineCapacity(adDto.getCarData().getEngineCapacity());
 
         carRepository.save(car);
+
         Advertisement ad = Advertisement.builder()
                 .title(adDto.getTitle())
                 .description(adDto.getDescription())
                 .location(adDto.getLocation())
                 .user(user)
-                .car(car).build();
+                .car(car)
+                .build();
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            ad.setImage(imageFile.getBytes());
+        }
+
+        try {
+            List<Double> embedding = embeddingService.generateAdvertisementEmbedding(adDto);
+            ad.setEmbedding(embedding);
+        } catch (Exception e) {
+            System.err.println("Embedding generation error: " + e.getMessage());
+        }
+
         advertisementRepository.save(ad);
         return advertisementMapper.toDto(ad);
+    }
+
+    @Transactional
+    public AdvertisementResponseDto addAdvertisement(AdvertisementDto adDto) {
+        try {
+            return addAdvertisement(adDto, null);
+        } catch (IOException e) {
+            // This should not happen when the file is null, but we need to handle the exception
+            throw new RuntimeException("Error while adding advertisement without image", e);
+        }
     }
 
 
@@ -98,7 +131,7 @@ public class AdvertisementService {
     public AdvertisementResponseDto removeAdvertisement(Long id) {
         User currentUser = userContextService.getCurrentUser();
         Advertisement ad = advertisementRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Not found"));
+                .orElseThrow(() -> new RuntimeException("Not found"));
 
         if(!currentUser.getId().equals(ad.getUser().getId())) {
             throw new SecurityException("You are not allowed to delete this advertisement");
@@ -111,7 +144,7 @@ public class AdvertisementService {
     }
 
     @Transactional
-    public AdvertisementResponseDto updateAdvertisement(Long id, AdvertisementDto adDto) {
+    public AdvertisementResponseDto updateAdvertisement(Long id, AdvertisementDto adDto, MultipartFile imageFile) throws IOException {
         User currentUser = userContextService.getCurrentUser();
         Advertisement ad = advertisementRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Not found"));
@@ -124,6 +157,10 @@ public class AdvertisementService {
         ad.setTitle(adDto.getTitle());
         ad.setDescription(adDto.getDescription());
         ad.setLocation(adDto.getLocation());
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            ad.setImage(imageFile.getBytes());
+        }
 
         // Update Car fields
         Car car = ad.getCar();
@@ -138,6 +175,13 @@ public class AdvertisementService {
         car.setPower(adDto.getCarData().getPower());
         car.setCarColor(adDto.getCarData().getCarColor());
         car.setEngineCapacity(adDto.getCarData().getEngineCapacity());
+
+        try {
+            List<Double> newEmbedding = embeddingService.generateAdvertisementEmbedding(adDto);
+            ad.setEmbedding(newEmbedding);
+        } catch (Exception e) {
+            System.err.println("Embedding update error: " + e.getMessage());
+        }
 
         // Save changes (cascaded to Car)
         advertisementRepository.save(ad);
@@ -161,7 +205,7 @@ public class AdvertisementService {
 
         List<Advertisement> ads = advertisementRepository.findByUserId(currentUser.getId());
 
-        return ads.stream().map(ad -> advertisementMapper.toDto(ad)).collect(Collectors.toList());
+        return ads.stream().map(advertisementMapper::toDto).collect(Collectors.toList());
     }
 
     @Transactional
@@ -175,12 +219,22 @@ public class AdvertisementService {
     }
 
     @Transactional
-    public void incrementClickCount(Long id) {
+    public void incrementContactCount(Long id) {
         Advertisement ad = getAdvertisementById(id);
-        if (ad.getClickCount() == null) {
-            ad.setClickCount(0L);
+        if (ad.getContactCount() == null) {
+            ad.setContactCount(0L);
         }
-        ad.setClickCount(ad.getClickCount() + 1);
+        ad.setContactCount(ad.getContactCount() + 1);
+        advertisementRepository.save(ad);
+    }
+
+    @Transactional
+    public void incrementLikeCount(Long id) {
+        Advertisement ad = getAdvertisementById(id);
+        if (ad.getLikeCount() == null) {
+            ad.setLikeCount(0L);
+        }
+        ad.setLikeCount(ad.getLikeCount() + 1);
         advertisementRepository.save(ad);
     }
 
@@ -193,7 +247,7 @@ public class AdvertisementService {
 
         for (Advertisement ad : userAds) {
             if (ad.getViewCount() != null) totalViews += ad.getViewCount();
-            if (ad.getClickCount() != null) totalContacts += ad.getClickCount();
+            if (ad.getContactCount() != null) totalContacts += ad.getContactCount();
         }
 
         List<Long> adIds = userAds.stream().map(Advertisement::getAdvertisementId).collect(Collectors.toList());
@@ -213,7 +267,7 @@ public class AdvertisementService {
         List<AdvertisementResponseDto> allAds = getAdvertisements();
 
         return allAds.stream()
-                .sorted(Comparator.comparingLong(AdvertisementResponseDto::getLikesCount).reversed())
+                .sorted(Comparator.comparingLong(AdvertisementResponseDto::getLikeCount).reversed())
                 .limit(limit)
                 .collect(Collectors.toList());
     }
@@ -267,10 +321,47 @@ public class AdvertisementService {
         return recommendations.stream()
                 .map(ad -> {
                     AdvertisementResponseDto dto = advertisementMapper.toDto(ad);
-                    dto.setLikesCount(favoriteAdvertisementRepository.countByAdvertisementId(ad.getAdvertisementId()));
+                    dto.setLikeCount(favoriteAdvertisementRepository.countByAdvertisementId(ad.getAdvertisementId()));
                     return dto;
                 })
                 .collect(Collectors.toList());
     }
-}
 
+    public List<AdvertisementResponseDto> searchAds(
+            String keywords, String brand, String model, String bodyType,
+            Integer minPrice, Integer maxPrice, Integer minYear, Integer maxYear,
+            String fuelType, String transmission, Integer minMileage, Integer maxMileage
+    ) {
+        List<Advertisement> ads;
+
+        if (keywords != null && !keywords.isEmpty()) {
+            String searchContext = keywords;
+            List<Double> vectorList = embeddingService.embedText(searchContext);
+
+            String vectorString = vectorList.toString();
+
+            ads = advertisementRepository.findBySemantics(
+                    vectorString, brand, model, bodyType, fuelType, transmission,
+                    minPrice, maxPrice, minYear, maxYear, minMileage, maxMileage
+            );
+        } else {
+            ads = advertisementRepository.findAll().stream()
+                    .filter(a -> brand == null || (a.getCar().getCarBrand() != null && a.getCar().getCarBrand().equalsIgnoreCase(brand)))
+                    .filter(a -> model == null || (a.getCar().getCarModel() != null && a.getCar().getCarModel().equalsIgnoreCase(model)))
+                    .filter(a -> bodyType == null || (a.getCar().getCarBodyType() != null && a.getCar().getCarBodyType().equalsIgnoreCase(bodyType)))
+                    .filter(a -> minPrice == null || (a.getCar().getPrice() != null && a.getCar().getPrice().compareTo(minPrice) >= 0))
+                    .filter(a -> maxPrice == null || (a.getCar().getPrice() != null && a.getCar().getPrice().compareTo(maxPrice) <= 0))
+                    .filter(a -> minYear == null || (a.getCar().getProductionYear() != null && a.getCar().getProductionYear() >= minYear))
+                    .filter(a -> maxYear == null || (a.getCar().getProductionYear() != null && a.getCar().getProductionYear() <= maxYear))
+                    .filter(a -> fuelType == null || (a.getCar().getFuelType() != null && a.getCar().getFuelType().equalsIgnoreCase(fuelType)))
+                    .filter(a -> transmission == null || (a.getCar().getTransmission() != null && a.getCar().getTransmission().equalsIgnoreCase(transmission)))
+                    .filter(a -> minMileage == null || (a.getCar().getMileage() != null && a.getCar().getMileage() >= minMileage))
+                    .filter(a -> maxMileage == null || (a.getCar().getMileage() != null && a.getCar().getMileage() <= maxMileage))
+                    .collect(Collectors.toList());
+        }
+
+        return ads.stream()
+                .map(advertisementMapper::toDto)
+                .collect(Collectors.toList());
+    }
+}

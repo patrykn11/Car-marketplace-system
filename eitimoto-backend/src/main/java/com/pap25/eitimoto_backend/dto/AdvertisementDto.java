@@ -15,6 +15,7 @@ public class AdvertisementDto {
     private String location;
     private CarDto carData; // pełne dane samochodu
     private Long viewCount;
-    private Long clickCount;
+    private Long contactCount;
+    private Long likeCount;
 
 }

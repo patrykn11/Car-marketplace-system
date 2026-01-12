@@ -22,17 +22,27 @@ export default function EditCarPage() {
     const [price, setPrice] = useState("");
     const [description, setDescription] = useState("");
     const [location, setLocation] = useState("");
+    const [imageFile, setImageFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImageFile(file);
+            setImagePreview(URL.createObjectURL(file));
+        }
+    };
 
     useEffect(() => {
         if (!isAuthenticated) {
-            alert("You must be logged in to edit an advertisement");
+
             navigate('/login');
             return;
         }
 
         const fetchAd = async () => {
             try {
-                const response = await fetch(`http://localhost:3333/api/advertisements/${id}`);
+                const response = await fetch(`http://localhost:8000/api/advertisements/${id}`);
                 if (response.ok) {
                     const data = await response.json();
                     setTitle(data.title);
@@ -49,16 +59,18 @@ export default function EditCarPage() {
                     setPower(data.carData.power);
                     setCarColor(data.carData.carColor);
                     setPrice(data.carData.price);
+                    setPrice(data.carData.price);
                     setLocation(data.location);
+                    setImagePreview(`http://localhost:8000/api/advertisements/${id}/image`);
 
                     setLoading(false);
                 } else {
-                    alert("Failed to fetch advertisement details");
+                    console.error("Failed to fetch advertisement details");
                     navigate('/');
                 }
             } catch (error) {
                 console.error("Error fetching ad:", error);
-                alert("Error connecting to server");
+                console.error("Error connecting to server");
                 navigate('/');
             }
         };
@@ -83,33 +95,38 @@ export default function EditCarPage() {
             location, carData
         }
 
+        const formData = new FormData();
+        formData.append("advertisement", new Blob([JSON.stringify(advertisementData)], { type: "application/json" }));
+        if (imageFile) {
+            formData.append("imageFile", imageFile);
+        }
+
         try {
-            const response = await authFetch(`http://localhost:3333/api/advertisements/update/${id}`, {
+            const response = await authFetch(`http://localhost:8000/api/advertisements/update/${id}`, {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(advertisementData)
+                body: formData
             });
 
             if (response.ok) {
                 const data = await response.json();
                 console.log("Success:", data);
-                alert("Advertisement updated successfully!");
+                // alert("Advertisement updated successfully!");
                 navigate('/');
             } else {
                 const error = await response.text();
                 console.error("Error:", response.status, error);
-                alert(`Error updating advertisement: ${response.status}`);
+                console.error(`Error updating advertisement: ${response.status}`);
             }
         } catch (err) {
             console.error("Network error:", err);
-            alert("Error connecting to server");
+            console.error("Error connecting to server");
         }
     }
 
-    
+
     if (loading) return <div className="text-center mt-10 dark:text-white">Loading...</div>;
 
     return (
@@ -363,6 +380,41 @@ export default function EditCarPage() {
                         <div className="mb-8">
                             <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center transition-colors">
                                 <span className="bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-300 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm">3</span>
+                                Photo
+                            </h3>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Update Image (Optional)
+                                </label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageChange}
+                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
+                                               file:rounded-full file:border-0 file:text-sm file:font-semibold
+                                               file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100
+                                               dark:file:bg-blue-900/50 dark:file:text-blue-300 dark:hover:file:bg-blue-900"
+                                />
+                                {imagePreview && (
+                                    <div className="mt-4">
+                                        <p className="text-sm text-gray-500 mb-2">Current/New Image:</p>
+                                        <img
+                                            src={imagePreview}
+                                            alt="Image preview"
+                                            className="w-full h-auto max-w-xs rounded-lg shadow-md"
+                                            onError={(e) => {
+                                                e.target.onerror = null;
+                                                e.target.style.display = 'none';
+                                            }}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="mb-8">
+                            <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center transition-colors">
+                                <span className="bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-300 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm">4</span>
                                 Description
                             </h3>
                             <div>

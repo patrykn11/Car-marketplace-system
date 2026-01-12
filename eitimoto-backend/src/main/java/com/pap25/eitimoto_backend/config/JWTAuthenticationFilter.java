@@ -33,15 +33,19 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         final String jwt;
         final String username;
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            System.out.println("JWT Filter: No Bearer token found");
             filterChain.doFilter(request, response);
             return;
         }
         jwt = authHeader.substring(7);
-        username = jwtService.extractUsername(jwt);
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-            if (jwtService.isTokenValid(jwt, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+        try {
+            username = jwtService.extractUsername(jwt);
+            System.out.println("JWT Filter: Extracted username: " + username);
+
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+                if (jwtService.isTokenValid(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,
                             userDetails.getAuthorities()
@@ -50,7 +54,14 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                             new WebAuthenticationDetailsSource().buildDetails(request)
                     );
                     SecurityContextHolder.getContext().setAuthentication(authToken);
+                    System.out.println("JWT Filter: Authentication successful for user: " + username);
+                } else {
+                    System.out.println("JWT Filter: Token invalid for user: " + username);
+                }
             }
+        } catch (Exception e) {
+            System.out.println("JWT Filter: Exception during authentication: " + e.getMessage());
+            e.printStackTrace();
         }
 
         filterChain.doFilter(request, response);

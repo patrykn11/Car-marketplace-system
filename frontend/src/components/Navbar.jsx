@@ -30,17 +30,18 @@ const Navbar = () => {
                             <Link to="/" className={getLinkClass('/')}>
                                 Home
                             </Link>
-                            <Link to="/cars" className={getLinkClass('/cars')}>
+                            <Link to="/cars" id="nav-browse" className={getLinkClass('/cars')}>
                                 Browse Cars
                             </Link>
                             {isAuthenticated && (
-                                <Link to="/add-car" className={getLinkClass('/add-car')}>
+                                <Link to="/add-car" id="nav-add-car" className={getLinkClass('/add-car')}>
                                     Add Car
                                 </Link>
                             )}
-                            <Link to="/valuation" className={getLinkClass('/valuation')}>
+                            <Link to="/valuation" id="nav-valuation" className={getLinkClass('/valuation')}>
                                 Valuation
                             </Link>
+                            
                             <Link to="/film" className={getLinkClass('/film')}>
                                 Car Reviews
                             </Link>
@@ -53,8 +54,8 @@ const Navbar = () => {
                         </div>
                     </div>
                     <div className="hidden sm:ml-6 sm:flex sm:items-center gap-4">
-                        
                         <button
+                            id="nav-theme-toggle"
                             onClick={toggleTheme}
                             className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none transition-colors"
                             aria-label="Toggle Theme"
@@ -80,6 +81,7 @@ const Navbar = () => {
                                 </Link>
                                 <Link
                                     to="/register"
+                                    id="nav-register"
                                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-md transition-all hover:shadow-lg"
                                 >
                                     Register

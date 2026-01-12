@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class FavoriteAdvertisementService {
-    
+
     private final FavoriteAdvertisementRepository favoriteAdvertisementRepository;
     private final UserRepository userRepository;
     private final AdvertisementRepository advertisementRepository;
@@ -83,7 +83,7 @@ public class FavoriteAdvertisementService {
                 .map(ad -> {
                     AdvertisementResponseDto dto = advertisementMapper.toDto(ad);
                     long likesCount = favoriteAdvertisementRepository.countByAdvertisementId(ad.getAdvertisementId());
-                    dto.setLikesCount(likesCount);
+                    dto.setLikeCount(likesCount);
                     return dto;
                 })
                 .collect(Collectors.toList());

@@ -20,10 +20,18 @@ public class StatsController {
     }
 
     @PostMapping("/advertisements/{id}/contact")
-    public ResponseEntity<Void> incrementClickCount(@PathVariable Long id) {
-        advertisementService.incrementClickCount(id);
+    public ResponseEntity<Void> incrementContactCount(@PathVariable Long id) {
+        advertisementService.incrementContactCount(id);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/advertisements/{id}/like")
+    public ResponseEntity<Void> incrementLikeCount(@PathVariable Long id) {
+        advertisementService.incrementLikeCount(id);
+        return ResponseEntity.ok().build();
+    }
+
+
 
     @GetMapping("/profile/stats")
     public ResponseEntity<UserStatsDto> getUserStats() {
