@@ -5,12 +5,13 @@ import com.pap25.eitimoto_backend.entities.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Import(com.pap25.eitimoto_backend.TestContainersConfig.class)
 @Transactional
 class UserRepositoryTest {
 
