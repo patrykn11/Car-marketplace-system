@@ -58,17 +58,13 @@ export default function AddCarPage() {
             formData.append("imageFile", imageFile);
         }
 
-        console.log("------------------------------------------------");
-        console.log("🛠️ DEBUG: DANE WYSYŁANE DO BACKENDU (FormData):");
         for (let [key, value] of formData.entries()) {
             console.log(key, value);
         }
-        console.log("------------------------------------------------");
 
         try {
             const response = await authFetch('http://localhost:8000/api/advertisements/add', {
                 method: 'POST',
-                // Content-Type is not set, browser will set it to multipart/form-data
                 headers: {
                     'Authorization': `Bearer ${token}`
                 },
@@ -119,7 +115,6 @@ export default function AddCarPage() {
                     </div>
 
                     <form onSubmit={addCar} className="p-8">
-                        {/* Existing form fields */}
                         <div className="mb-8">
                             <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center transition-colors">
                                 <span className="bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-300 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm">1</span>

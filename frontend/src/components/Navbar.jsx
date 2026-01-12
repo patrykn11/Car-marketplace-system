@@ -1,11 +1,13 @@
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext'
-import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
+import SettingsPanel from './SettingsPanel';
 
 const Navbar = () => {
     const { isAuthenticated, logout } = useAuth();
-    const { theme, toggleTheme } = useTheme();
     const location = useLocation();
+
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
     const getLinkClass = (path) => {
         const baseClass = "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200 ";
@@ -41,7 +43,6 @@ const Navbar = () => {
                             <Link to="/valuation" id="nav-valuation" className={getLinkClass('/valuation')}>
                                 Valuation
                             </Link>
-                            
                             <Link to="/film" className={getLinkClass('/film')}>
                                 Car Reviews
                             </Link>
@@ -53,23 +54,29 @@ const Navbar = () => {
                             </Link>
                         </div>
                     </div>
-                    <div className="hidden sm:ml-6 sm:flex sm:items-center gap-4">
-                        <button
-                            id="nav-theme-toggle"
-                            onClick={toggleTheme}
-                            className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none transition-colors"
-                            aria-label="Toggle Theme"
-                        >
-                            {theme === 'light' ? (
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+
+                    <div className="hidden sm:ml-6 sm:flex sm:items-center gap-3">
+                        
+                        <div className="relative">
+                            <button
+                                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                                className={`p-2 rounded-lg transition-all duration-200 focus:outline-none ${
+                                    isSettingsOpen 
+                                    ? 'bg-blue-50 text-blue-600 dark:bg-gray-700 dark:text-blue-400 rotate-90' 
+                                    : 'text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
+                                }`}
+                                title="Appearance Settings"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
                                 </svg>
-                            ) : (
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                                </svg>
+                            </button>
+
+                            {isSettingsOpen && (
+                                <SettingsPanel />
                             )}
-                        </button>
+                        </div>
 
                         {!isAuthenticated ? (
                             <>

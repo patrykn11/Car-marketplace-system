@@ -12,25 +12,21 @@ const CarDetailsPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Invitation & Friend State
     const [invitationFromUser, setInvitationFromUser] = useState(false);
     const [acceptedInvitationFromUser, setAcceptedInvitationFromUser] = useState(false);
     const [sentInvitation, setSentInvitation] = useState(false);
     const [isFriend, setIsFriend] = useState(false);
     const [loadingInvite, setLoadingInvite] = useState(false);
 
-    // Comment State
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState("");
     const [replyingTo, setReplyingTo] = useState(null);
     const [refreshSignal, setRefreshSignal] = useState(0);
 
-    // Likes & Favorites State
     const [isLiked, setIsLiked] = useState(false);
     const [likesCount, setLikesCount] = useState(0);
     const [likeLoading, setLikeLoading] = useState(false);
 
-    // UI State
     const [showPhone, setShowPhone] = useState(false);
 
     const fetchComments = useCallback(async () => {
@@ -45,17 +41,14 @@ const CarDetailsPage = () => {
         }
     }, [id, authFetch]);
 
-    // 1. View Tracking Logic (From HEAD)
     useEffect(() => {
         if (id && !loading && car) {
-            // we only count view if it's not the owner viewing their own ad
             if (isAuthenticated && username !== car.username) {
                 authFetch(`http://localhost:8000/api/advertisements/${id}/view`, { method: 'POST' }).catch(err => console.error(err));
             }
         }
     }, [id, loading, car, username, isAuthenticated, authFetch]);
 
-    // 2. Fetch Car Details (From Incoming - includes likes/favs)
     useEffect(() => {
         const fetchCarDetails = async () => {
             try {
@@ -88,7 +81,6 @@ const CarDetailsPage = () => {
         }
     }, [id, fetchComments, isAuthenticated, authFetch]);
 
-    // 3. Check Friend/Invitation Status (Merged Logic)
     useEffect(() => {
         if (!isAuthenticated || !car || username === car.username) return;
 
@@ -103,7 +95,6 @@ const CarDetailsPage = () => {
                 const sentRes = await authFetch(`http://localhost:8000/api/invitations/sent/${car.username}`);
                 setSentInvitation(await sentRes.json());
 
-                // Using the specific isFriend endpoint from Incoming changes
                 const friendRes = await authFetch(`http://localhost:8000/api/friends/isFriend/${car.username}`);
                 setIsFriend(await friendRes.json());
             } catch (err) {
@@ -129,10 +120,8 @@ const CarDetailsPage = () => {
         try {
             let response;
             if (!previousLiked) {
-                // Add (POST)
                 response = await authFetch(`http://localhost:8000/api/favorites/${id}`, { method: 'POST' });
             } else {
-                // Remove (DELETE)
                 response = await authFetch(`http://localhost:8000/api/favorites/${id}`, { method: 'DELETE' });
             }
 
@@ -227,7 +216,6 @@ const CarDetailsPage = () => {
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
                     <div className="md:flex">
 
-                        {/* Image & Comments */}
                         <div className="md:w-1/2 flex flex-col border-r border-gray-100 dark:border-gray-700">
                             <div className="h-96 bg-gray-200 dark:bg-gray-700 relative">
                                 <img
@@ -290,7 +278,6 @@ const CarDetailsPage = () => {
                             </div>
                         </div>
 
-                        {/* Details */}
                         <div className="md:w-1/2 p-8 flex flex-col overflow-y-auto max-h-[900px]">
                             <div className="flex justify-between items-start mb-6">
                                 <div>
@@ -355,7 +342,6 @@ const CarDetailsPage = () => {
                                     <div>
                                         <p className="text-gray-600 dark:text-gray-300">Posted by: <span className="font-medium text-gray-900 dark:text-white">{car.username}</span></p>
 
-                                        {/* Contact Phone Logic - Merged from HEAD */}
                                         <div className="text-gray-600 dark:text-gray-300 flex items-center gap-2 mt-1">
                                             <span>Contact:</span>
                                             {showPhone ? (
@@ -364,7 +350,6 @@ const CarDetailsPage = () => {
                                                 <button
                                                     onClick={() => {
                                                         setShowPhone(true);
-                                                        // Only call API if specifically needed for tracking, otherwise just showing state is fine
                                                         authFetch(`http://localhost:8000/api/advertisements/${id}/contact`, { method: 'POST' }).catch(err => console.error(err));
                                                     }}
                                                     className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium hover:underline"
@@ -375,7 +360,6 @@ const CarDetailsPage = () => {
                                         </div>
                                     </div>
 
-                                    {/* Friend / Invite Logic */}
                                     {isAuthenticated && username !== car.username && !isFriend && !acceptedInvitationFromUser && (
                                         invitationFromUser ? (
                                             <button

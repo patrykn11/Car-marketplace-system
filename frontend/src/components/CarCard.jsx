@@ -9,7 +9,6 @@ const CarCard = ({ car, isFavoriteInitial, onToggleFavorite }) => {
     const { isAuthenticated, username, authFetch } = useAuth();
     const { subscribeToTopic, unsubscribeFromTopic } = useWebSocket();
 
-    // Używamy propsa isFavoriteInitial jako wartości początkowej
     const [isLiked, setIsLiked] = useState(isFavoriteInitial || false);
     const [loading, setLoading] = useState(false);
 
@@ -29,18 +28,15 @@ const CarCard = ({ car, isFavoriteInitial, onToggleFavorite }) => {
         setLoading(true);
         const previousState = isLiked;
 
-        // Optymistyczna aktualizacja UI
         setIsLiked(!isLiked);
 
         try {
             let response;
             if (!previousState) {
-                // Dodawanie do ulubionych
                 response = await authFetch(`/api/favorites/${car.advertisementId}`, {
                     method: 'POST'
                 });
             } else {
-                // Usuwanie z ulubionych
                 response = await authFetch(`/api/favorites/${car.advertisementId}`, {
                     method: 'DELETE'
                 });
@@ -100,7 +96,6 @@ const CarCard = ({ car, isFavoriteInitial, onToggleFavorite }) => {
     return (
         <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg shadow-md overflow-hidden hover:shadow-lg dark:hover:shadow-gray-900/50 transition-all duration-300 relative group">
 
-            {/* Przycisk ulubionych - styl z B, ale warunek wyświetlania z A (brak własnego auta) */}
             {isAuthenticated && username !== car.username && (
                 <button
                     onClick={handleToggleFavorite}
@@ -123,7 +118,6 @@ const CarCard = ({ car, isFavoriteInitial, onToggleFavorite }) => {
                 </button>
             )}
 
-            {/* Przyciski edycji/usuwania - widoczne tylko dla właściciela */}
             {isAuthenticated && username === car.username && (
                 <div className="absolute top-2 right-2 z-10 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button

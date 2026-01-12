@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import { useAuth } from './AuthContext'; // Assuming AuthContext is in same folder
+import { useAuth } from './AuthContext'; 
 import { toast } from 'react-toastify';
 
 const WebSocketContext = createContext(null);
@@ -9,7 +9,7 @@ const WebSocketContext = createContext(null);
 export const WebSocketProvider = ({ children }) => {
     const { isAuthenticated, authFetch, username } = useAuth();
     const stompClientRef = useRef(null);
-    const subscriptionsRef = useRef(new Map()); // Map<id, subscription>
+    const subscriptionsRef = useRef(new Map());
     const [isConnected, setIsConnected] = useState(false);
 
     useEffect(() => {
@@ -33,7 +33,6 @@ export const WebSocketProvider = ({ children }) => {
             onConnect: () => {
                 console.log('Global WebSocket Connected');
                 setIsConnected(true);
-                // Fetch existing favorites and subscribe
                 fetchFavoritesAndSubscribe(client);
             },
             onStompError: (frame) => {
@@ -64,7 +63,7 @@ export const WebSocketProvider = ({ children }) => {
         try {
             const response = await authFetch('/api/favorites');
             if (response.ok) {
-                const favorites = await response.json(); // List<Long>
+                const favorites = await response.json();
                 favorites.forEach(id => {
                     subscribeToTopic(id, client);
                 });
@@ -76,12 +75,12 @@ export const WebSocketProvider = ({ children }) => {
 
     const subscribeToTopic = (id, client = stompClientRef.current) => {
         if (!client || !client.active) return;
-        if (subscriptionsRef.current.has(id)) return; // Already subscribed
+        if (subscriptionsRef.current.has(id)) return;
 
         console.log(`Subscribing to /topic/post/${id}`);
         const subscription = client.subscribe(`/topic/post/${id}`, (message) => {
             const notification = JSON.parse(message.body);
-            // Don't show notification if I am the sender
+
             if (notification.senderUsername && notification.senderUsername === username) {
                 return;
             }
