@@ -11,30 +11,23 @@ import com.pap25.eitimoto_backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
+import com.pap25.eitimoto_backend.services.UserContextService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
 public class FavoriteAdvertisementService {
 
     private final FavoriteAdvertisementRepository favoriteAdvertisementRepository;
-    private final UserRepository userRepository;
     private final AdvertisementRepository advertisementRepository;
     private final AdvertisementMapper advertisementMapper;
+    private final UserContextService userContextService;
 
     private User getCurrentUser() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof User) {
-            String username = ((User) principal).getUsername();
-            return userRepository.findByUsername(username)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-        } else {
-            throw new RuntimeException("User not authenticated");
-        }
+        return userContextService.getCurrentUser();
     }
 
     public boolean addFavoriteAdvertisement(Long advertisementId) {
@@ -49,14 +42,14 @@ public class FavoriteAdvertisementService {
                 .user(user)
                 .build();
         favoriteAdvertisementRepository.save(favoriteAdvertisement);
-        
+
         // Update like count in advertisement
         Advertisement ad = advertisementRepository.findById(advertisementId)
                 .orElseThrow(() -> new RuntimeException("Advertisement not found"));
         Long currentLikes = ad.getLikeCount() != null ? ad.getLikeCount() : 0L;
         ad.setLikeCount(currentLikes + 1);
         advertisementRepository.save(ad);
-        
+
         return true;
     }
 
@@ -69,14 +62,14 @@ public class FavoriteAdvertisementService {
             return false;
         }
         favoriteAdvertisementRepository.deleteByUserIdAndAdvertisementId(user.getId(), advertisementId);
-        
+
         // Update like count in advertisement
         Advertisement ad = advertisementRepository.findById(advertisementId)
                 .orElseThrow(() -> new RuntimeException("Advertisement not found"));
         Long currentLikes = ad.getLikeCount() != null ? ad.getLikeCount() : 0L;
         ad.setLikeCount(Math.max(0, currentLikes - 1));
         advertisementRepository.save(ad);
-        
+
         return true;
     }
     public List<Long> getFavoriteAdvertisements() {
