@@ -57,7 +57,7 @@ class ProfileServiceTest {
 
         // Assert
         assertEquals(username, result.getUsername());
-        assertEquals("test@test.com", result.getEmail());
+        assertEquals("test@meow.com", result.getEmail());
     }
 
     @Test
