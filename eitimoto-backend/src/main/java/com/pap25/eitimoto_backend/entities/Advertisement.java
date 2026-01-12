@@ -46,6 +46,7 @@ public class Advertisement {
     @Column(nullable=false)
     private String location;
 
+
     @Column(columnDefinition = "bigint default 0")
     @Builder.Default
     private Long viewCount = 0L;
