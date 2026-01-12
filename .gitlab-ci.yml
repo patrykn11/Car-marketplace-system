@@ -1,26 +1,10 @@
+image: maven:3.9.3-openjdk-21
+
 stages:
-  - test
+  - build-and-test
 
-variables:
-  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
-  DOCKER_HOST: tcp://docker:2375
-  DOCKER_TLS_CERTDIR: ""
-
-services:
-  - docker:dind
-
-cache:
-  paths:
-    - .m2/repository
-
-test:
-  stage: test
-  image: maven:3.9.6-eclipse-temurin-21
+moje-testowanie:
+  stage: build-and-test
   script:
-    - mkdir -p .m2/repository
-    - cd eitimoto-backend
-    - ./mvnw test
-  artifacts:
-    when: always
-    reports:
-      junit: eitimoto-backend/target/surefire-reports/TEST-*.xml
+    - chmod +x ./run_tests.sh
+    - ./run_tests.sh
