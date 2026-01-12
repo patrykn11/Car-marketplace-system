@@ -40,9 +40,9 @@ const CarListPage = () => {
                     const filteredData = data.filter(car => 
                         car.carData?.carBodyType === bodyTypeFromUrl
                     );
-                    setDisplayedCars(filteredData);
+                    setDisplayedCars(applySorting(filteredData));
                 } else {
-                    setDisplayedCars(data);
+                    setDisplayedCars(applySorting(data));
                 }
 
             } catch (err) {
@@ -74,6 +74,39 @@ const CarListPage = () => {
 
         fetchFavorites();
     }, [isAuthenticated, authFetch]);
+
+    // Apply sorting when sort option changes
+    useEffect(() => {
+        if (displayedCars.length > 0) {
+            setDisplayedCars(applySorting(displayedCars));
+        }
+    }, [filterSortingBy]);
+
+    // Helper function to apply sorting
+    const applySorting = (carsArray) => {
+        if (!filterSortingBy) return carsArray;
+
+        let sortedCars = [...carsArray];
+
+        switch (filterSortingBy) {
+            case 'Price ascending':
+                sortedCars.sort((a, b) => (a.carData?.price || 0) - (b.carData?.price || 0));
+                break;
+            case 'Price descending':
+                sortedCars.sort((a, b) => (b.carData?.price || 0) - (a.carData?.price || 0));
+                break;
+            case 'Year ascending':
+                sortedCars.sort((a, b) => (a.carData?.productionYear || 0) - (b.carData?.productionYear || 0));
+                break;
+            case 'Year descending':
+                sortedCars.sort((a, b) => (b.carData?.productionYear || 0) - (a.carData?.productionYear || 0));
+                break;
+            default:
+                return carsArray;
+        }
+
+        return sortedCars;
+    };
 
     const handleFavoriteToggle = (advertisementId, isLikedNow) => {
         setFavorites(prevIds => {
@@ -118,7 +151,7 @@ const CarListPage = () => {
             }
 
             const data = await response.json();
-            setDisplayedCars(data);
+            setDisplayedCars(applySorting(data));
         } catch (err) {
             console.error("Search error:", err);
             setError(err.message);
@@ -134,7 +167,8 @@ const CarListPage = () => {
             minMileage: '', maxMileage: '', keywords: ''
         });
         setFilterSortingBy("");
-        setDisplayedCars(cars);
+        // Reset to original cars - sorting will be applied by applySorting (which returns original since filterSortingBy is empty)
+        setDisplayedCars(applySorting(cars));
     };
 
     if (loading) return <div className="flex justify-center items-center h-64 dark:text-white">Loading...</div>;
