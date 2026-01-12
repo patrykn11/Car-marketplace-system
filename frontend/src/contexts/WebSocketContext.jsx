@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import { useAuth } from './AuthContext'; 
+import { useAuth } from './AuthContext';
 import { toast } from 'react-toastify';
 
 const WebSocketContext = createContext(null);
@@ -28,8 +28,13 @@ export const WebSocketProvider = ({ children }) => {
         if (stompClientRef.current?.active) return;
 
         const socket = new SockJS('http://localhost:3333/ws');
+        const token = localStorage.getItem('access_token');
+
         const client = new Client({
             webSocketFactory: () => socket,
+            connectHeaders: {
+                Authorization: `Bearer ${token}`
+            },
             onConnect: () => {
                 console.log('Global WebSocket Connected');
                 setIsConnected(true);
@@ -59,7 +64,28 @@ export const WebSocketProvider = ({ children }) => {
         setIsConnected(false);
     };
 
+    const messageListeners = useRef(new Set());
+
+    const registerMessageListener = (callback) => {
+        messageListeners.current.add(callback);
+        return () => messageListeners.current.delete(callback);
+    };
+
     const fetchFavoritesAndSubscribe = async (client) => {
+        client.subscribe('/user/queue/messages', (message) => {
+            const msg = JSON.parse(message.body);
+            let handled = false;
+            messageListeners.current.forEach(listener => {
+                if (listener(msg)) {
+                    handled = true;
+                }
+            });
+
+            if (!handled && msg.senderUsername !== username) {
+                toast.info(`New message from ${msg.senderUsername}: ${msg.content.substring(0, 20)}...`);
+            }
+        });
+
         try {
             const response = await authFetch('/api/favorites');
             if (response.ok) {
@@ -106,7 +132,7 @@ export const WebSocketProvider = ({ children }) => {
     };
 
     return (
-        <WebSocketContext.Provider value={{ subscribeToTopic, unsubscribeFromTopic, isConnected }}>
+        <WebSocketContext.Provider value={{ subscribeToTopic, unsubscribeFromTopic, isConnected, registerMessageListener }}>
             {children}
         </WebSocketContext.Provider>
     );

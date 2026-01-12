@@ -360,6 +360,15 @@ const CarDetailsPage = () => {
                                         </div>
                                     </div>
 
+                                    {isAuthenticated && username !== car.username && (
+                                        <button
+                                            onClick={() => navigate('/chat', { state: { initialPartner: car.username } })}
+                                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors ml-auto sm:ml-0"
+                                        >
+                                            Message Seller
+                                        </button>
+                                    )}
+
                                     {isAuthenticated && username !== car.username && !isFriend && !acceptedInvitationFromUser && (
                                         invitationFromUser ? (
                                             <button

@@ -21,6 +21,7 @@ import NewsPage from './pages/NewsPage';
 import BrandsPage from './pages/BrandsPage.jsx';
 import ModelsPage from './pages/ModelsPage.jsx';
 import ModelDetailsPage from './pages/ModelDetailsPage.jsx';
+import ChatPage from './pages/ChatPage.jsx';
 import './App.css';
 
 function App() {
@@ -28,29 +29,30 @@ function App() {
     <AuthProvider>
       <WebSocketProvider>
         <ToastContainer />
-      <ThemeProvider>
-        <Routes>
-          <Route path="/" element={<MainLayout />}>
-            <Route index element={<HomePage />} />
-            <Route path="login" element={<LoginPage />} />
-            <Route path="register" element={<RegisterPage />} />
-            <Route path="profile" element={<UserProfilePage />} />
-            <Route path="cars" element={<CarListPage />} />
-            <Route path="cars/:id" element={<CarDetailsPage />} />
-            <Route path="add-car" element={<AddCarPage />} />
-            <Route path="edit-car/:id" element={<EditCarPage />} />
-            <Route path="*" element={<NotFoundPage />} />
-            <Route path="film" element={<CarFilms />} />
-            <Route path="news" element={<NewsPage />} />
-            <Route path="valuation" element={<CarValuationPage />} />
-            <Route path="edit-profile" element={<UpdateProfilePage />} />
+        <ThemeProvider>
+          <Routes>
+            <Route path="/" element={<MainLayout />}>
+              <Route index element={<HomePage />} />
+              <Route path="login" element={<LoginPage />} />
+              <Route path="register" element={<RegisterPage />} />
+              <Route path="profile" element={<UserProfilePage />} />
+              <Route path="cars" element={<CarListPage />} />
+              <Route path="cars/:id" element={<CarDetailsPage />} />
+              <Route path="add-car" element={<AddCarPage />} />
+              <Route path="edit-car/:id" element={<EditCarPage />} />
+              <Route path="*" element={<NotFoundPage />} />
+              <Route path="film" element={<CarFilms />} />
+              <Route path="news" element={<NewsPage />} />
+              <Route path="valuation" element={<CarValuationPage />} />
+              <Route path="edit-profile" element={<UpdateProfilePage />} />
+              <Route path="chat" element={<ChatPage />} />
 
-            <Route path="/catalog" element={<BrandsPage />} />
-            <Route path="/catalog/brand/:brandId" element={<ModelsPage />} />
-            <Route path="/catalog/details/:modelId" element={<ModelDetailsPage />} />
-          </Route>
-        </Routes>
-      </ThemeProvider>
+              <Route path="/catalog" element={<BrandsPage />} />
+              <Route path="/catalog/brand/:brandId" element={<ModelsPage />} />
+              <Route path="/catalog/details/:modelId" element={<ModelDetailsPage />} />
+            </Route>
+          </Routes>
+        </ThemeProvider>
       </WebSocketProvider>
     </AuthProvider>
   );

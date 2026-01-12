@@ -40,6 +40,11 @@ const Navbar = () => {
                                     Add Car
                                 </Link>
                             )}
+                            {isAuthenticated && (
+                                <Link to="/chat" className={getLinkClass('/chat')}>
+                                    Messages
+                                </Link>
+                            )}
                             <Link to="/valuation" id="nav-valuation" className={getLinkClass('/valuation')}>
                                 Valuation
                             </Link>
@@ -56,15 +61,14 @@ const Navbar = () => {
                     </div>
 
                     <div className="hidden sm:ml-6 sm:flex sm:items-center gap-3">
-                        
+
                         <div className="relative">
                             <button
                                 onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                                className={`p-2 rounded-lg transition-all duration-200 focus:outline-none ${
-                                    isSettingsOpen 
-                                    ? 'bg-blue-50 text-blue-600 dark:bg-gray-700 dark:text-blue-400 rotate-90' 
-                                    : 'text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
-                                }`}
+                                className={`p-2 rounded-lg transition-all duration-200 focus:outline-none ${isSettingsOpen
+                                        ? 'bg-blue-50 text-blue-600 dark:bg-gray-700 dark:text-blue-400 rotate-90'
+                                        : 'text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
+                                    }`}
                                 title="Appearance Settings"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

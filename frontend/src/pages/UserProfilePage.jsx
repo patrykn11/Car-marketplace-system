@@ -11,7 +11,6 @@ const UserProfilePage = () => {
     const [loading, setLoading] = useState(true);
     const [invitations, setInvitations] = useState([]);
 
-
     const [invitationFromUser, setInvitationFromUser] = useState(false);
     const [stats, setStats] = useState(null);
     const [activeTab, setActiveTab] = useState('my-listings');
