@@ -62,9 +62,10 @@ const CarDetailsPage = () => {
                 const response = await fetch(`http://localhost:8000/api/advertisements/${id}`);
                 if (!response.ok) throw new Error('Failed to fetch car details');
                 const data = await response.json();
+                console.log(data)
 
                 setCar(data);
-                setLikesCount(data.likesCount || 0);
+                setLikesCount(data.likeCount || 0);
 
                 if (isAuthenticated) {
                     const favRes = await authFetch('http://localhost:8000/api/favorites');

@@ -49,6 +49,14 @@ public class FavoriteAdvertisementService {
                 .user(user)
                 .build();
         favoriteAdvertisementRepository.save(favoriteAdvertisement);
+        
+        // Update like count in advertisement
+        Advertisement ad = advertisementRepository.findById(advertisementId)
+                .orElseThrow(() -> new RuntimeException("Advertisement not found"));
+        Long currentLikes = ad.getLikeCount() != null ? ad.getLikeCount() : 0L;
+        ad.setLikeCount(currentLikes + 1);
+        advertisementRepository.save(ad);
+        
         return true;
     }
 
@@ -61,6 +69,14 @@ public class FavoriteAdvertisementService {
             return false;
         }
         favoriteAdvertisementRepository.deleteByUserIdAndAdvertisementId(user.getId(), advertisementId);
+        
+        // Update like count in advertisement
+        Advertisement ad = advertisementRepository.findById(advertisementId)
+                .orElseThrow(() -> new RuntimeException("Advertisement not found"));
+        Long currentLikes = ad.getLikeCount() != null ? ad.getLikeCount() : 0L;
+        ad.setLikeCount(Math.max(0, currentLikes - 1));
+        advertisementRepository.save(ad);
+        
         return true;
     }
     public List<Long> getFavoriteAdvertisements() {

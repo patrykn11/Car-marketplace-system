@@ -50,7 +50,12 @@ public class AdvertisementService {
     public List<AdvertisementResponseDto> getAdvertisements() {
         return advertisementRepository.findAll()
                 .stream()
-                .map(advertisementMapper::toDto)
+                .map(ad -> {
+                    AdvertisementResponseDto dto = advertisementMapper.toDto(ad);
+                    long count = favoriteAdvertisementRepository.countByAdvertisementId(ad.getAdvertisementId());
+                    dto.setLikeCount(count);
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -205,7 +210,14 @@ public class AdvertisementService {
 
         List<Advertisement> ads = advertisementRepository.findByUserId(currentUser.getId());
 
-        return ads.stream().map(advertisementMapper::toDto).collect(Collectors.toList());
+        return ads.stream()
+                .map(ad -> {
+                    AdvertisementResponseDto dto = advertisementMapper.toDto(ad);
+                    long count = favoriteAdvertisementRepository.countByAdvertisementId(ad.getAdvertisementId());
+                    dto.setLikeCount(count);
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -361,7 +373,12 @@ public class AdvertisementService {
         }
 
         return ads.stream()
-                .map(advertisementMapper::toDto)
+                .map(ad -> {
+                    AdvertisementResponseDto dto = advertisementMapper.toDto(ad);
+                    long count = favoriteAdvertisementRepository.countByAdvertisementId(ad.getAdvertisementId());
+                    dto.setLikeCount(count);
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 }
