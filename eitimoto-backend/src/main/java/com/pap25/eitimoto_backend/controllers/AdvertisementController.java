@@ -64,9 +64,12 @@ public class AdvertisementController {
         return ResponseEntity.ok(removeAd);
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<AdvertisementResponseDto> updateAdvertisement(@PathVariable Long id, @RequestBody AdvertisementDto advertisement) {
-        AdvertisementResponseDto updatedAd = advertisementService.updateAdvertisement(id, advertisement);
+    @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<AdvertisementResponseDto> updateAdvertisement(
+            @PathVariable Long id,
+            @RequestPart("advertisement") AdvertisementDto advertisement,
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) throws IOException {
+        AdvertisementResponseDto updatedAd = advertisementService.updateAdvertisement(id, advertisement, imageFile);
         return ResponseEntity.ok(updatedAd);
     }
 

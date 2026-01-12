@@ -144,7 +144,7 @@ public class AdvertisementService {
     }
 
     @Transactional
-    public AdvertisementResponseDto updateAdvertisement(Long id, AdvertisementDto adDto) {
+    public AdvertisementResponseDto updateAdvertisement(Long id, AdvertisementDto adDto, MultipartFile imageFile) throws IOException {
         User currentUser = userContextService.getCurrentUser();
         Advertisement ad = advertisementRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Not found"));
@@ -157,6 +157,10 @@ public class AdvertisementService {
         ad.setTitle(adDto.getTitle());
         ad.setDescription(adDto.getDescription());
         ad.setLocation(adDto.getLocation());
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            ad.setImage(imageFile.getBytes());
+        }
 
         // Update Car fields
         Car car = ad.getCar();

@@ -22,6 +22,16 @@ export default function EditCarPage() {
     const [price, setPrice] = useState("");
     const [description, setDescription] = useState("");
     const [location, setLocation] = useState("");
+    const [imageFile, setImageFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImageFile(file);
+            setImagePreview(URL.createObjectURL(file));
+        }
+    };
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -49,7 +59,9 @@ export default function EditCarPage() {
                     setPower(data.carData.power);
                     setCarColor(data.carData.carColor);
                     setPrice(data.carData.price);
+                    setPrice(data.carData.price);
                     setLocation(data.location);
+                    setImagePreview(`http://localhost:8000/api/advertisements/${id}/image`);
 
                     setLoading(false);
                 } else {
@@ -83,14 +95,19 @@ export default function EditCarPage() {
             location, carData
         }
 
+        const formData = new FormData();
+        formData.append("advertisement", new Blob([JSON.stringify(advertisementData)], { type: "application/json" }));
+        if (imageFile) {
+            formData.append("imageFile", imageFile);
+        }
+
         try {
             const response = await authFetch(`http://localhost:8000/api/advertisements/update/${id}`, {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(advertisementData)
+                body: formData
             });
 
             if (response.ok) {
@@ -363,6 +380,41 @@ export default function EditCarPage() {
                         <div className="mb-8">
                             <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center transition-colors">
                                 <span className="bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-300 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm">3</span>
+                                Photo
+                            </h3>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Update Image (Optional)
+                                </label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageChange}
+                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
+                                               file:rounded-full file:border-0 file:text-sm file:font-semibold
+                                               file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100
+                                               dark:file:bg-blue-900/50 dark:file:text-blue-300 dark:hover:file:bg-blue-900"
+                                />
+                                {imagePreview && (
+                                    <div className="mt-4">
+                                        <p className="text-sm text-gray-500 mb-2">Current/New Image:</p>
+                                        <img
+                                            src={imagePreview}
+                                            alt="Image preview"
+                                            className="w-full h-auto max-w-xs rounded-lg shadow-md"
+                                            onError={(e) => {
+                                                e.target.onerror = null;
+                                                e.target.style.display = 'none';
+                                            }}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="mb-8">
+                            <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center transition-colors">
+                                <span className="bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-300 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm">4</span>
                                 Description
                             </h3>
                             <div>
