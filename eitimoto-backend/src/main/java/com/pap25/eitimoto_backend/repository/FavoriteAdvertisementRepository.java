@@ -16,6 +16,8 @@ public interface FavoriteAdvertisementRepository extends JpaRepository<FavoriteA
 
     void deleteByUserIdAndAdvertisementId(Long userId, Long advertisementId);
 
+    void deleteByAdvertisementId(Long advertisementId);
+
     Long countByAdvertisementIdIn(List<Long> advertisementIds);
 
     long countByAdvertisementId(Long advertisementId);

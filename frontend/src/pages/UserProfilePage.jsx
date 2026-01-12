@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { api } from "../apiClient";
 
 const UserProfilePage = () => {
     const [user, setUser] = useState(null);
@@ -103,10 +102,16 @@ const UserProfilePage = () => {
 
     async function deleteAdvertisement(adId) {
         try {
-            await api.delete(`/advertisements/remove/${adId}`);
-            setMyAdvertisements(prev => prev.filter(ad => ad.advertisementId !== adId));
+            const response = await authFetch(`http://localhost:8000/api/advertisements/remove/${adId}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                setMyAdvertisements(prev => prev.filter(ad => ad.advertisementId !== adId));
+            } else {
+                console.error('Failed to delete advertisement');
+            }
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error deleting advertisement:', error);
         }
     }
     const removeFromFavorites = async (adId) => {

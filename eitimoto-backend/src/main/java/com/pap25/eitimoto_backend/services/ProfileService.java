@@ -5,6 +5,7 @@ import com.pap25.eitimoto_backend.entities.FriendRequest;
 import com.pap25.eitimoto_backend.entities.FriendshipStatus;
 import com.pap25.eitimoto_backend.mapper.AdvertisementMapper;
 import com.pap25.eitimoto_backend.repository.FriendRequestRepository;
+import com.pap25.eitimoto_backend.repository.FavoriteAdvertisementRepository;
 import org.springframework.stereotype.Service;
 
 import com.pap25.eitimoto_backend.entities.Advertisement;
@@ -26,6 +27,7 @@ public class ProfileService {
         private final UserContextService userContextService;
         private final FriendRequestRepository friendRequestRepository;
         private final AdvertisementMapper advertisementMapper;
+        private final FavoriteAdvertisementRepository favoriteAdvertisementRepository;
 
         public UserProfileResponseDto getMyProfile(String username) {
             User user = userRepository.findByUsername(username)  
@@ -59,7 +61,12 @@ public class ProfileService {
             User user = userContextService.getCurrentUser();
             return userContextService.getFriends().stream()
                     .flatMap(friend -> friend.getAdvertisements().stream())
-                    .map(ad -> advertisementMapper.toDto(ad))
+                    .map(ad -> {
+                        AdvertisementResponseDto dto = advertisementMapper.toDto(ad);
+                        long count = favoriteAdvertisementRepository.countByAdvertisementId(ad.getAdvertisementId());
+                        dto.setLikeCount(count);
+                        return dto;
+                    })
                     .collect(Collectors.toList());
 
 
