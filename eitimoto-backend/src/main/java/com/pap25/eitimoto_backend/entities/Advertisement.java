@@ -11,6 +11,7 @@ import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -35,6 +36,10 @@ public class Advertisement {
     @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_ad_user_id"))
     private User user;
 
+    @OneToMany(mappedBy = "advertisement", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Comment> comments = new ArrayList<>();
+
     @Column(nullable=false)
     private String title;
 
@@ -42,12 +47,15 @@ public class Advertisement {
     private String location;
 
     @Column(columnDefinition = "bigint default 0")
+    @Builder.Default
     private Long viewCount = 0L;
 
     @Column(columnDefinition = "bigint default 0")
+    @Builder.Default
     private Long contactCount = 0L;
 
     @Column(columnDefinition = "bigint default 0")
+    @Builder.Default
     private Long likeCount = 0L;
 
     @JdbcTypeCode(SqlTypes.VARBINARY)

@@ -142,6 +142,9 @@ public class AdvertisementService {
             throw new SecurityException("You are not allowed to delete this advertisement");
         }
 
+        // Delete all favorites for this advertisement
+        favoriteAdvertisementRepository.deleteByAdvertisementId(id);
+
         AdvertisementResponseDto responseDto = advertisementMapper.toDto(ad);
         advertisementRepository.delete(ad);
 
