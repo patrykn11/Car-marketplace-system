@@ -65,7 +65,7 @@ class UserContextServiceTest {
         User result = userContextService.getCurrentUser();
 
         // Assert
-        assertEquals("testUsesr", result.getUsername());
+        assertEquals("testUser", result.getUsername());
     }
 
     @Test
