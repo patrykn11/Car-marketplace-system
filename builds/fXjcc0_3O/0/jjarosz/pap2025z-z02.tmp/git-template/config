@@ -1,0 +1,10 @@
+[init]
+	defaultBranch = none
+[fetch]
+	recurseSubmodules = false
+[credential]
+	interactive = never
+[gc]
+	autoDetach = false
+[include]
+	path = /Users/patryknisgorski/java/builds/fXjcc0_3O/0/jjarosz/pap2025z-z02.tmp/.gitlab-runner.ext.conf
