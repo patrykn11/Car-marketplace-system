@@ -30,7 +30,7 @@ const UpdateProfilePage = () => {
         if (userNewLocation.trim()) newLocation = userNewLocation;
 
         try {
-            const response = await fetch("http://localhost:8000/api/profile/edit_profile/me", {
+            const response = await fetch("/api/profile/edit_profile/me", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

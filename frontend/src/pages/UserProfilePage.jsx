@@ -22,7 +22,7 @@ const UserProfilePage = () => {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const response = await authFetch('http://localhost:8000/api/profile/stats');
+                const response = await authFetch('/api/profile/stats');
                 if (response.ok) {
                     const data = await response.json();
                     setStats(data);
@@ -65,17 +65,17 @@ const UserProfilePage = () => {
 
     async function fetchUserProfile() {
         try {
-            const userResponse = await authFetch('http://localhost:8000/api/profile/me');
+            const userResponse = await authFetch('/api/profile/me');
             if (!userResponse.ok) throw new Error('Failed to fetch user data!');
             const userData = await userResponse.json();
             setUser(userData);
 
-            const myAdsResponse = await authFetch('http://localhost:8000/api/profile/user/advertisements');
+            const myAdsResponse = await authFetch('/api/profile/user/advertisements');
             if (!myAdsResponse.ok) throw new Error('Failed to fetch user ads!');
             const myAdsData = await myAdsResponse.json();
             setMyAdvertisements(myAdsData);
 
-            const favResponse = await authFetch('http://localhost:8000/api/favorites/list');
+            const favResponse = await authFetch('/api/favorites/list');
             if (favResponse.ok) {
                 const favData = await favResponse.json();
                 setFavoriteAds(favData);
@@ -90,7 +90,7 @@ const UserProfilePage = () => {
 
     async function fetchFriendsAdvertisements() {
         try {
-            const response = await authFetch('http://localhost:8000/api/profile/friends/advertisements');
+            const response = await authFetch('/api/profile/friends/advertisements');
             if (!response.ok) throw new Error('Failed to fetch friends ads!');
             const data = await response.json();
             setFriendsAds(data);
@@ -101,7 +101,7 @@ const UserProfilePage = () => {
 
     async function deleteAdvertisement(adId) {
         try {
-            const response = await authFetch(`http://localhost:8000/api/advertisements/remove/${adId}`, {
+            const response = await authFetch(`/api/advertisements/remove/${adId}`, {
                 method: 'DELETE'
             });
             if (response.ok) {
@@ -115,7 +115,7 @@ const UserProfilePage = () => {
     }
     const removeFromFavorites = async (adId) => {
         try {
-            const res = await authFetch(`http://localhost:8000/api/favorites/${adId}`, { method: 'DELETE' });
+            const res = await authFetch(`/api/favorites/${adId}`, { method: 'DELETE' });
             if (res.ok) {
                 setFavoriteAds(prev => prev.filter(ad => ad.advertisementId !== adId));
             }
@@ -342,7 +342,7 @@ const AdCard = ({ ad, navigate, onDelete, isOwner, customAction }) => (
             <img
                 className="w-full h-full object-cover"
                 src={ad.hasImage
-                    ? `http://localhost:8000/api/advertisements/${ad.advertisementId}/image`
+                    ? `/api/advertisements/${ad.advertisementId}/image`
                     : "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
                 }
                 alt={ad.title}

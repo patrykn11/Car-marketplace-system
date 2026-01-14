@@ -9,7 +9,7 @@ const CAR_DATA = {
     "Opel": ["Insignia", "Vectra", "Astra", "Mokka", "Grandland", "Corsa"]
 }
 
-const YEARS = Array.from({length: 26}, (_, i) => 2025 - i)
+const YEARS = Array.from({ length: 26 }, (_, i) => 2025 - i)
 const FUEL_TYPES = ["Gasoline", "Diesel", "Hybrid", "Electric"]
 
 const CarValuationPage = () => {
@@ -40,14 +40,14 @@ const CarValuationPage = () => {
         setError(null);
         setValuation(null);
 
-        if(!formData.brand || !formData.model || !formData.productionYear || !formData.mileage || !formData.fuelType ) {
+        if (!formData.brand || !formData.model || !formData.productionYear || !formData.mileage || !formData.fuelType) {
             setError("Fill in all required fields!")
             setLoading(false)
             return
         }
 
         try {
-            const response = await fetch("http://localhost:8000/api/valuation/calculate", {
+            const response = await fetch("/api/valuation/calculate", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -94,8 +94,8 @@ const CarValuationPage = () => {
                                         name="brand"
                                         value={formData.brand}
                                         onChange={handleInputChange}
-                                        className="w-full rounded-xl border border-gray-300 p-3 outline-none transition-all 
-                                                   focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                                        className="w-full rounded-xl border border-gray-300 p-3 outline-none transition-all
+                                                   focus:ring-2 focus:ring-blue-500 focus:border-blue-500
                                                    bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                     >
                                         <option value="">Choose brand</option>
@@ -112,9 +112,9 @@ const CarValuationPage = () => {
                                         value={formData.model}
                                         onChange={handleInputChange}
                                         disabled={!formData.brand}
-                                        className="w-full rounded-xl border border-gray-300 p-3 outline-none transition-all 
-                                                   focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
-                                                   bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white 
+                                        className="w-full rounded-xl border border-gray-300 p-3 outline-none transition-all
+                                                   focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                                                   bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white
                                                    disabled:bg-gray-100 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
                                     >
                                         <option value="">Choose model</option>
@@ -130,8 +130,8 @@ const CarValuationPage = () => {
                                         name="productionYear"
                                         value={formData.productionYear}
                                         onChange={handleInputChange}
-                                        className="w-full rounded-xl border border-gray-300 p-3 outline-none transition-all 
-                                                   focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                                        className="w-full rounded-xl border border-gray-300 p-3 outline-none transition-all
+                                                   focus:ring-2 focus:ring-blue-500 focus:border-blue-500
                                                    bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                     >
                                         <option value="">Choose year</option>
@@ -147,8 +147,8 @@ const CarValuationPage = () => {
                                         name="fuelType"
                                         value={formData.fuelType}
                                         onChange={handleInputChange}
-                                        className="w-full rounded-xl border border-gray-300 p-3 outline-none transition-all 
-                                                   focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                                        className="w-full rounded-xl border border-gray-300 p-3 outline-none transition-all
+                                                   focus:ring-2 focus:ring-blue-500 focus:border-blue-500
                                                    bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                     >
                                         <option value="">Choose fuel type</option>
@@ -166,9 +166,9 @@ const CarValuationPage = () => {
                                         value={formData.mileage}
                                         onChange={handleInputChange}
                                         placeholder="np. 150000"
-                                        className="w-full rounded-xl border border-gray-300 p-3 outline-none transition-all 
-                                                   focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
-                                                   bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white 
+                                        className="w-full rounded-xl border border-gray-300 p-3 outline-none transition-all
+                                                   focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                                                   bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white
                                                    dark:[color-scheme:dark]"
                                     />
                                 </div>
@@ -191,9 +191,9 @@ const CarValuationPage = () => {
                     </div>
 
                     <div className="md:col-span-1">
-                        <div className={`h-full rounded-3xl border border-gray-200 dark:border-gray-700 shadow-lg p-8 flex flex-col items-center justify-center text-center transition-all duration-500 
-                            ${valuation 
-                                ? 'bg-blue-600 text-white' 
+                        <div className={`h-full rounded-3xl border border-gray-200 dark:border-gray-700 shadow-lg p-8 flex flex-col items-center justify-center text-center transition-all duration-500
+                            ${valuation
+                                ? 'bg-blue-600 text-white'
                                 : 'bg-white text-gray-500 dark:bg-gray-800 dark:text-gray-300'
                             }`}>
 

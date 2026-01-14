@@ -3,21 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import CarCard from '../components/CarCard';
 import AppTutorial from '../components/AppTutorial';
 import { useAuth } from '../contexts/AuthContext';
-
-const BODY_TYPES = [
-    { name: "SUV", icon: (<svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l2-8h12l-2 8H4z" /><circle cx="6" cy="18" r="2" /><circle cx="18" cy="18" r="2" /></svg>) },
-    { name: "Sedan", icon: (<svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M3 12h18l-3-6H6L3 12z" /><circle cx="6" cy="18" r="2" /><circle cx="18" cy="18" r="2" /></svg>) },
-    { name: "Hatchback", icon: (<svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M4 14h16" /><circle cx="7" cy="17" r="2" /><circle cx="17" cy="17" r="2" /></svg>) },
-    { name: "Coupe", icon: (<svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M2 14h20" /><circle cx="6" cy="17" r="2" /><circle cx="18" cy="17" r="2" /></svg>) }
-];
-
-const BRAND_ADS = [
-    { id: 1, name: "BMW", slogan: "Sheer Driving Pleasure", logo: "https://upload.wikimedia.org/wikipedia/commons/4/44/BMW.svg", link: "/cars?brand=BMW", theme: "from-blue-600 to-blue-800" },
-    { id: 2, name: "Audi", slogan: "Vorsprung durch Technik", logo: "https://logowik.com/content/uploads/images/562_audi.jpg", link: "/cars?brand=Audi", theme: "from-gray-800 to-gray-900" },
-    { id: 3, name: "Mercedes-Benz", slogan: "The Best or Nothing", logo: "https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg", link: "/cars?brand=Mercedes", theme: "from-black to-gray-800" },
-    { id: 4, name: "Tesla", slogan: "Electric Future", logo: "https://upload.wikimedia.org/wikipedia/commons/b/bd/Tesla_Motors.svg", link: "/cars?brand=Tesla", theme: "from-red-600 to-red-800" },
-    { id: 5, name: "Toyota", slogan: "Let's Go Places", logo: "https://upload.wikimedia.org/wikipedia/commons/9/9d/Toyota_carlogo.svg", link: "/cars?brand=Toyota", theme: "from-red-500 to-red-700" }
-];
+import { BODY_TYPES } from '../data/bodyTypes';
+import { BRAND_ADS } from '../data/brandAds';
 
 const HomePage = () => {
     const [featuredCars, setFeaturedCars] = useState([]);
@@ -31,9 +18,9 @@ const HomePage = () => {
 
     useEffect(() => {
         const fetchHomeData = async () => {
-            const adsRes = await fetch('http://localhost:8000/api/advertisements/popular');
+            const adsRes = await fetch('/api/advertisements/popular');
             if (adsRes.ok) setFeaturedCars(await adsRes.json());
-            const brandsRes = await fetch('http://localhost:8000/api/catalog/brands');
+            const brandsRes = await fetch('/api/catalog/brands');
             if (brandsRes.ok) {
                 const data = await brandsRes.json();
                 setPopularBrands(data.slice(0, 4));
@@ -44,9 +31,9 @@ const HomePage = () => {
 
     useEffect(() => {
         if (isAuthenticated) {
-            authFetch('http://localhost:8000/api/favorites')
+            authFetch('/api/favorites')
                 .then(r => r.ok && r.json().then(setFavoriteIds));
-            authFetch('http://localhost:8000/api/advertisements/recommendations')
+            authFetch('/api/advertisements/recommendations')
                 .then(r => r.ok && r.json().then(setRecommendedCars));
         } else {
             setFavoriteIds([]);
@@ -58,7 +45,7 @@ const HomePage = () => {
         const fetchBrandAd = async () => {
             if (isAuthenticated) {
                 try {
-                    const res = await authFetch('http://localhost:8000/api/Ad');
+                    const res = await authFetch('/api/Ad');
                     const favBrand = await res.text();
                     console.log("Car brand:", favBrand);
                     const ad = BRAND_ADS.find(a => a.name.toLowerCase() === favBrand.toLowerCase());

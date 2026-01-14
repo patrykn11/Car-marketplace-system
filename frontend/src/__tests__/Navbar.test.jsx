@@ -82,7 +82,7 @@ describe('Navbar Component', () => {
             </MemoryRouter>
         );
 
-        const themeBtn = screen.getByRole('button', { name: /Toggle Theme/i });
+        const themeBtn = screen.getByRole('button', { name: /Appearance Settings/i });
         fireEvent.click(themeBtn);
         expect(mockToggleTheme).toHaveBeenCalled();
     });

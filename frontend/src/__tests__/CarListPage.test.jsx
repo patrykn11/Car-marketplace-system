@@ -132,7 +132,7 @@ describe('CarListPage Component', () => {
         );
 
         await waitFor(() => {
-            expect(mockAuthFetch).toHaveBeenCalledWith('http://localhost:8000/api/favorites');
+            expect(mockAuthFetch).toHaveBeenCalledWith('/api/favorites');
         });
     });
 

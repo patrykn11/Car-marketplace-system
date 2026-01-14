@@ -29,10 +29,10 @@ export default function ChatPage() {
                     return [...prev, msg];
                 });
                 scrollToBottom();
-                return true; 
+                return true;
             } else {
                 fetchPartners();
-                return false; 
+                return false;
             }
         });
 
@@ -47,7 +47,7 @@ export default function ChatPage() {
 
     const fetchPartners = async () => {
         try {
-            const res = await authFetch('http://localhost:8000/api/chat/partners');
+            const res = await authFetch('/api/chat/partners');
             if (res.ok) {
                 const data = await res.json();
                 setPartners(data);
@@ -59,7 +59,7 @@ export default function ChatPage() {
 
     const fetchHistory = async (partner) => {
         try {
-            const res = await authFetch(`http://localhost:8000/api/chat/history/${partner}`);
+            const res = await authFetch(`/api/chat/history/${partner}`);
             if (res.ok) {
                 const data = await res.json();
                 setMessages(data);
@@ -77,7 +77,7 @@ export default function ChatPage() {
         if (!newMessage.trim() || !selectedPartner) return;
 
         try {
-            const res = await authFetch('http://localhost:8000/api/chat/send', {
+            const res = await authFetch('/api/chat/send', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

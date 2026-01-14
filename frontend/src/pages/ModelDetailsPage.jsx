@@ -8,7 +8,7 @@ const ModelDetailsPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(`http://localhost:8000/api/catalog/models/${modelId}`)
+    axios.get(`/api/catalog/models/${modelId}`)
       .then(res => setCar(res.data))
       .catch(err => console.error(err));
   }, [modelId]);
@@ -17,18 +17,18 @@ const ModelDetailsPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-10 max-w-4xl transition-colors duration-300">
-      <button 
+      <button
         onClick={() => navigate(-1)}
         className="mb-6 text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white flex items-center gap-2 transition-colors"
       >
         ← Back
       </button>
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl dark:shadow-gray-900/50 overflow-hidden border border-gray-100 dark:border-gray-700 transition-colors duration-300">
-        
+
         <div className="w-full h-80 md:h-96 bg-gray-200 dark:bg-gray-700 relative">
-          <img 
-            src={car.photoUrl || '/models/placeholder.jpg'} 
-            alt={car.name} 
+          <img
+            src={car.photoUrl || '/models/placeholder.jpg'}
+            alt={car.name}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 dark:opacity-40 pointer-events-none" />

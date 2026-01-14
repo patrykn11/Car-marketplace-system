@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { Client } from '@stomp/stompjs';
+import { WS_BASE_URL } from '../config';
 import SockJS from 'sockjs-client';
 import { useAuth } from './AuthContext';
 import { toast } from 'react-toastify';
@@ -27,7 +28,7 @@ export const WebSocketProvider = ({ children }) => {
     const connect = () => {
         if (stompClientRef.current?.active) return;
 
-        const socket = new SockJS('http://localhost:3333/ws');
+        const socket = new SockJS(WS_BASE_URL);
         const token = localStorage.getItem('access_token');
 
         const client = new Client({

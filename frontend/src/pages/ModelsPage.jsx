@@ -9,14 +9,14 @@ const ModelsPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(`http://localhost:8000/api/catalog/brands/${brandId}/models`)
+    axios.get(`/api/catalog/brands/${brandId}/models`)
       .then(res => setModels(res.data))
       .catch(err => console.error(err));
   }, [brandId]);
 
   return (
     <div className="container mx-auto px-4 py-10">
-      <button 
+      <button
         onClick={() => navigate('/catalog')}
         className="mb-6 text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-2 transition-colors"
       >
@@ -28,14 +28,14 @@ const ModelsPage = () => {
 
       {models.length === 0 ? (
         <p className="text-gray-500 dark:text-gray-400">
-            No models for this brand in the database.
+          No models for this brand in the database.
         </p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {models.map((car) => (
-            <CarTile 
-              key={car.id} 
-              car={car} 
+            <CarTile
+              key={car.id}
+              car={car}
               onClick={(id) => navigate(`/catalog/details/${id}`)}
             />
           ))}

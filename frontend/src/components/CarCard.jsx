@@ -90,7 +90,7 @@ const CarCard = ({ car, isFavoriteInitial, onToggleFavorite }) => {
     };
 
     const imageUrl = car.hasImage
-        ? `http://localhost:8000/api/advertisements/${car.advertisementId}/image`
+        ? `/api/advertisements/${car.advertisementId}/image`
         : "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60";
 
     return (

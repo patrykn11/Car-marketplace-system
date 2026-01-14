@@ -7,7 +7,7 @@ const Comment = ({ comment, onReplyClick, refreshSignal }) => {
 
   const fetchReplies = useCallback(async () => {
     try {
-      const res = await authFetch(`http://localhost:3333/api/comment/getChildren/${comment.comment_id}`);
+      const res = await authFetch(`/api/comment/getChildren/${comment.comment_id}`);
       if (res.ok) {
         const data = await res.json();
         setReplies(data);
@@ -38,7 +38,7 @@ const Comment = ({ comment, onReplyClick, refreshSignal }) => {
             className="text-xs text-blue-600 hover:text-blue-800 font-bold transition-colors"
             onClick={() => onReplyClick(comment.comment_id)}
           >
-           Reply
+            Reply
           </button>
         )}
       </div>

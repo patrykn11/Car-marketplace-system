@@ -25,7 +25,7 @@ const CarListPage = () => {
         const fetchCars = async () => {
             try {
                 setLoading(true);
-                const response = await fetch('http://localhost:8000/api/advertisements');
+                const response = await fetch('/api/advertisements');
                 if (!response.ok) {
                     throw new Error('Failed to fetch advertisements');
                 }
@@ -59,7 +59,7 @@ const CarListPage = () => {
         const fetchFavorites = async () => {
             if (isAuthenticated) {
                 try {
-                    const response = await authFetch('http://localhost:8000/api/favorites');
+                    const response = await authFetch('/api/favorites');
                     if (response.ok) {
                         const data = await response.json();
                         setFavorites(data);
@@ -142,7 +142,7 @@ const CarListPage = () => {
             if (filters.minMileage) params.append('minMileage', filters.minMileage);
             if (filters.maxMileage) params.append('maxMileage', filters.maxMileage);
 
-            const response = await fetch(`http://localhost:8000/api/advertisements/search?${params.toString()}`);
+            const response = await fetch(`/api/advertisements/search?${params.toString()}`);
 
             if (!response.ok) {
                 throw new Error('Search failed');

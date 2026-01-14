@@ -63,7 +63,7 @@ export default function AddCarPage() {
         }
 
         try {
-            const response = await authFetch('http://localhost:8000/api/advertisements/add', {
+            const response = await authFetch('/api/advertisements/add', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`

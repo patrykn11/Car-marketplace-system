@@ -1,0 +1,6 @@
+export const BODY_TYPES = [
+    { name: "SUV", icon: (<svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l2-8h12l-2 8H4z" /><circle cx="6" cy="18" r="2" /><circle cx="18" cy="18" r="2" /></svg>) },
+    { name: "Sedan", icon: (<svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M3 12h18l-3-6H6L3 12z" /><circle cx="6" cy="18" r="2" /><circle cx="18" cy="18" r="2" /></svg>) },
+    { name: "Hatchback", icon: (<svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M4 14h16" /><circle cx="7" cy="17" r="2" /><circle cx="17" cy="17" r="2" /></svg>) },
+    { name: "Coupe", icon: (<svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M2 14h20" /><circle cx="6" cy="17" r="2" /><circle cx="18" cy="17" r="2" /></svg>) }
+];

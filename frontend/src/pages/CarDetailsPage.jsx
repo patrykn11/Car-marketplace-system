@@ -31,7 +31,7 @@ const CarDetailsPage = () => {
 
     const fetchComments = useCallback(async () => {
         try {
-            const res = await authFetch(`http://localhost:8000/api/comment/getParents/${id}`);
+            const res = await authFetch(`/api/comment/getParents/${id}`);
             if (res.ok) {
                 const data = await res.json();
                 setComments(data);
@@ -44,7 +44,7 @@ const CarDetailsPage = () => {
     useEffect(() => {
         if (id && !loading && car) {
             if (isAuthenticated && username !== car.username) {
-                authFetch(`http://localhost:8000/api/advertisements/${id}/view`, { method: 'POST' }).catch(err => console.error(err));
+                authFetch(`/api/advertisements/${id}/view`, { method: 'POST' }).catch(err => console.error(err));
             }
         }
     }, [id, loading, car, username, isAuthenticated, authFetch]);
@@ -52,7 +52,7 @@ const CarDetailsPage = () => {
     useEffect(() => {
         const fetchCarDetails = async () => {
             try {
-                const response = await fetch(`http://localhost:8000/api/advertisements/${id}`);
+                const response = await fetch(`/api/advertisements/${id}`);
                 if (!response.ok) throw new Error('Failed to fetch car details');
                 const data = await response.json();
                 console.log(data)
@@ -61,7 +61,7 @@ const CarDetailsPage = () => {
                 setLikesCount(data.likeCount || 0);
 
                 if (isAuthenticated) {
-                    const favRes = await authFetch('http://localhost:8000/api/favorites');
+                    const favRes = await authFetch('/api/favorites');
                     if (favRes.ok) {
                         const favIds = await favRes.json();
                         setIsLiked(favIds.includes(Number(id)));
@@ -86,16 +86,16 @@ const CarDetailsPage = () => {
 
         const checkStatus = async () => {
             try {
-                const fromRes = await authFetch(`http://localhost:8000/api/invitations/from/${car.username}`);
+                const fromRes = await authFetch(`/api/invitations/from/${car.username}`);
                 setInvitationFromUser(await fromRes.json());
 
-                const acceptedRes = await authFetch(`http://localhost:8000/api/invitations/Accepted/${car.username}`);
+                const acceptedRes = await authFetch(`/api/invitations/Accepted/${car.username}`);
                 setAcceptedInvitationFromUser(await acceptedRes.json());
 
-                const sentRes = await authFetch(`http://localhost:8000/api/invitations/sent/${car.username}`);
+                const sentRes = await authFetch(`/api/invitations/sent/${car.username}`);
                 setSentInvitation(await sentRes.json());
 
-                const friendRes = await authFetch(`http://localhost:8000/api/friends/isFriend/${car.username}`);
+                const friendRes = await authFetch(`/api/friends/isFriend/${car.username}`);
                 setIsFriend(await friendRes.json());
             } catch (err) {
                 console.error('Error checking invitations/friend status:', err);
@@ -120,9 +120,9 @@ const CarDetailsPage = () => {
         try {
             let response;
             if (!previousLiked) {
-                response = await authFetch(`http://localhost:8000/api/favorites/${id}`, { method: 'POST' });
+                response = await authFetch(`/api/favorites/${id}`, { method: 'POST' });
             } else {
-                response = await authFetch(`http://localhost:8000/api/favorites/${id}`, { method: 'DELETE' });
+                response = await authFetch(`/api/favorites/${id}`, { method: 'DELETE' });
             }
 
             if (!response.ok) throw new Error("Failed to update favorite");
@@ -141,7 +141,7 @@ const CarDetailsPage = () => {
         if (!newComment.trim()) return;
 
         try {
-            const res = await authFetch(`http://localhost:8000/api/comment/add-com`, {
+            const res = await authFetch(`/api/comment/add-com`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -165,13 +165,13 @@ const CarDetailsPage = () => {
         setLoadingInvite(true);
         try {
             const url = invitationFromUser
-                ? `http://localhost:8000/api/invitations/accept/${car.username}`
-                : `http://localhost:8000/api/invitations/add/${car.username}`;
+                ? `/api/invitations/accept/${car.username}`
+                : `/api/invitations/add/${car.username}`;
             const res = await authFetch(url, { method: 'POST' });
             if (res.ok) {
                 if (!invitationFromUser) {
                     try {
-                        await authFetch(`http://localhost:8000/api/advertisements/${id}/contact`, { method: 'POST' });
+                        await authFetch(`/api/advertisements/${id}/contact`, { method: 'POST' });
                     } catch (statsErr) {
                         console.error('Error incrementing contact stats:', statsErr);
                     }
@@ -221,7 +221,7 @@ const CarDetailsPage = () => {
                                 <img
                                     className="w-full h-full object-cover"
                                     src={car.hasImage
-                                        ? `http://localhost:8000/api/advertisements/${id}/image`
+                                        ? `/api/advertisements/${id}/image`
                                         : "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
                                     }
                                     alt="Car"
@@ -350,7 +350,7 @@ const CarDetailsPage = () => {
                                                 <button
                                                     onClick={() => {
                                                         setShowPhone(true);
-                                                        authFetch(`http://localhost:8000/api/advertisements/${id}/contact`, { method: 'POST' }).catch(err => console.error(err));
+                                                        authFetch(`/api/advertisements/${id}/contact`, { method: 'POST' }).catch(err => console.error(err));
                                                     }}
                                                     className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium hover:underline"
                                                 >
