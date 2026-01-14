@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e  # zatrzymaj skrypt przy błędzie
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     if [[ -z "$JAVA_HOME" && -x "/usr/libexec/java_home" ]]; then
@@ -15,6 +16,7 @@ else
     echo "JAVA_HOME is not set. Using system default 'java'."
 fi
 
+# checking java version
 JAVA_VER=$(java -version 2>&1 | head -n 1 | awk -F '"' '{print $2}' | awk -F '.' '{print $1}')
 if [[ "$JAVA_VER" -ne "21" ]]; then
     echo "WARNING: You are running Java $JAVA_VER. This project assumes Java 21."
