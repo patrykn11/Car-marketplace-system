@@ -60,7 +60,6 @@ class AuthControllerTest {
 
     @Test
     void login_ShouldReturn200AndToken_WhenCredentialsAreCorrect() throws Exception {
-        // First register a user
         AuthRequest registerRequest = AuthRequest.builder()
                 .username("loginuser")
                 .password("password")
@@ -74,7 +73,6 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isOk());
 
-        // Then try to login
         AuthRequest loginRequest = AuthRequest.builder()
                 .username("loginuser")
                 .password("password")

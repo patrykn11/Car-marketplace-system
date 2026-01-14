@@ -37,16 +37,13 @@ class AuthServiceTest {
 
     @Test
     void register_ShouldReturnAuthResponse_WhenRequestIsValid() {
-        // Arrange
         AuthRequest request = new AuthRequest("user", "password", "email@test.com", "123", "City");
         when(userRepository.existsByUsername(request.getUsername())).thenReturn(false);
         when(passwordEncoder.encode(request.getPassword())).thenReturn("encodedPass");
         when(jwtService.generateToken(any(User.class))).thenReturn("jwt-token");
 
-        // Act
         AuthResponse response = authService.register(request);
 
-        // Assert
         assertNotNull(response);
         assertEquals("jwt-token", response.getToken());
         assertEquals("user", response.getUsername());
@@ -55,18 +52,15 @@ class AuthServiceTest {
 
     @Test
     void register_ShouldThrowException_WhenUsernameTaken() {
-        // Arrange
         AuthRequest request = new AuthRequest("user", "password", "email@test.com", "123", "City");
         when(userRepository.existsByUsername(request.getUsername())).thenReturn(true);
 
-        // Act & Assert
         assertThrows(RuntimeException.class, () -> authService.register(request));
         verify(userRepository, never()).save(any(User.class));
     }
 
     @Test
     void login_ShouldReturnAuthResponse_WhenCredentialsAreCorrect() {
-        // Arrange
         AuthRequest request = new AuthRequest("user", "password", null, null, null);
         User user = new User();
         user.setUsername("user");
@@ -75,10 +69,8 @@ class AuthServiceTest {
         when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
         when(jwtService.generateToken(user)).thenReturn("jwt-token");
 
-        // Act
         AuthResponse response = authService.login(request);
 
-        // Assert
         assertNotNull(response);
         assertEquals("jwt-token", response.getToken());
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));

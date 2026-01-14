@@ -36,7 +36,6 @@ class FriendRequestServiceTest {
 
     @Test
     void createInvitation_ShouldSaveAndReturnDto_WhenValid() {
-        // Arrange
         String targetUsername = "target";
         User sender = new User();
         sender.setUsername("sender");
@@ -51,22 +50,18 @@ class FriendRequestServiceTest {
 
         when(friendRequestMapper.toDto(any(FriendRequest.class))).thenReturn(new FriendRequestResponseDto());
 
-        // Act
         FriendRequestResponseDto result = service.createInvitation(targetUsername);
 
-        // Assert
         assertNotNull(result);
         verify(friendRequestRepository).save(any(FriendRequest.class));
     }
 
     @Test
     void createInvitation_ShouldThrowException_WhenSendingToSelf() {
-        // Arrange
         User sender = new User();
         sender.setUsername("sender");
         when(userContextService.getCurrentUser()).thenReturn(sender);
 
-        // Act & Assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
             () -> service.createInvitation("sender"));
         assertEquals("you can't send invitation to yourself", ex.getMessage());
@@ -74,7 +69,6 @@ class FriendRequestServiceTest {
 
     @Test
     void acceptInvitation_ShouldUpdateStatus_WhenFound() {
-        // Arrange
         String senderUsername = "sender";
         User receiver = new User();
         receiver.setUsername("receiver");
@@ -89,10 +83,8 @@ class FriendRequestServiceTest {
 
         when(friendRequestMapper.toDto(any())).thenReturn(new FriendRequestResponseDto());
 
-        // Act
         service.acceptInvitation(senderUsername);
 
-        // Assert
         assertEquals(FriendshipStatus.ACCEPTED, request.getStatus());
         verify(friendRequestRepository).save(request);
     }

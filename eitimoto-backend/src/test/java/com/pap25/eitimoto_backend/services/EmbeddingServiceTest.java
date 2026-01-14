@@ -27,7 +27,6 @@ class EmbeddingServiceTest {
 
     @Test
     void shouldGenerateAdvertisementEmbedding() {
-        // Arrange
         AdvertisementDto dto = new AdvertisementDto();
         CarDto carData = new CarDto();
         carData.setCarBrand("Toyota");
@@ -41,32 +40,26 @@ class EmbeddingServiceTest {
         List<Double> expectedEmbedding = List.of(0.1, 0.2, 0.3);
         when(embeddingModel.embed(anyString())).thenReturn(expectedEmbedding);
 
-        // Act
         List<Double> result = embeddingService.generateAdvertisementEmbedding(dto);
 
-        // Assert
         assertEquals(expectedEmbedding, result);
         verify(embeddingModel).embed(anyString());
     }
 
     @Test
     void shouldEmbedText() {
-        // Arrange
         String text = "test text";
         List<Double> expectedEmbedding = List.of(0.5, 0.6);
         when(embeddingModel.embed(text)).thenReturn(expectedEmbedding);
 
-        // Act
         List<Double> result = embeddingService.embedText(text);
 
-        // Assert
         assertEquals(expectedEmbedding, result);
         verify(embeddingModel).embed(text);
     }
 
     @Test
     void shouldGenerateSearchEmbedding() {
-        // Arrange
         String keywords = "cheap reliable";
         String brand = "Honda";
         String model = "Civic";
@@ -75,10 +68,8 @@ class EmbeddingServiceTest {
         List<Double> expectedEmbedding = List.of(0.9, 0.8);
         when(embeddingModel.embed(anyString())).thenReturn(expectedEmbedding);
 
-        // Act
         List<Double> result = embeddingService.generateSearchEmbedding(keywords, brand, model, bodyType);
 
-        // Assert
         assertEquals(expectedEmbedding, result);
         verify(embeddingModel).embed(anyString());
     }

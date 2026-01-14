@@ -37,7 +37,6 @@ class FavoriteAdvertisementServiceTest {
 
     @Test
     void addFavorite_ShouldAddAndIncrementLikes_WhenNotAlreadyFavorite() {
-        // Arrange
         Long adId = 1L;
         User user = new User();
         user.setId(10L);
@@ -50,10 +49,8 @@ class FavoriteAdvertisementServiceTest {
                 .thenReturn(Optional.empty());
         when(advertisementRepository.findById(adId)).thenReturn(Optional.of(ad));
 
-        // Act
         boolean result = service.addFavoriteAdvertisement(adId);
 
-        // Assert
         assertTrue(result);
         assertEquals(6L, ad.getLikeCount());
         verify(favoriteAdvertisementRepository).save(any(FavoriteAdvertisement.class));
@@ -62,7 +59,6 @@ class FavoriteAdvertisementServiceTest {
 
     @Test
     void addFavorite_ShouldReturnFalse_WhenAlreadyFavorite() {
-        // Arrange
         Long adId = 1L;
         User user = new User();
         user.setId(10L);
@@ -71,10 +67,8 @@ class FavoriteAdvertisementServiceTest {
         when(favoriteAdvertisementRepository.findByUserIdAndAdvertisementId(user.getId(), adId))
                 .thenReturn(Optional.of(new FavoriteAdvertisement()));
 
-        // Act
         boolean result = service.addFavoriteAdvertisement(adId);
 
-        // Assert
         assertFalse(result);
         verify(favoriteAdvertisementRepository, never()).save(any());
         verify(advertisementRepository, never()).save(any());
@@ -82,7 +76,6 @@ class FavoriteAdvertisementServiceTest {
 
     @Test
     void removeFavorite_ShouldRemoveAndDecrementLikes_WhenFavoriteExists() {
-        // Arrange
         Long adId = 1L;
         User user = new User();
         user.setId(10L);
@@ -95,10 +88,8 @@ class FavoriteAdvertisementServiceTest {
                 .thenReturn(Optional.of(new FavoriteAdvertisement()));
         when(advertisementRepository.findById(adId)).thenReturn(Optional.of(ad));
 
-        // Act
         boolean result = service.removeFavoriteAdvertisement(adId);
 
-        // Assert
         assertTrue(result);
         assertEquals(4L, ad.getLikeCount());
         verify(favoriteAdvertisementRepository).deleteByUserIdAndAdvertisementId(user.getId(), adId);
@@ -106,7 +97,6 @@ class FavoriteAdvertisementServiceTest {
 
     @Test
     void getFavoriteAdvertisementsDetails_ShouldReturnDtoList() {
-        // Arrange
         User user = new User();
         user.setId(10L);
         when(userContextService.getCurrentUser()).thenReturn(user);
@@ -122,10 +112,8 @@ class FavoriteAdvertisementServiceTest {
         when(advertisementMapper.toDto(ad)).thenReturn(new AdvertisementResponseDto());
         when(favoriteAdvertisementRepository.countByAdvertisementId(1L)).thenReturn(100L);
 
-        // Act
         List<AdvertisementResponseDto> result = service.getFavoriteAdvertisementsDetails();
 
-        // Assert
         assertEquals(1, result.size());
         assertEquals(100L, result.get(0).getLikeCount());
     }

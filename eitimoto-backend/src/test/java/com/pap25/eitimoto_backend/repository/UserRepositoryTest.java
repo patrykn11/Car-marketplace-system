@@ -26,7 +26,7 @@ class UserRepositoryTest {
                 .email("test@example.com")
                 .contactNumber("123456789")
                 .location("Test City")
-                .role(Role.USER) // Assuming Role.USER exists
+                .role(Role.USER)
                 .build();
 
         User savedUser = userRepository.save(user);
