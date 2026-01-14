@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import { useAuth } from './AuthContext'; // Assuming AuthContext is in same folder
+import { useAuth } from './AuthContext';
 import { toast } from 'react-toastify';
 
 const WebSocketContext = createContext(null);
@@ -9,7 +9,7 @@ const WebSocketContext = createContext(null);
 export const WebSocketProvider = ({ children }) => {
     const { isAuthenticated, authFetch, username } = useAuth();
     const stompClientRef = useRef(null);
-    const subscriptionsRef = useRef(new Map()); // Map<id, subscription>
+    const subscriptionsRef = useRef(new Map());
     const [isConnected, setIsConnected] = useState(false);
 
     useEffect(() => {
@@ -28,12 +28,16 @@ export const WebSocketProvider = ({ children }) => {
         if (stompClientRef.current?.active) return;
 
         const socket = new SockJS('http://localhost:3333/ws');
+        const token = localStorage.getItem('access_token');
+
         const client = new Client({
             webSocketFactory: () => socket,
+            connectHeaders: {
+                Authorization: `Bearer ${token}`
+            },
             onConnect: () => {
                 console.log('Global WebSocket Connected');
                 setIsConnected(true);
-                // Fetch existing favorites and subscribe
                 fetchFavoritesAndSubscribe(client);
             },
             onStompError: (frame) => {
@@ -60,11 +64,32 @@ export const WebSocketProvider = ({ children }) => {
         setIsConnected(false);
     };
 
+    const messageListeners = useRef(new Set());
+
+    const registerMessageListener = (callback) => {
+        messageListeners.current.add(callback);
+        return () => messageListeners.current.delete(callback);
+    };
+
     const fetchFavoritesAndSubscribe = async (client) => {
+        client.subscribe('/user/queue/messages', (message) => {
+            const msg = JSON.parse(message.body);
+            let handled = false;
+            messageListeners.current.forEach(listener => {
+                if (listener(msg)) {
+                    handled = true;
+                }
+            });
+
+            if (!handled && msg.senderUsername !== username) {
+                toast.info(`New message from ${msg.senderUsername}: ${msg.content.substring(0, 20)}...`);
+            }
+        });
+
         try {
             const response = await authFetch('/api/favorites');
             if (response.ok) {
-                const favorites = await response.json(); // List<Long>
+                const favorites = await response.json();
                 favorites.forEach(id => {
                     subscribeToTopic(id, client);
                 });
@@ -76,12 +101,12 @@ export const WebSocketProvider = ({ children }) => {
 
     const subscribeToTopic = (id, client = stompClientRef.current) => {
         if (!client || !client.active) return;
-        if (subscriptionsRef.current.has(id)) return; // Already subscribed
+        if (subscriptionsRef.current.has(id)) return;
 
         console.log(`Subscribing to /topic/post/${id}`);
         const subscription = client.subscribe(`/topic/post/${id}`, (message) => {
             const notification = JSON.parse(message.body);
-            // Don't show notification if I am the sender
+
             if (notification.senderUsername && notification.senderUsername === username) {
                 return;
             }
@@ -107,7 +132,7 @@ export const WebSocketProvider = ({ children }) => {
     };
 
     return (
-        <WebSocketContext.Provider value={{ subscribeToTopic, unsubscribeFromTopic, isConnected }}>
+        <WebSocketContext.Provider value={{ subscribeToTopic, unsubscribeFromTopic, isConnected, registerMessageListener }}>
             {children}
         </WebSocketContext.Provider>
     );

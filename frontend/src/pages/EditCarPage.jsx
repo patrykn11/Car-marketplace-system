@@ -47,7 +47,6 @@ export default function EditCarPage() {
                     const data = await response.json();
                     setTitle(data.title);
                     setDescription(data.description);
-                    // Map carData
                     setCarBrand(data.carData.carBrand);
                     setCarModel(data.carData.carModel);
                     setCarBodyType(data.carData.carBodyType);
@@ -113,7 +112,6 @@ export default function EditCarPage() {
             if (response.ok) {
                 const data = await response.json();
                 console.log("Success:", data);
-                // alert("Advertisement updated successfully!");
                 navigate('/');
             } else {
                 const error = await response.text();

@@ -11,7 +11,6 @@ const UserProfilePage = () => {
     const [loading, setLoading] = useState(true);
     const [invitations, setInvitations] = useState([]);
 
-
     const [invitationFromUser, setInvitationFromUser] = useState(false);
     const [stats, setStats] = useState(null);
     const [activeTab, setActiveTab] = useState('my-listings');
@@ -245,7 +244,6 @@ const UserProfilePage = () => {
                     )}
                 </div>
 
-                {/* ZMIANA: Nawigacja Zakładek (z wersji zdalnej) */}
                 <div className="flex space-x-2 border-b border-gray-200 dark:border-gray-700 pb-2">
                     <button
                         onClick={() => setActiveTab('my-listings')}
@@ -267,7 +265,6 @@ const UserProfilePage = () => {
                     </button>
                 </div>
 
-                {/* ZMIANA: Zawartość zakładek */}
                 {activeTab === 'my-listings' && (
                     <div>
                         <div className="flex justify-between items-center mb-6">

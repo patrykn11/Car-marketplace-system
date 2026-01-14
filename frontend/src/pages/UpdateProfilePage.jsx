@@ -64,7 +64,6 @@ const UpdateProfilePage = () => {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    {/* EMAIL INPUT */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Email
@@ -82,7 +81,6 @@ const UpdateProfilePage = () => {
                         />
                     </div>
 
-                    {/* CONTACT NUMBER INPUT */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Contact Number
@@ -100,7 +98,6 @@ const UpdateProfilePage = () => {
                         />
                     </div>
 
-                    {/* LOCATION INPUT */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Location
@@ -118,7 +115,6 @@ const UpdateProfilePage = () => {
                         />
                     </div>
 
-                    {/* BUTTONS */}
                     <div className="flex gap-3 pt-4">
                         <button
                             type="submit"

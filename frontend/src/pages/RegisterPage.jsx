@@ -85,7 +85,6 @@ const RegisterPage = () => {
                     REGISTER
                 </h2>
 
-                {/* USERNAME */}
                 <input
                     type="text"
                     placeholder="Username"
@@ -96,7 +95,6 @@ const RegisterPage = () => {
                        dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:placeholder-gray-400"
                 />
 
-                {/* PASSWORD */}
                 <input
                     type="password"
                     placeholder="Password"
@@ -107,7 +105,6 @@ const RegisterPage = () => {
                        dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:placeholder-gray-400"
                 />
 
-                {/* EMAIL */}
                 <input
                     type="email"
                     placeholder="Email"
@@ -118,7 +115,6 @@ const RegisterPage = () => {
                        dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:placeholder-gray-400"
                 />
 
-                {/* PHONE */}
                 <input
                     type="text"
                     placeholder="+48 123 456 789"
@@ -129,7 +125,6 @@ const RegisterPage = () => {
                        dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:placeholder-gray-400"
                 />
 
-                {/* LOCATION */}
                 <input
                     type="text"
                     placeholder="Location ex. Warsaw"
