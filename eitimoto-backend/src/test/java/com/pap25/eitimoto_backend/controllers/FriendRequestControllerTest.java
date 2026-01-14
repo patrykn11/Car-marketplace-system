@@ -1,9 +1,9 @@
 package com.pap25.eitimoto_backend.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pap25.eitimoto_backend.dto.FriendRequestResponseDto;
 import com.pap25.eitimoto_backend.dto.UserProfileResponseDto;
 import com.pap25.eitimoto_backend.services.FriendRequestService;
+import com.pap25.eitimoto_backend.services.JWTService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -11,7 +11,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAut
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -38,10 +38,10 @@ class FriendRequestControllerTest {
     private FriendRequestService friendRequestService;
 
     @MockBean
-    private com.pap25.eitimoto_backend.services.JWTService jwtService;
+    private JWTService jwtService;
 
     @MockBean
-    private org.springframework.security.core.userdetails.UserDetailsService userDetailsService;
+    private UserDetailsService userDetailsService;
 
     @Test
     void getFriendRequests_ShouldReturnList() throws Exception {

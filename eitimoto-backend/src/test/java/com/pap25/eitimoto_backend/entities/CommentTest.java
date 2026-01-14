@@ -10,8 +10,6 @@ class CommentTest {
     @Test
     void builder_ShouldConstructValidComment() {
         Advertisement ad = Advertisement.builder().advertisementId(10L).build();
-        User user = User.builder().id(5L).build();
-
         Comment comment = Comment.builder()
                 .id(1L)
                 .content("Nice car!")

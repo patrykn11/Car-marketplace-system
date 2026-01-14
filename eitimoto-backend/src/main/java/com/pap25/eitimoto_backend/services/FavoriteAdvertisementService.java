@@ -7,11 +7,8 @@ import com.pap25.eitimoto_backend.entities.User;
 import com.pap25.eitimoto_backend.mapper.AdvertisementMapper;
 import com.pap25.eitimoto_backend.repository.AdvertisementRepository;
 import com.pap25.eitimoto_backend.repository.FavoriteAdvertisementRepository;
-import com.pap25.eitimoto_backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
-import com.pap25.eitimoto_backend.services.UserContextService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,7 +40,6 @@ public class FavoriteAdvertisementService {
                 .build();
         favoriteAdvertisementRepository.save(favoriteAdvertisement);
 
-        // Update like count in advertisement
         Advertisement ad = advertisementRepository.findById(advertisementId)
                 .orElseThrow(() -> new RuntimeException("Advertisement not found"));
         Long currentLikes = ad.getLikeCount() != null ? ad.getLikeCount() : 0L;
@@ -62,8 +58,6 @@ public class FavoriteAdvertisementService {
             return false;
         }
         favoriteAdvertisementRepository.deleteByUserIdAndAdvertisementId(user.getId(), advertisementId);
-
-        // Update like count in advertisement
         Advertisement ad = advertisementRepository.findById(advertisementId)
                 .orElseThrow(() -> new RuntimeException("Advertisement not found"));
         Long currentLikes = ad.getLikeCount() != null ? ad.getLikeCount() : 0L;

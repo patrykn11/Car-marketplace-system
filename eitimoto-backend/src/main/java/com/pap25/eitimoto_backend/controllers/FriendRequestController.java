@@ -2,8 +2,6 @@ package com.pap25.eitimoto_backend.controllers;
 
 import com.pap25.eitimoto_backend.dto.UserProfileResponseDto;
 import com.pap25.eitimoto_backend.dto.FriendRequestResponseDto;
-import com.pap25.eitimoto_backend.entities.FriendRequest;
-import com.pap25.eitimoto_backend.repository.FriendRequestRepository;
 import com.pap25.eitimoto_backend.services.FriendRequestService;
 
 import lombok.RequiredArgsConstructor;
@@ -22,8 +20,6 @@ public class FriendRequestController {
     public ResponseEntity<List<UserProfileResponseDto>> getFriendRequests() {
         return ResponseEntity.ok(friendRequestService.getUserInvitations());
     }
-
-
 
 
     @PostMapping("add/{username}")

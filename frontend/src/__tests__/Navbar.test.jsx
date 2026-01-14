@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
-import { MemoryRouter, useLocation } from 'react-router-dom';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -17,7 +17,11 @@ describe('Navbar Component', () => {
 
         useTheme.mockReturnValue({
             theme: 'light',
-            toggleTheme: mockToggleTheme
+            toggleTheme: mockToggleTheme,
+            fontSize: '100%',
+            setFontSize: vi.fn(),
+            fontFamily: 'sans',
+            setFontFamily: vi.fn()
         });
     });
 
@@ -82,8 +86,12 @@ describe('Navbar Component', () => {
             </MemoryRouter>
         );
 
-        const themeBtn = screen.getByRole('button', { name: /Appearance Settings/i });
-        fireEvent.click(themeBtn);
+        const settingsBtn = screen.getByRole('button', { name: /Appearance Settings/i });
+        fireEvent.click(settingsBtn);
+
+        const themeToggleBtn = screen.getByText(/Light Mode/i);
+        fireEvent.click(themeToggleBtn);
+
         expect(mockToggleTheme).toHaveBeenCalled();
     });
 

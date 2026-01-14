@@ -1,28 +1,18 @@
 package com.pap25.eitimoto_backend.controllers;
 
-import com.pap25.eitimoto_backend.dto.AdvertisementDto;
 import com.pap25.eitimoto_backend.dto.AdvertisementResponseDto;
 import com.pap25.eitimoto_backend.dto.UpdateUserProfileRequestDto;
 import com.pap25.eitimoto_backend.dto.UserProfileResponseDto;
-import com.pap25.eitimoto_backend.entities.Advertisement;
-import com.pap25.eitimoto_backend.entities.User;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.security.core.Authentication;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import com.pap25.eitimoto_backend.services.AdvertisementService;
 import com.pap25.eitimoto_backend.services.ProfileService;
-import com.pap25.eitimoto_backend.services.UserContextService;
-import com.pap25.eitimoto_backend.repository.AdvertisementRepository;
-import lombok.RequiredArgsConstructor;
 
+import lombok.RequiredArgsConstructor;
 import java.util.List;
-import java.util.stream.Collectors;
 import com.pap25.eitimoto_backend.services.FriendRequestService;
 
 @RestController

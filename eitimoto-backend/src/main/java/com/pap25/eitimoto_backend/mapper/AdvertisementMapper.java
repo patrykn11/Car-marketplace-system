@@ -1,6 +1,4 @@
 package com.pap25.eitimoto_backend.mapper;
-
-import com.pap25.eitimoto_backend.dto.AdvertisementDto;
 import org.springframework.stereotype.Component;
 import com.pap25.eitimoto_backend.dto.AdvertisementResponseDto;
 import com.pap25.eitimoto_backend.dto.CarDto;
@@ -34,7 +32,7 @@ public class AdvertisementMapper {
                 .viewCount(ad.getViewCount())
                 .contactCount(ad.getContactCount())
                 .contactNumber(ad.getUser().getContactNumber())
-                .likeCount(0L) // Will be set by service
+                .likeCount(0L)
                 .hasImage(ad.getImage() != null && ad.getImage().length > 0)
                 .build();
     }

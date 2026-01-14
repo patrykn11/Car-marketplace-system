@@ -19,8 +19,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -66,8 +64,8 @@ class ProfileServiceTest {
 
         UpdateUserProfileRequestDto dto = new UpdateUserProfileRequestDto();
         dto.setNewEmail("new@test.com");
-        dto.setNewContactNumber(""); // Should not update
-        dto.setNewLocation(null);    // Should not update
+        dto.setNewContactNumber("");
+        dto.setNewLocation(null);
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
 
@@ -79,16 +77,12 @@ class ProfileServiceTest {
 
     @Test
     void getFriendsAdvertisements_ShouldReturnAdsFromFriends() {
-        User currentUser = new User();
-        currentUser.setUsername("me");
-
         User friend = new User();
         friend.setUsername("friend");
         Advertisement ad = new Advertisement();
         ad.setAdvertisementId(1L);
         friend.setAdvertisements(List.of(ad));
 
-        when(userContextService.getCurrentUser()).thenReturn(currentUser);
         when(userContextService.getFriends()).thenReturn(Set.of(friend));
         when(advertisementMapper.toDto(ad)).thenReturn(new AdvertisementResponseDto());
         when(favoriteAdvertisementRepository.countByAdvertisementId(1L)).thenReturn(10L);

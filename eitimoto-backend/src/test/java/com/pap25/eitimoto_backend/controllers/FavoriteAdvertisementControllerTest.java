@@ -1,6 +1,5 @@
 package com.pap25.eitimoto_backend.controllers;
 
-import com.pap25.eitimoto_backend.dto.AdvertisementResponseDto;
 import com.pap25.eitimoto_backend.services.FavoriteAdvertisementService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +8,9 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAut
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
 import com.pap25.eitimoto_backend.services.JWTService;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 

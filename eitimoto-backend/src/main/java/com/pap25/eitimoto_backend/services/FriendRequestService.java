@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import com.pap25.eitimoto_backend.dto.FriendRequestResponseDto;
 import com.pap25.eitimoto_backend.dto.UserProfileResponseDto;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import com.pap25.eitimoto_backend.entities.FriendshipStatus;

@@ -2,7 +2,6 @@ package com.pap25.eitimoto_backend.converters;
 
 import org.junit.jupiter.api.Test;
 import java.util.List;
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -1,8 +1,6 @@
 package com.pap25.eitimoto_backend.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pap25.eitimoto_backend.dto.AdvertisementResponseDto;
-import com.pap25.eitimoto_backend.dto.UpdateUserProfileRequestDto;
 import com.pap25.eitimoto_backend.dto.UserProfileResponseDto;
 import com.pap25.eitimoto_backend.services.AdvertisementService;
 import com.pap25.eitimoto_backend.services.FriendRequestService;
@@ -15,14 +13,11 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAut
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -52,9 +47,6 @@ class ProfileControllerTest {
 
     @MockBean
     private UserDetailsService userDetailsService;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Test
     void getUserFriends_ShouldReturnListOfFriends() throws Exception {

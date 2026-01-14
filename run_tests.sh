@@ -7,13 +7,13 @@ export SDKMAN_DIR="$HOME/.sdkman"
 if [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]]; then
     echo "Found SDKMAN. Configuring environment..."
     source "$SDKMAN_DIR/bin/sdkman-init.sh"
-    
+
     if ! sdk use java $REQUIRED_JAVA_VERSION; then
         echo "Java $REQUIRED_JAVA_VERSION not found. Installing automatically..."
         echo "n" | sdk install java $REQUIRED_JAVA_VERSION
         sdk use java $REQUIRED_JAVA_VERSION
     fi
-    
+
     if [[ -n "$SDKMAN_CANDIDATES_DIR" ]]; then
         export JAVA_HOME="$SDKMAN_CANDIDATES_DIR/java/$REQUIRED_JAVA_VERSION"
     fi
@@ -49,4 +49,7 @@ fi
 
 cd eitimoto-backend
 ./mvnw test
+cd ..
+cd frontend
+npm run test
 echo "Tests finished."

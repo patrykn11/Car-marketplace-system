@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -11,7 +11,6 @@ const UserProfilePage = () => {
     const [loading, setLoading] = useState(true);
     const [invitations, setInvitations] = useState([]);
 
-    const [invitationFromUser, setInvitationFromUser] = useState(false);
     const [stats, setStats] = useState(null);
     const [activeTab, setActiveTab] = useState('my-listings');
 

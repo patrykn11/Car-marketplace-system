@@ -17,7 +17,6 @@ public class CatalogDataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if (brandRepository.count() == 0) {
-            // Brands
             Brand audi = brandRepository.save(Brand.builder().name("Audi").logoUrl("/brands/audi.svg").build());
             Brand bmw = brandRepository.save(Brand.builder().name("BMW").logoUrl("/brands/bmw.svg").build());
             Brand mercedes = brandRepository.save(Brand.builder().name("Mercedes").logoUrl("/brands/mercedes.svg").build());
@@ -27,7 +26,6 @@ public class CatalogDataLoader implements CommandLineRunner {
             Brand volkswagen = brandRepository.save(Brand.builder().name("Volkswagen").logoUrl("/brands/volkswagen.svg").build());
             Brand nissan = brandRepository.save(Brand.builder().name("Nissan").logoUrl("/brands/nissan.svg").build());
             Brand hyundai = brandRepository.save(Brand.builder().name("Hyundai").logoUrl("/brands/hyundai.svg").build());
-            // Models
             carModelRepository.save(CarModel.builder()
                 .name("A4")
                 .brand(audi)
@@ -136,7 +134,7 @@ public class CatalogDataLoader implements CommandLineRunner {
                 .horsePower(191)
                 .photoUrl("/models/hyundai-sonata.jpg")
                 .build());
-            
+
             System.out.println(">>> TEST DATA LOADED!");
         }
     }

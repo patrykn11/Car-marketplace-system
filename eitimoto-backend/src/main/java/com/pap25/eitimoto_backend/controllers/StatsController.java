@@ -31,8 +31,6 @@ public class StatsController {
         return ResponseEntity.ok().build();
     }
 
-
-
     @GetMapping("/profile/stats")
     public ResponseEntity<UserStatsDto> getUserStats() {
         return ResponseEntity.ok(advertisementService.getUserStats());

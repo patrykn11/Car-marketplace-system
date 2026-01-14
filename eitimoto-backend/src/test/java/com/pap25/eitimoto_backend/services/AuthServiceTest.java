@@ -2,7 +2,6 @@ package com.pap25.eitimoto_backend.services;
 
 import com.pap25.eitimoto_backend.auth.AuthRequest;
 import com.pap25.eitimoto_backend.auth.AuthResponse;
-import com.pap25.eitimoto_backend.entities.Role;
 import com.pap25.eitimoto_backend.entities.User;
 import com.pap25.eitimoto_backend.repository.UserRepository;
 import org.junit.jupiter.api.Test;

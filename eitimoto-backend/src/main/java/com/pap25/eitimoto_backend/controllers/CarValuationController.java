@@ -16,7 +16,6 @@ public class CarValuationController {
     private final CarValuationService carValuationService;
     @PostMapping("/calculate")
     public ResponseEntity<Double> calculateCarValuation(@RequestBody CarValuationRequest request) {
-        // Logic to calculate car valuation based on the request data
         Double estimatedPrice = carValuationService.CalculateVehiclePrice(request);
         return ResponseEntity.ok(estimatedPrice);
 

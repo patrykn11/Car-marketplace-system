@@ -5,7 +5,6 @@ import com.pap25.eitimoto_backend.entities.Advertisement;
 import com.pap25.eitimoto_backend.entities.FavoriteAdvertisement;
 import com.pap25.eitimoto_backend.entities.User;
 import com.pap25.eitimoto_backend.repository.AdvertisementRepository;
-import com.pap25.eitimoto_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

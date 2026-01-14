@@ -1,12 +1,11 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import AddCarPage from '../pages/AddCarPage';
 import { useAuth } from '../contexts/AuthContext';
 
 vi.mock('../contexts/AuthContext');
 
-// Mocks to keep component rendering
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
     const actual = await vi.importActual('react-router-dom');
@@ -16,7 +15,6 @@ vi.mock('react-router-dom', async () => {
     };
 });
 
-// Helper to wrap component in context
 const renderComponent = () => {
     return render(
         <MemoryRouter>
@@ -44,7 +42,6 @@ describe('AddCarPage Component', () => {
 
         expect(screen.getByText(/Add New Advertisement/i)).toBeInTheDocument();
         expect(screen.getByText(/Basic Information/i)).toBeInTheDocument();
-        // Just checking basic presence of key elements
         expect(screen.getByText(/Price \(PLN\)/i)).toBeInTheDocument();
     });
 });

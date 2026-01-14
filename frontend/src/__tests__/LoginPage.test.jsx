@@ -3,7 +3,6 @@ import { BrowserRouter } from 'react-router-dom';
 import LoginPage from '../pages/LoginPage';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Mock useNavigate
 const navigateMock = vi.fn();
 vi.mock('react-router-dom', async () => {
     const actual = await vi.importActual('react-router-dom');
@@ -13,7 +12,6 @@ vi.mock('react-router-dom', async () => {
     };
 });
 
-// Mock useAuth
 const loginMock = vi.fn();
 vi.mock('../contexts/AuthContext', () => ({
     useAuth: () => ({

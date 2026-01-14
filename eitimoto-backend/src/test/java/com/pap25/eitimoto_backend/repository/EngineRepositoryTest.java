@@ -30,14 +30,14 @@ class EngineRepositoryTest {
         engine.setEngineCode("V8-SUPER");
         engine.setEngineBrand("Generic");
         engine.setEnginePower(500);
-        engine.setEnginePowerPerLitre(100.0); // Dummy value
+        engine.setEnginePowerPerLitre(100.0);
         engine.setEngineTorque(600);
         engine.setStartProductionYear(2023);
         engine.setFinishProductionYear(2024);
-        engine.setEngineFuelType(FuelType.GASOLINE); // Assuming enum exists or similar
+        engine.setEngineFuelType(FuelType.GASOLINE);
         engine.setEngineDisplacement(5000);
         engine.setNumberOfPistons(8);
-        engine.setEngineConfiguration(EngineConfiguration.V_ENGINE); // Assuming enum exists
+        engine.setEngineConfiguration(EngineConfiguration.V_ENGINE);
         engine.setEngineOilCapacity(5.0);
 
         engineRepository.save(engine);

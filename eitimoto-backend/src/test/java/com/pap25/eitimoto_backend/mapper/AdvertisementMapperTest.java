@@ -55,7 +55,7 @@ class AdvertisementMapperTest {
         assertEquals("123456789", dto.getContactNumber());
         assertEquals(10L, dto.getViewCount());
         assertEquals(5L, dto.getContactCount());
-        assertEquals(0L, dto.getLikeCount()); // explicitly 0 in mapper
+        assertEquals(0L, dto.getLikeCount());
         assertTrue(dto.isHasImage());
 
         assertNotNull(dto.getCarData());

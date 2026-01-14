@@ -1,7 +1,6 @@
 package com.pap25.eitimoto_backend.entities;
 
 import org.junit.jupiter.api.Test;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,8 +30,6 @@ class AdvertisementTest {
 
     @Test
     void defaults_ShouldBeSet() {
-        Advertisement ad = new Advertisement();
-
         Advertisement adFromBuilder = Advertisement.builder().build();
         assertEquals(0L, adFromBuilder.getViewCount());
     }

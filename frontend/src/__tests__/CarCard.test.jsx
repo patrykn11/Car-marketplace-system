@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import CarCard from '../components/CarCard';
 import { useAuth } from '../contexts/AuthContext';

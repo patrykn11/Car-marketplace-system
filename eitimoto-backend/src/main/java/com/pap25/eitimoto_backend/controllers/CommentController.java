@@ -5,7 +5,6 @@ import com.pap25.eitimoto_backend.dto.CommentResponseDto;
 import com.pap25.eitimoto_backend.services.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
