@@ -29,15 +29,12 @@ git clone https://gitlab-stud.elka.pw.edu.pl/jjarosz/pap2025z-z02.git
 #### Linux (Ubuntu/Debian)
 
 ```bash
-sudo ./run_app.sh
+./run_app.sh
 ```
-
-> Skrypt wymaga `sudo`  
-> Jeśli skrypt nie najdzie Dockera, to zainstaluje go automatycznie.
 
 #### macOS / Windows / Inne systemy
 
-Skrypt `run_app.sh` **nie zadziała** . Należy użyć:
+Skrypt `run_app.sh` **działa** . W alternatywie można użyć poniższego skrytpu:
 
 ```bash
 docker-compose up --build
@@ -47,7 +44,7 @@ docker-compose up --build
 
 ---
 
-Po uruchomieniu należy poczekać 1-2 minuty na start wszystkich serwisów.
+Po uruchomieniu należy poczekać 3-4 minuty na start wszystkich serwisów.
 
 ---
 
@@ -57,6 +54,6 @@ Po uruchomieniu należy poczekać 1-2 minuty na start wszystkich serwisów.
 |--------|-----|
 | Frontend | http://localhost:8000 |
 | Backend API | http://localhost:3333/api |
-| PostgreSQL | localhost:3000 |
+| PostgreSQL | localhost:3001 |
 
 ---
