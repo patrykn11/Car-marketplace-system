@@ -53,7 +53,6 @@ class UserContextServiceTest {
 
     @Test
     void getCurrentUser_ShouldReturnUser_WhenPrincipalIsUserObj() {
-        // Arrange
         User principalUser = new User();
         principalUser.setUsername("testUser");
 
@@ -61,16 +60,13 @@ class UserContextServiceTest {
         when(authentication.getPrincipal()).thenReturn(principalUser);
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(principalUser));
 
-        // Act
         User result = userContextService.getCurrentUser();
 
-        // Assert
         assertEquals("testUser", result.getUsername());
     }
 
     @Test
     void getCurrentUser_ShouldReturnUser_WhenPrincipalIsString() {
-        // Arrange
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn("testUser");
 
@@ -78,28 +74,22 @@ class UserContextServiceTest {
         user.setUsername("testUser");
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
 
-        // Act
         User result = userContextService.getCurrentUser();
 
-        // Assert
         assertEquals("testUser", result.getUsername());
     }
 
     @Test
     void getCurrentUser_ShouldThrowException_WhenUserNotFound() {
-        // Arrange
          when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn("unknownUser");
         when(userRepository.findByUsername("unknownUser")).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(RuntimeException.class, () -> userContextService.getCurrentUser());
     }
 
     @Test
     void getFriends_ShouldReturnFlattenedSetOfFriends() {
-        // Arrange
-        // Mock getCurrentUser flow
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn("testUser");
 
@@ -124,10 +114,8 @@ class UserContextServiceTest {
         when(friendRequestRepository.findAllByUserAndStatus("testUser", FriendshipStatus.ACCEPTED))
                 .thenReturn(List.of(req1, req2));
 
-        // Act
         Set<User> friends = userContextService.getFriends();
 
-        // Assert
         assertEquals(2, friends.size());
         assertTrue(friends.contains(friend1));
         assertTrue(friends.contains(friend2));

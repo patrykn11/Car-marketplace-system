@@ -44,7 +44,6 @@ class ProfileServiceTest {
 
     @Test
     void getMyProfile_ShouldReturnProfile_WhenUserExists() {
-        // Arrange
         String username = "testUser";
         User user = new User();
         user.setUsername(username);
@@ -52,17 +51,14 @@ class ProfileServiceTest {
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
 
-        // Act
         UserProfileResponseDto result = profileService.getMyProfile(username);
 
-        // Assert
         assertEquals(username, result.getUsername());
         assertEquals("test@test.com", result.getEmail());
     }
 
     @Test
     void updateMyProfile_ShouldUpdateFields() {
-        // Arrange
         String username = "testUser";
         User user = new User();
         user.setUsername(username);
@@ -75,17 +71,14 @@ class ProfileServiceTest {
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
 
-        // Act
         profileService.updateMyProfile(username, dto);
 
-        // Assert
         assertEquals("new@test.com", user.getEmail());
         verify(userRepository).save(user);
     }
 
     @Test
     void getFriendsAdvertisements_ShouldReturnAdsFromFriends() {
-        // Arrange
         User currentUser = new User();
         currentUser.setUsername("me");
 
@@ -100,10 +93,8 @@ class ProfileServiceTest {
         when(advertisementMapper.toDto(ad)).thenReturn(new AdvertisementResponseDto());
         when(favoriteAdvertisementRepository.countByAdvertisementId(1L)).thenReturn(10L);
 
-        // Act
         List<AdvertisementResponseDto> result = profileService.getFriendsAdvertisements();
 
-        // Assert
         assertEquals(1, result.size());
         assertEquals(10L, result.get(0).getLikeCount());
     }

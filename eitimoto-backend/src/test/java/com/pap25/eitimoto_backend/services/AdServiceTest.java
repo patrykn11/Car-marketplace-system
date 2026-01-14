@@ -32,7 +32,6 @@ class AdServiceTest {
 
     @Test
     void shouldReturnFavoriteBrand() {
-        // Arrange
         User user = new User();
         FavoriteAdvertisement fav1 = new FavoriteAdvertisement();
         fav1.setAdvertisementId(1L);
@@ -63,25 +62,20 @@ class AdServiceTest {
         when(advertisementRepository.findById(2L)).thenReturn(Optional.of(ad2));
         when(advertisementRepository.findById(3L)).thenReturn(Optional.of(ad3));
 
-        // Act
         String favoriteBrand = adService.favoriteCar();
 
-        // Assert
         assertEquals("Toyota", favoriteBrand);
     }
 
     @Test
     void shouldReturnUnknownWhenNoFavorites() {
-        // Arrange
         User user = new User();
         user.setFavoriteAdvertisements(List.of());
 
         when(userContextService.getCurrentUser()).thenReturn(user);
 
-        // Act
         String favoriteBrand = adService.favoriteCar();
 
-        // Assert
         assertEquals("Unknown", favoriteBrand);
     }
 }
