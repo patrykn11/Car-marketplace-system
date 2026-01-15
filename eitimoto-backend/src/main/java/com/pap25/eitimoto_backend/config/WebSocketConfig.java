@@ -31,14 +31,22 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final JWTService jwtService;
     private final UserDetailsService userDetailsService;
-
     @Override
+    /**
+     * Register the STOMP WebSocket endpoint used by clients.
+     * @param registry STOMP endpoint registry
+     */
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("*")
-                .withSockJS();
+            .setAllowedOriginPatterns("*")
+            .withSockJS();
     }
 
+
+    /**
+     * Configure application destination prefixes and the simple message broker.
+     * @param registry message broker registry
+     */
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes("/app");
@@ -46,6 +54,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.setUserDestinationPrefix("/user");
     }
 
+    /**
+     * Intercept inbound STOMP messages to handle authentication during CONNECT.
+     * If a valid JWT is provided in the 'Authorization' native header,
+     * this method sets the authenticated Principal on the session.
+     * @param registration channel registration
+     */
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(new ChannelInterceptor() {
@@ -75,6 +89,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         }
                     }
                 }
+
                 return message;
             }
         });
