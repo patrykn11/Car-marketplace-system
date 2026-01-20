@@ -11,6 +11,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service responsible for user authentication and registration.
+ * Handles user registration with password encoding and login
+ * with JWT token generation.
+ */
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -19,6 +24,14 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JWTService jwtService;
 
+    /**
+     * Register a new user in the system.
+     * Encodes the password and generates a JWT token upon successful registration.
+     *
+     * @param request the authentication request containing user details
+     * @return authentication response with JWT token and user info
+     * @throws RuntimeException if username is already taken
+     */
     public AuthResponse register(AuthRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new RuntimeException("Username already taken");
@@ -46,6 +59,14 @@ public class AuthService {
                 .build();
     }
 
+    /**
+     * Authenticate a user and generate a JWT token.
+     * Validates credentials using Spring Security's AuthenticationManager.
+     *
+     * @param request the authentication request containing username and password
+     * @return authentication response with JWT token and user info
+     * @throws RuntimeException if user is not found or credentials are invalid
+     */
     public AuthResponse login(AuthRequest request) {
 
         authenticationManager.authenticate(

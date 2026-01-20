@@ -33,6 +33,11 @@ import jakarta.persistence.EntityNotFoundException;
 import com.pap25.eitimoto_backend.mapper.AdvertisementMapper;
 
 
+/**
+ * Service responsible for managing car advertisements.
+ * Handles CRUD operations, search functionality, recommendations,
+ * and user statistics related to advertisements.
+ */
 @Service
 @RequiredArgsConstructor
 public class AdvertisementService {
@@ -45,6 +50,11 @@ public class AdvertisementService {
     private final org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
     private final EmbeddingService embeddingService;
 
+    /**
+     * Retrieve all advertisements with their like counts.
+     *
+     * @return list of advertisement DTOs with populated like counts
+     */
     public List<AdvertisementResponseDto> getAdvertisements() {
         return advertisementRepository.findAll()
                 .stream()
@@ -57,11 +67,24 @@ public class AdvertisementService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Find an advertisement by its unique identifier.
+     *
+     * @param id the advertisement ID
+     * @return the advertisement entity
+     * @throws EntityNotFoundException if no advertisement exists with the given ID
+     */
     public Advertisement getAdvertisementById(Long id) {
         return advertisementRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Advertisement not found with id: " + id));
     }
 
+    /**
+     * Retrieve the image data for an advertisement.
+     *
+     * @param id the advertisement ID
+     * @return byte array containing the image data
+     */
     public byte[] getAdvertisementImage(Long id) {
         Advertisement advertisement = getAdvertisementById(id);
         return advertisement.getImage();
@@ -77,6 +100,15 @@ public class AdvertisementService {
         return dto;
     }
 
+    /**
+     * Create a new advertisement with an optional image.
+     * Generates an embedding vector for semantic search capability.
+     *
+     * @param adDto the advertisement data transfer object
+     * @param imageFile optional image file for the advertisement
+     * @return the created advertisement as a response DTO
+     * @throws IOException if image processing fails
+     */
     @Transactional
     public AdvertisementResponseDto addAdvertisement(AdvertisementDto adDto, MultipartFile imageFile) throws IOException {
         User user = userContextService.getCurrentUser();
@@ -130,6 +162,14 @@ public class AdvertisementService {
     }
 
 
+    /**
+     * Delete an advertisement by its ID.
+     * Only the owner of the advertisement can delete it.
+     *
+     * @param id the advertisement ID to remove
+     * @return the deleted advertisement as a response DTO
+     * @throws SecurityException if the current user is not the owner
+     */
     @Transactional
     public AdvertisementResponseDto removeAdvertisement(Long id) {
         User currentUser = userContextService.getCurrentUser();
@@ -149,6 +189,17 @@ public class AdvertisementService {
         return responseDto;
     }
 
+    /**
+     * Update an existing advertisement with new data and optional image.
+     * Notifies subscribers via WebSocket about the update.
+     *
+     * @param id the advertisement ID to update
+     * @param adDto the updated advertisement data
+     * @param imageFile optional new image file
+     * @return the updated advertisement as a response DTO
+     * @throws IOException if image processing fails
+     * @throws SecurityException if the current user is not the owner
+     */
     @Transactional
     public AdvertisementResponseDto updateAdvertisement(Long id, AdvertisementDto adDto, MultipartFile imageFile) throws IOException {
         User currentUser = userContextService.getCurrentUser();
@@ -285,6 +336,14 @@ public class AdvertisementService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Generate personalized advertisement recommendations for a user.
+     * Analyzes user's favorite advertisements to find similar listings
+     * based on preferred car brands.
+     *
+     * @param username the username to generate recommendations for
+     * @return list of recommended advertisement DTOs
+     */
     public List<AdvertisementResponseDto> getPersonalizedRecommendations(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -340,6 +399,25 @@ public class AdvertisementService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Search advertisements using semantic search and/or filter criteria.
+     * When keywords are provided, uses AI embeddings for semantic matching.
+     * Otherwise, applies traditional filtering on car attributes.
+     *
+     * @param keywords optional search keywords for semantic search
+     * @param brand optional car brand filter
+     * @param model optional car model filter
+     * @param bodyType optional body type filter
+     * @param minPrice optional minimum price filter
+     * @param maxPrice optional maximum price filter
+     * @param minYear optional minimum production year filter
+     * @param maxYear optional maximum production year filter
+     * @param fuelType optional fuel type filter
+     * @param transmission optional transmission type filter
+     * @param minMileage optional minimum mileage filter
+     * @param maxMileage optional maximum mileage filter
+     * @return list of matching advertisement DTOs
+     */
     public List<AdvertisementResponseDto> searchAds(
             String keywords, String brand, String model, String bodyType,
             Integer minPrice, Integer maxPrice, Integer minYear, Integer maxYear,

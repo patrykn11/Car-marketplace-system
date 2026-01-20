@@ -14,6 +14,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * REST controller for managing car advertisements.
+ * Provides endpoints for CRUD operations, searching,
+ * and retrieving recommendations.
+ */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/advertisements")
@@ -21,6 +26,11 @@ public class AdvertisementController {
 
     private final AdvertisementService advertisementService;
 
+    /**
+     * Get all advertisements.
+     *
+     * @return list of all advertisements
+     */
     @GetMapping
     public ResponseEntity<List<AdvertisementResponseDto>> getAllAdvertisements() {
         List<AdvertisementResponseDto> list = advertisementService.getAdvertisements();

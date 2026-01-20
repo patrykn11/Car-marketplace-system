@@ -16,6 +16,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 
+/**
+ * Security configuration for the application.
+ * Configures HTTP security, CORS, session management,
+ * and JWT authentication filter chain.
+ */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -24,6 +29,15 @@ public class SecurityConfig {
     private final JWTAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
 
+    /**
+     * Configure the security filter chain for HTTP requests.
+     * Sets up endpoint authorization rules, stateless session management,
+     * and JWT authentication filter.
+     *
+     * @param http the HttpSecurity to configure
+     * @return the configured SecurityFilterChain
+     * @throws Exception if configuration fails
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -57,6 +71,12 @@ public class SecurityConfig {
 
 
 
+    /**
+     * Configure CORS settings for the application.
+     * Allows requests from localhost development servers with all common HTTP methods.
+     *
+     * @return the CORS configuration source
+     */
     @Bean
     public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

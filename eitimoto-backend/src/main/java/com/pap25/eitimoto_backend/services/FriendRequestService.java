@@ -13,6 +13,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import com.pap25.eitimoto_backend.entities.FriendshipStatus;
 import com.pap25.eitimoto_backend.mapper.FriendRequestMapper;
+
+/**
+ * Service responsible for managing friend requests and friendships.
+ * Handles sending, accepting, and rejecting friend invitations,
+ * as well as retrieving user's friends and pending invitations.
+ */
 @Service
 @RequiredArgsConstructor
 public class FriendRequestService {
@@ -21,6 +27,11 @@ public class FriendRequestService {
     private final UserContextService userContextService;
     private final FriendRequestMapper friendRequestMapper;
 
+    /**
+     * Get all pending friend invitations for the current user.
+     *
+     * @return list of user profiles who sent invitations
+     */
     public List<UserProfileResponseDto> getUserInvitations() {
         Long userId = userContextService.getCurrentUser().getId();
 
@@ -40,6 +51,11 @@ public class FriendRequestService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Get all friends of the current user.
+     *
+     * @return list of friend user profiles
+     */
     public List<UserProfileResponseDto> getUserFriends() {
         Set<User> friends = userContextService.getFriends();
         return friends.stream()
@@ -52,6 +68,14 @@ public class FriendRequestService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Create a friend invitation to another user.
+     * Validates that the invitation doesn't already exist and users aren't already friends.
+     *
+     * @param username the username of the user to invite
+     * @return the created friend request as a response DTO
+     * @throws IllegalArgumentException if invitation is invalid or already exists
+     */
     public FriendRequestResponseDto createInvitation(String username) {
         User sender = userContextService.getCurrentUser();
 
@@ -84,6 +108,14 @@ public class FriendRequestService {
 
         return friendRequestMapper.toDto(friendRequest);
     }
+
+    /**
+     * Accept a pending friend invitation from another user.
+     *
+     * @param senderUsername the username of the user who sent the invitation
+     * @return the updated friend request as a response DTO
+     * @throws IllegalArgumentException if no pending invitation exists
+     */
     public FriendRequestResponseDto acceptInvitation(String senderUsername) {
         User receiver = userContextService.getCurrentUser();
 

@@ -16,6 +16,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service responsible for handling chat functionality between users.
+ * Manages sending messages, retrieving conversations,
+ * and real-time message delivery via WebSocket.
+ */
 @Service
 @RequiredArgsConstructor
 public class ChatService {
@@ -24,6 +29,15 @@ public class ChatService {
         private final UserRepository userRepository;
         private final SimpMessagingTemplate messagingTemplate;
 
+        /**
+         * Send a message from one user to another.
+         * Persists the message and delivers it via WebSocket to both parties.
+         *
+         * @param senderUsername the username of the message sender
+         * @param request the chat request containing receiver and content
+         * @return the sent message as a DTO
+         * @throws UsernameNotFoundException if sender or receiver is not found
+         */
         @Transactional
         public MessageDTO sendMessage(String senderUsername, ChatRequest request) {
                 User sender = userRepository.findByUsername(senderUsername)
@@ -66,6 +80,14 @@ public class ChatService {
                 return messageDTO;
         }
 
+        /**
+         * Retrieve the conversation history between two users.
+         *
+         * @param username1 the first user's username
+         * @param username2 the second user's username
+         * @return list of messages in the conversation
+         * @throws UsernameNotFoundException if either user is not found
+         */
         public List<MessageDTO> getConversation(String username1, String username2) {
                 User user1 = userRepository.findByUsername(username1)
                                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username1));
@@ -85,6 +107,13 @@ public class ChatService {
                                 .collect(Collectors.toList());
         }
 
+        /**
+         * Get all users that have had a conversation with the specified user.
+         *
+         * @param username the username to find chat partners for
+         * @return list of usernames of chat partners
+         * @throws UsernameNotFoundException if user is not found
+         */
         public List<String> getChatPartners(String username) {
                 User user = userRepository.findByUsername(username)
                                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
