@@ -3,6 +3,13 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, useParams } from 'react-router-dom';
 import Comment from '../components/Comment';
 
+/**
+ * Page component for displaying detailed information about a car advertisement.
+ * Shows car details, images, owner info, comments, and provides actions like
+ * favoriting, contacting owner, sending friend requests.
+ * 
+ * @returns {JSX.Element} Car details page component
+ */
 const CarDetailsPage = () => {
     const { id } = useParams();
     const { authFetch, isAuthenticated, username } = useAuth();
@@ -29,6 +36,9 @@ const CarDetailsPage = () => {
 
     const [showPhone, setShowPhone] = useState(false);
 
+    /**
+     * Fetch parent comments for this advertisement from the API.
+     */
     const fetchComments = useCallback(async () => {
         try {
             const res = await authFetch(`/api/comment/getParents/${id}`);
@@ -105,6 +115,10 @@ const CarDetailsPage = () => {
         checkStatus();
     }, [isAuthenticated, car, username, authFetch]);
 
+    /**
+     * Toggle favorite status of the current advertisement.
+     * Updates like count and syncs with server.
+     */
     const handleToggleFavorite = async () => {
         if (!isAuthenticated) {
             return;
@@ -136,6 +150,12 @@ const CarDetailsPage = () => {
         }
     };
 
+    /**
+     * Submit a new comment or reply to the advertisement.
+     * Clears input and refreshes comments on success.
+     * 
+     * @param {Event} e - Form submit event
+     */
     const handleAddComment = async (e) => {
         e.preventDefault();
         if (!newComment.trim()) return;

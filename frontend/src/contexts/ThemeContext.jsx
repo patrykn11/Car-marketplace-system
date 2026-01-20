@@ -1,9 +1,27 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
+/**
+ * Context for managing application theme and appearance settings.
+ */
 const ThemeContext = createContext();
 
+/**
+ * Custom hook to access theme context.
+ * Provides access to theme, fontSize, fontFamily and their setters.
+ * 
+ * @returns {Object} Theme context value
+ */
 export const useTheme = () => useContext(ThemeContext);
 
+/**
+ * Theme provider component that manages appearance settings.
+ * Handles dark/light mode, font size, and font family preferences.
+ * Persists settings to localStorage and applies them to document root.
+ * 
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Child components to wrap
+ * @returns {JSX.Element} Provider component with theme context
+ */
 export const ThemeProvider = ({ children }) => {
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
 
@@ -32,6 +50,9 @@ export const ThemeProvider = ({ children }) => {
 
     }, [theme, fontSize, fontFamily]);
 
+    /**
+     * Toggle between light and dark theme modes.
+     */
     const toggleTheme = () => {
         setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
     };

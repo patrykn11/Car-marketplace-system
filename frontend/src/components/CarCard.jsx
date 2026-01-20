@@ -4,6 +4,17 @@ import { useAuth } from '../contexts/AuthContext';
 import { useWebSocket } from '../contexts/WebSocketContext';
 import closeIcon from '../assets/close.png';
 
+/**
+ * Card component for displaying a car advertisement summary.
+ * Shows car image, basic info, price, and provides favorite/delete functionality.
+ * Subscribes to WebSocket notifications when favorited.
+ * 
+ * @param {Object} props - Component props
+ * @param {Object} props.car - Car advertisement data
+ * @param {boolean} props.isFavoriteInitial - Initial favorite state
+ * @param {Function} props.onToggleFavorite - Callback when favorite status changes
+ * @returns {JSX.Element} Car card component
+ */
 const CarCard = ({ car, isFavoriteInitial, onToggleFavorite }) => {
     const carData = car.carData || {};
     const { isAuthenticated, username, authFetch } = useAuth();
@@ -16,6 +27,13 @@ const CarCard = ({ car, isFavoriteInitial, onToggleFavorite }) => {
         setIsLiked(isFavoriteInitial);
     }, [isFavoriteInitial]);
 
+    /**
+     * Toggle the favorite status of this car advertisement.
+     * Updates local state optimistically and syncs with server.
+     * Subscribes/unsubscribes from WebSocket notifications accordingly.
+     * 
+     * @param {Event} e - Click event
+     */
     const handleToggleFavorite = async (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -64,6 +82,13 @@ const CarCard = ({ car, isFavoriteInitial, onToggleFavorite }) => {
         }
     };
 
+    /**
+     * Delete this car advertisement.
+     * Only available for the advertisement owner.
+     * Reloads page on successful deletion.
+     * 
+     * @param {Event} e - Click event
+     */
     const handleDelete = async (e) => {
         e.preventDefault();
         e.stopPropagation();

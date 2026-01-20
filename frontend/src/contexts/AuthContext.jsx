@@ -1,7 +1,20 @@
 import { createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+/**
+ * Context for managing user authentication state across the application.
+ * Provides access to auth token, user info, and authentication methods.
+ */
 const AuthContext = createContext();
 
+/**
+ * Authentication provider component that wraps the application.
+ * Manages user login state, token storage, and provides authentication utilities.
+ * 
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Child components to wrap
+ * @returns {JSX.Element} Provider component with auth context
+ */
 export const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
     const [token, setToken] = useState(localStorage.getItem("token"));
@@ -10,6 +23,17 @@ export const AuthProvider = ({ children }) => {
     const [contactNumber, setContactNumber] = useState(localStorage.getItem("contactNumber"));
     const [location, setLocation] = useState(localStorage.getItem("location"));
 
+    /**
+     * Register a new user account.
+     * Stores credentials in local storage and updates context state.
+     * 
+     * @param {string} username - User's chosen username
+     * @param {string} password - User's password
+     * @param {string} email - User's email address
+     * @param {string} contactNumber - User's contact phone number
+     * @param {string} location - User's location
+     * @throws {Error} If registration fails
+     */
     const register = async (username, password, email, contactNumber, location) => {
         const res = await fetch("/api/auth/register", {
             method: "POST",
@@ -35,6 +59,14 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("location", location);
     };
 
+    /**
+     * Authenticate user with username and password.
+     * Retrieves JWT token and stores user data in local storage.
+     * 
+     * @param {string} username - User's username
+     * @param {string} password - User's password
+     * @throws {Error} If credentials are invalid
+     */
     const login = async (username, password) => {
         const res = await fetch("/api/auth/login", {
             method: "POST",
@@ -59,6 +91,10 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("location", data.location);
     };
 
+    /**
+     * Log out the current user.
+     * Clears all auth data from state and local storage, redirects to home.
+     */
     const logout = () => {
         setToken(null);
         setUsername(null);
@@ -74,6 +110,14 @@ export const AuthProvider = ({ children }) => {
 
         navigate("/");
     };
+
+    /**
+     * Fetch wrapper that automatically includes the Authorization header.
+     * 
+     * @param {string} url - The URL to fetch
+     * @param {Object} options - Fetch options (method, body, etc.)
+     * @returns {Promise<Response>} Fetch response with auth header included
+     */
     const authFetch = (url, options = {}) => {
         return fetch(url, {
             ...options,
@@ -95,4 +139,10 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
+/**
+ * Custom hook to access authentication context.
+ * Provides access to auth state and methods (login, logout, register, authFetch).
+ * 
+ * @returns {Object} Auth context value containing token, user info, and auth methods
+ */
 export const useAuth = () => useContext(AuthContext);

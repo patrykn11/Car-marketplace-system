@@ -3,6 +3,13 @@ import { useSearchParams } from 'react-router-dom';
 import CarCard from '../components/CarCard';
 import { useAuth } from '../contexts/AuthContext';
 
+/**
+ * Page component for browsing and searching car advertisements.
+ * Provides filtering by brand, model, price, year, fuel type, etc.
+ * Supports semantic search with keywords and sorting options.
+ * 
+ * @returns {JSX.Element} Car list page component
+ */
 const CarListPage = () => {
     const [cars, setCars] = useState([]);
     const [displayedCars, setDisplayedCars] = useState([]);
@@ -81,6 +88,12 @@ const CarListPage = () => {
         }
     }, [filterSortingBy]);
 
+    /**
+     * Apply sorting to an array of cars based on selected criteria.
+     * 
+     * @param {Array} carsArray - Array of car objects to sort
+     * @returns {Array} Sorted array of cars
+     */
     const applySorting = (carsArray) => {
         if (!filterSortingBy) return carsArray;
 
@@ -106,6 +119,13 @@ const CarListPage = () => {
         return sortedCars;
     };
 
+    /**
+     * Handle favorite toggle event from CarCard component.
+     * Updates local favorites state.
+     * 
+     * @param {number} advertisementId - ID of the advertisement
+     * @param {boolean} isLikedNow - New favorite status
+     */
     const handleFavoriteToggle = (advertisementId, isLikedNow) => {
         setFavorites(prevIds => {
             if (isLikedNow) {
@@ -124,6 +144,10 @@ const CarListPage = () => {
 
     const uniqueModels = [...new Set(carsForModels.map(ad => ad.carData?.carModel))].filter(Boolean).sort();
 
+    /**
+     * Execute search with current filter criteria.
+     * Sends request to API with all active filters and updates displayed cars.
+     */
     const handleSearchClick = async () => {
         setLoading(true);
         try {

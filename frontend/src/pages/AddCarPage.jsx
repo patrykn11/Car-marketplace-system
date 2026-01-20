@@ -2,6 +2,13 @@ import React, { useState } from "react";
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
+/**
+ * Page component for creating a new car advertisement.
+ * Provides a form for entering car details, uploading images,
+ * and submitting the advertisement to the API.
+ * 
+ * @returns {JSX.Element} Add car page component
+ */
 export default function AddCarPage() {
     const { token, authFetch, isAuthenticated } = useAuth();
     const navigate = useNavigate();
@@ -23,6 +30,12 @@ export default function AddCarPage() {
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
 
+    /**
+     * Handle image file selection.
+     * Creates a preview URL for the selected image.
+     * 
+     * @param {Event} e - Input change event
+     */
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -31,6 +44,13 @@ export default function AddCarPage() {
         }
     };
 
+    /**
+     * Submit the new car advertisement to the API.
+     * Sends car data and image as multipart form data.
+     * Redirects to home page on success.
+     * 
+     * @param {Event} ev - Form submit event
+     */
     async function addCar(ev) {
         ev.preventDefault();
 

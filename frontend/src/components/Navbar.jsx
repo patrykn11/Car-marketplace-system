@@ -3,12 +3,25 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import SettingsPanel from './SettingsPanel';
 
+/**
+ * Main navigation bar component.
+ * Displays navigation links, authentication buttons, and settings panel.
+ * Adapts content based on user authentication status.
+ * 
+ * @returns {JSX.Element} Navigation bar component
+ */
 const Navbar = () => {
     const { isAuthenticated, logout } = useAuth();
     const location = useLocation();
 
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
+    /**
+     * Generate CSS classes for navigation links based on active state.
+     * 
+     * @param {string} path - Route path to check
+     * @returns {string} CSS class string for the link
+     */
     const getLinkClass = (path) => {
         const baseClass = "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200 ";
         const activeClass = "border-blue-500 text-gray-900 dark:text-white";

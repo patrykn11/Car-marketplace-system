@@ -3,6 +3,13 @@ import { useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useWebSocket } from '../contexts/WebSocketContext';
 
+/**
+ * Page component for real-time chat functionality.
+ * Displays conversation list and message history.
+ * Supports real-time message delivery via WebSocket.
+ * 
+ * @returns {JSX.Element} Chat page component
+ */
 export default function ChatPage() {
     const { authFetch, username: myUsername } = useAuth();
     const location = useLocation();
@@ -45,6 +52,9 @@ export default function ChatPage() {
         }
     }, [selectedPartner]);
 
+    /**
+     * Fetch list of users the current user has chatted with.
+     */
     const fetchPartners = async () => {
         try {
             const res = await authFetch('/api/chat/partners');
@@ -57,6 +67,11 @@ export default function ChatPage() {
         }
     };
 
+    /**
+     * Fetch message history with a specific chat partner.
+     * 
+     * @param {string} partner - Username of the chat partner
+     */
     const fetchHistory = async (partner) => {
         try {
             const res = await authFetch(`/api/chat/history/${partner}`);
@@ -72,6 +87,12 @@ export default function ChatPage() {
 
 
 
+    /**
+     * Send a new message to the selected chat partner.
+     * Clears input and updates message list on success.
+     * 
+     * @param {Event} e - Form submit event
+     */
     const handleSend = async (e) => {
         e.preventDefault();
         if (!newMessage.trim() || !selectedPartner) return;

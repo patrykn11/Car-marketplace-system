@@ -5,8 +5,20 @@ import SockJS from 'sockjs-client';
 import { useAuth } from './AuthContext';
 import { toast } from 'react-toastify';
 
+/**
+ * Context for managing WebSocket connections and real-time notifications.
+ */
 const WebSocketContext = createContext(null);
 
+/**
+ * WebSocket provider component that manages STOMP connections.
+ * Handles real-time notifications for favorite advertisements and chat messages.
+ * Automatically connects when user is authenticated and disconnects on logout.
+ * 
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Child components to wrap
+ * @returns {JSX.Element} Provider component with WebSocket context
+ */
 export const WebSocketProvider = ({ children }) => {
     const { isAuthenticated, authFetch, username } = useAuth();
     const stompClientRef = useRef(null);
@@ -25,6 +37,10 @@ export const WebSocketProvider = ({ children }) => {
         };
     }, [isAuthenticated]);
 
+    /**
+     * Establish WebSocket connection using SockJS and STOMP protocol.
+     * Subscribes to user's message queue and favorite advertisements on connect.
+     */
     const connect = () => {
         if (stompClientRef.current?.active) return;
 
@@ -56,6 +72,9 @@ export const WebSocketProvider = ({ children }) => {
         stompClientRef.current = client;
     };
 
+    /**
+     * Close WebSocket connection and clean up all subscriptions.
+     */
     const disconnect = () => {
         if (stompClientRef.current) {
             stompClientRef.current.deactivate();
@@ -100,6 +119,13 @@ export const WebSocketProvider = ({ children }) => {
         }
     };
 
+    /**
+     * Subscribe to notifications for a specific advertisement.
+     * Displays toast notifications when the advertisement is updated.
+     * 
+     * @param {number} id - Advertisement ID to subscribe to
+     * @param {Object} client - Optional STOMP client instance
+     */
     const subscribeToTopic = (id, client = stompClientRef.current) => {
         if (!client || !client.active) return;
         if (subscriptionsRef.current.has(id)) return;
@@ -123,6 +149,11 @@ export const WebSocketProvider = ({ children }) => {
         subscriptionsRef.current.set(id, subscription);
     };
 
+    /**
+     * Unsubscribe from notifications for a specific advertisement.
+     * 
+     * @param {number} id - Advertisement ID to unsubscribe from
+     */
     const unsubscribeFromTopic = (id) => {
         const subscription = subscriptionsRef.current.get(id);
         if (subscription) {
@@ -139,4 +170,10 @@ export const WebSocketProvider = ({ children }) => {
     );
 };
 
+/**
+ * Custom hook to access WebSocket context.
+ * Provides methods for subscribing/unsubscribing to topics and registering message listeners.
+ * 
+ * @returns {Object} WebSocket context with subscribeToTopic, unsubscribeFromTopic, isConnected, registerMessageListener
+ */
 export const useWebSocket = () => useContext(WebSocketContext);
