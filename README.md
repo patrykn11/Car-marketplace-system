@@ -1,59 +1,55 @@
-# Eitimoto - Platforma ogłoszeń motoryzacyjnych
+# Eitimoto Car Marketplace
 
-> **PAP2025Z-Z02** - Projekt zespołowy
+Eitimoto is a full-stack car marketplace application. It provides user authentication, car advertisement management, catalog browsing, favorites, comments, user profiles, chat, friend requests, statistics, and AI-assisted car searching.
 
-## Zespół
+## Tech Stack
 
-| Imię i nazwisko |
-|-----------------|
-| Adrian Werel |
-| Julian Jarosz |
-| Paweł Kozikowski |
-| Patryk Nisgorski |
+- **Frontend:** React 19, Vite, React Router, Axios, Tailwind CSS, Vitest
+- **Backend:** Java 21, Spring Boot 3.3, Spring Security, Spring Data JPA, WebSocket/STOMP
+- **Database:** PostgreSQL 16 with pgvector
+- **AI integration:** Spring AI with OpenAI embeddings
+- **Infrastructure:** Docker, Docker Compose, Nginx
 
----
+## Project Structure
 
-## Szybki start
-
-### Wymagania
-- **Docker & Docker Compose** 
-
-### Uruchomienie
-
-Klonowanie repozytorium 
-
-```bash
-git clone https://gitlab-stud.elka.pw.edu.pl/jjarosz/pap2025z-z02.git
+```text
+.
+├── docker-compose.yml          # Full application stack
+├── eitimoto-backend/           # Spring Boot REST API
+│   ├── src/main/java/...       # Controllers, services, entities, repositories
+│   ├── src/main/resources/     # Application config, schema and seed SQL
+│   └── pom.xml                 # Maven project configuration
+└── frontend/                   # React frontend
+    ├── src/                    # Pages, components, contexts and API client
+    ├── package.json            # NPM scripts and dependencies
+    └── nginx.conf              # Production container config
 ```
 
-#### Linux (Ubuntu/Debian)
+## Prerequisites
+
+- Docker and Docker Compose
+- Java 21
+- Maven or the included Maven wrapper
+- Node.js and npm
+
+Docker is the easiest way to run the complete system.
+
+## Running with Docker Compose
+
+From the repository root:
 
 ```bash
-./run_app.sh
+docker compose up --build
 ```
 
-#### macOS / Windows / Inne systemy
+The services will be available at:
 
-Skrypt `run_app.sh` **działa** . W alternatywie można użyć poniższego skrytpu:
+- Frontend: `http://localhost:8000`
+- Backend API: `http://localhost:3333`
+- PostgreSQL: `localhost:3001`
+
+To stop the stack:
 
 ```bash
-docker-compose up --build
+docker compose down
 ```
-
-> Wymaga wcześniejszej instalacji [Docker Desktop](https://www.docker.com/products/docker-desktop/).
-
----
-
-Po uruchomieniu należy poczekać 3-4 minuty na start wszystkich serwisów.
-
----
-
-## Dostęp do aplikacji
-
-| Serwis | URL |
-|--------|-----|
-| Frontend | http://localhost:8000 |
-| Backend API | http://localhost:3333/api |
-| PostgreSQL | localhost:3001 |
-
----
